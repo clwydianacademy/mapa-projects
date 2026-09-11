@@ -2,7 +2,7 @@
 """
 check_claims.py — content guard for the Clwydian Academy site.
 
-Fails the build on any claim the academy cannot stand behind, or any regression to
+Fails the build on any claim the academy cannot stand behind (scans .html, .md, .txt and .json in the tree), or any regression to
 pre-August 2026 copy. Run against the built output before every commit:
 
     python3 scripts/check_claims.py "clwydian-academy 2"
@@ -66,7 +66,7 @@ def check(root):
     pages = 0
     for dirpath, _dirs, files in os.walk(root):
         for fn in files:
-            if not fn.endswith((".html", ".md", ".txt")):
+            if not fn.endswith((".html", ".md", ".txt", ".json")):
                 continue
             path = os.path.join(dirpath, fn)
             rel = "/" + os.path.relpath(path, root).replace(os.sep, "/")
