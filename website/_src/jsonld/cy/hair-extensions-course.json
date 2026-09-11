@@ -5,7 +5,7 @@
     "@id": "https://clwydianacademy.co.uk/cy/cyrsiau/cwrs-estyniadau-gwallt/#course",
     "name": "Dosbarth Meistr Gwasanaethau Estyniadau Gwallt Creadigol (Uned VTCT UHB206)",
     "inLanguage": "cy",
-    "description": "Dosbarth meistr DPP pedwar dydd Llun yn Llanelwy yn arwain at uned VTCT Lefel 2 UHB206 reoledig gydag ardystiad brand moethus ychwanegol: gosod, asio, cynnal a chadw a sgiliau busnes estyniadau.",
+    "description": "Dosbarth meistr DPP chwe dydd Llun yn Llanelwy yn arwain at uned VTCT Lefel 2 UHB206 reoledig gydag ardystiad brand moethus ychwanegol: gosod, asio, cynnal a chadw a sgiliau busnes estyniadau.",
     "provider": {
       "@id": "https://clwydianacademy.co.uk/#organization"
     },
@@ -14,7 +14,7 @@
     "hasCourseInstance": {
       "@type": "CourseInstance",
       "courseMode": "Blended",
-      "courseWorkload": "P4W",
+      "courseWorkload": "P6W",
       "location": {
         "@type": "Place",
         "name": "Clwydian Academy, St Asaph",

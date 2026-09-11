@@ -5,7 +5,7 @@
     "@id": "https://clwydianacademy.co.uk/cy/cyrsiau/cwrs-permio/#course",
     "name": "Dosbarth Meistr Gwasanaethau Permio a Gwead Modern (Uned VTCT UHB204)",
     "inLanguage": "cy",
-    "description": "Dosbarth meistr DPP cyfunol pedwar dydd Llun yn Llanelwy yn arwain at uned VTCT Lefel 2 UHB204 reoledig: cemeg permio, patrymau dirwyn masnachol, niwtraleiddio ac asesiad model byw.",
+    "description": "Dosbarth meistr DPP cyfunol chwe dydd Llun yn Llanelwy yn arwain at uned VTCT Lefel 2 UHB204 reoledig: cemeg permio, patrymau dirwyn masnachol, niwtraleiddio ac asesiad model byw.",
     "provider": {
       "@id": "https://clwydianacademy.co.uk/#organization"
     },
@@ -14,7 +14,7 @@
     "hasCourseInstance": {
       "@type": "CourseInstance",
       "courseMode": "Blended",
-      "courseWorkload": "P4W",
+      "courseWorkload": "P6W",
       "location": {
         "@type": "Place",
         "name": "Clwydian Academy, St Asaph",

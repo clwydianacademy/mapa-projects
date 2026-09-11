@@ -5,7 +5,7 @@
     "@id": "https://clwydianacademy.co.uk/cy/cyrsiau/dpp-ymgynghori-a-manwerthu/#course",
     "name": "Dosbarth Meistr Cyfarwyddo a Chynghori ar Gynhyrchion a Gwasanaethau (Uned VTCT UNHB385)",
     "inLanguage": "cy",
-    "description": "Dosbarth meistr DPP cyfunol pedwar dydd Llun yn Llanelwy yn arwain at uned VTCT Lefel 3 UNHB385 reoledig: ymgynghori uwch, dadansoddi gwallt a chroen pen, proffilio ffordd o fyw a chyfathrebu manwerthu.",
+    "description": "Dosbarth meistr DPP cyfunol pum dydd Llun yn Llanelwy yn arwain at uned VTCT Lefel 2 UNHB385 reoledig: ymgynghori uwch, dadansoddi gwallt a chroen pen, proffilio ffordd o fyw a chyfathrebu manwerthu.",
     "provider": {
       "@id": "https://clwydianacademy.co.uk/#organization"
     },
@@ -14,7 +14,7 @@
     "hasCourseInstance": {
       "@type": "CourseInstance",
       "courseMode": "Blended",
-      "courseWorkload": "P4W",
+      "courseWorkload": "P5W",
       "location": {
         "@type": "Place",
         "name": "Clwydian Academy, St Asaph",

@@ -5,7 +5,7 @@
     "@id": "https://clwydianacademy.co.uk/cy/cyrsiau/cwrs-llacio-gwallt/#course",
     "name": "Dosbarth Meistr Llacio, Sythu a Llyfnhau Cemegol (Uned VTCT UHB205)",
     "inLanguage": "cy",
-    "description": "Dosbarth meistr DPP cyfunol chwe dydd Llun yn Llanelwy yn arwain at uned VTCT Lefel 2 UHB205 reoledig: llacio cemegol, sythu parhaol a systemau llyfnhau modern gydag asesiad model byw.",
+    "description": "Dosbarth meistr DPP cyfunol wyth dydd Llun yn Llanelwy yn arwain at uned VTCT Lefel 2 UHB205 reoledig: llacio cemegol, sythu parhaol a systemau llyfnhau modern gydag asesiad model byw.",
     "provider": {
       "@id": "https://clwydianacademy.co.uk/#organization"
     },
@@ -14,7 +14,7 @@
     "hasCourseInstance": {
       "@type": "CourseInstance",
       "courseMode": "Blended",
-      "courseWorkload": "P6W",
+      "courseWorkload": "P8W",
       "location": {
         "@type": "Place",
         "name": "Clwydian Academy, St Asaph",
@@ -32,7 +32,7 @@
         "category": "Paid",
         "price": "695",
         "priceCurrency": "GBP",
-        "description": "Rhaglen chwe wythnos gyflawn gan gynnwys ffioedd arholiad"
+        "description": "Rhaglen wyth wythnos gyflawn gan gynnwys ffioedd arholiad"
       }
     ]
   },

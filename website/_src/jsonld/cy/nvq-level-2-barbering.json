@@ -3,9 +3,9 @@
     "@context": "https://schema.org",
     "@type": "Course",
     "@id": "https://clwydianacademy.co.uk/cy/cyrsiau/barbro-nvq-lefel-2/#course",
-    "name": "Diploma NVQ Lefel 2 mewn Barbro — Carlam",
+    "name": "Diploma NVQ Lefel 2 mewn Barbro — Gyda'r Hwyr",
     "inLanguage": "cy",
-    "description": "Cwrs barbro carlam chwe mis dwys yn Llanelwy: dau ddiwrnod academi yn olynol bob pythefnos ynghyd â dysgu o bell dan arweiniad, yn arwain at gymhwyster barbro VTCT NVQ Lefel 2.",
+    "description": "Cwrs barbro gyda'r hwyr 32 wythnos yn Llanelwy: un noson yr wythnos (nos Fawrth 5pm–9pm) ynghyd â dysgu o bell wedi'i amserlennu, yn arwain at gymhwyster barbro VTCT NVQ Lefel 2.",
     "provider": {
       "@id": "https://clwydianacademy.co.uk/#organization"
     },
@@ -14,7 +14,7 @@
     "hasCourseInstance": {
       "@type": "CourseInstance",
       "courseMode": "Blended",
-      "courseWorkload": "P6M",
+      "courseWorkload": "P32W",
       "location": {
         "@type": "Place",
         "name": "Clwydian Academy, St Asaph",
