@@ -14,6 +14,9 @@ GitHub Pages (no CNAME, no .nojekyll); that hosting is dead.
 """
 import datetime, json, os, subprocess, sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import cpd   # everything rendered from _data/cpd-2027.json
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 OUT = os.path.join(REPO, "clwydian-academy 2")
@@ -75,6 +78,7 @@ CHROME = {
                  ("/courses/nvq-level-2-barbering/", "NVQ Level 2 Barbering"),
                  ("/courses/nvq-level-3-hairdressing/", "NVQ Level 3 Hairdressing"),
                  ("/courses/cpd-courses/", "CPD for Professionals"),
+                 ("/courses/cpd-calendar/", "CPD calendar 2027"),
                  ("/funding/", "Fees &amp; Funding")],
         academy_label="Academy",
         academy=[("/about/", "About &amp; Mission"),
@@ -103,6 +107,7 @@ CHROME = {
                  ("/cy/cyrsiau/barbro-nvq-lefel-2/", "Barbro NVQ Lefel 2"),
                  ("/cy/cyrsiau/trin-gwallt-nvq-lefel-3/", "Trin Gwallt NVQ Lefel 3"),
                  ("/cy/cyrsiau/cyrsiau-dpp/", "DPP i Weithwyr Proffesiynol"),
+                 ("/cy/cyrsiau/calendr-dpp/", "Calendr DPP 2027"),
                  ("/cy/ffioedd-a-chyllid/", "Ffioedd a Chyllid")],
         academy_label="Yr Academi",
         academy=[("/cy/amdanom/", "Amdanom a&rsquo;n Cenhadaeth"),
@@ -267,8 +272,14 @@ def footer(page, loc):
 '''
 
 def lastmod(page, loc, fallback):
-    """Date of the last commit touching this page's fragment or JSON-LD; the build date if none."""
-    paths = [os.path.join("pages", loc, page["key"] + ".html"), os.path.join("jsonld", loc, page["key"] + ".json")]
+    """Date of the last commit touching this page's sources; the build date if none.
+    Sources are the fragment and JSON-LD, plus the CPD data and cpd.py for pages that render from them."""
+    if page.get("generated"):
+        paths = [cpd.DATA_PATH, os.path.join(HERE, "cpd.py")]
+    else:
+        paths = [os.path.join("pages", loc, page["key"] + ".html"), os.path.join("jsonld", loc, page["key"] + ".json")]
+        if page.get("cpd_unit"):
+            paths += [cpd.DATA_PATH, os.path.join(HERE, "cpd.py")]
     try:
         out = subprocess.run(["git", "--no-optional-locks", "log", "-1", "--format=%cI", "--", *paths],
                              cwd=HERE, capture_output=True, text=True, check=True).stdout.strip()
@@ -290,13 +301,21 @@ def build():
     if not os.path.isdir(OUT):
         sys.exit(f"build: output directory missing: {OUT}")
     pages = json.loads(read("pages.json"))
+    cpd.configure(DOMAIN, next(p for p in pages if p.get("generated") == "cpd-calendar"))
     urls = {"en": [], "cy": []}
     for page in pages:
         for loc in LOCALES:
             if not page.get(loc):
                 continue
-            body = read("pages", loc, page["key"] + ".html")
-            jsonld = json.loads(read("jsonld", loc, page["key"] + ".json"))
+            if page.get("generated") == "cpd-calendar":
+                body = cpd.calendar_body(loc, page)
+                jsonld = cpd.calendar_jsonld(loc, page)
+            else:
+                body = read("pages", loc, page["key"] + ".html")
+                jsonld = json.loads(read("jsonld", loc, page["key"] + ".json"))
+            if "<!-- cpd-dates -->" in body:
+                body = body.replace("<!-- cpd-dates -->", cpd.date_rows(loc, page))
+                jsonld = cpd.enrich(jsonld, loc, page)
             html = head(page, loc, jsonld) + "\n" + header(page, loc) + "\n" + body + footer(page, loc)
             rel = out_path(page[loc]["path"])
             write(rel, html)

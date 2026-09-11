@@ -85,6 +85,24 @@
     }
   },
   {
+    "key": "cpd-calendar",
+    "generated": "cpd-calendar",
+    "nav": "/courses/",
+    "noindex": false,
+    "priority": "0.9",
+    "legal": "plain",
+    "en": {
+      "path": "/courses/cpd-calendar/",
+      "title": "CPD Calendar January – July 2027 | Clwydian Academy",
+      "desc": "Every 2027 CPD cohort at St Asaph with dates, prices, levels and guided learning hours — Monday and Wednesday strands, academy closures and the published tariff."
+    },
+    "cy": {
+      "path": "/cy/cyrsiau/calendr-dpp/",
+      "title": "Calendr DPP Ionawr – Gorffennaf 2027 | Clwydian Academy",
+      "desc": "Pob carfan DPP 2027 yn Llanelwy gyda dyddiadau, prisiau, lefelau ac oriau dysgu dan arweiniad — llinynnau dydd Llun a dydd Mercher, dyddiau cau'r academi a'r tariff cyhoeddedig."
+    }
+  },
+  {
     "key": "funding",
     "nav": "/funding/",
     "noindex": false,
@@ -218,7 +236,8 @@
       "path": "/cy/cyrsiau/cwrs-estyniadau-gwallt/",
       "title": "Cwrs Estyniadau Gwallt — VTCT UHB206 | Clwydian Academy",
       "desc": "Dosbarth meistr estyniadau gwallt creadigol wedi'i ardystio'n ddwbl yn Llanelwy: pedwar dydd Llun, uned VTCT Lefel 2 UHB206 ac ardystiad brand moethus."
-    }
+    },
+    "cpd_unit": "UHB206"
   },
   {
     "key": "perming-course",
@@ -235,7 +254,8 @@
       "path": "/cy/cyrsiau/cwrs-permio/",
       "title": "Cwrs Permio a Gwead Modern — VTCT UHB204 | Clwydian Academy",
       "desc": "Mae'r pêrm yn ôl: dosbarth meistr permio a gwead modern dros bedwar dydd Llun yn Llanelwy, yn arwain at uned VTCT Lefel 2 UHB204 reoledig. I steilyddion a barbwyr."
-    }
+    },
+    "cpd_unit": "UHB204"
   },
   {
     "key": "hair-relaxing-course",
@@ -252,7 +272,8 @@
       "path": "/cy/cyrsiau/cwrs-llacio-gwallt/",
       "title": "Cwrs Llacio a Llyfnhau Gwallt — VTCT UHB205 | Clwydian Academy",
       "desc": "Dewch yn arbenigwr gwallt gweadog: dosbarth meistr llacio, sythu a llyfnhau cemegol dros chwe dydd Llun yn Llanelwy — uned VTCT Lefel 2 UHB205 reoledig, £695."
-    }
+    },
+    "cpd_unit": "UHB205"
   },
   {
     "key": "consultation-retail-cpd",
@@ -269,7 +290,8 @@
       "path": "/cy/cyrsiau/dpp-ymgynghori-a-manwerthu/",
       "title": "Dosbarth Meistr Ymgynghori a Manwerthu — VTCT UNHB385 | Clwydian Academy",
       "desc": "Dosbarth meistr ymgynghori uwch dros bedwar dydd Llun yn Llanelwy: dadansoddi gwallt a chroen pen, proffilio ffordd o fyw a manwerthu hyderus — uned VTCT Lefel 3 UNHB385."
-    }
+    },
+    "cpd_unit": "UNHB385"
   },
   {
     "key": "salon-business-course",
@@ -286,7 +308,8 @@
       "path": "/cy/cyrsiau/cwrs-busnes-salon/",
       "title": "Dosbarth Meistr Busnes Salon — VTCT UNHB379 | Clwydian Academy",
       "desc": "Rhedwch eich colofn fel Prif Weithredwr: dosbarth meistr busnes pedair wythnos yn Llanelwy i steilyddion, barbwyr a pherchnogion salonau — uned VTCT Lefel 3 UNHB379."
-    }
+    },
+    "cpd_unit": "UNHB379"
   },
   {
     "key": "skin-cancer-awareness",
@@ -303,7 +326,8 @@
       "path": "/cy/cyrsiau/ymwybyddiaeth-canser-y-croen/",
       "title": "Cwrs Ymwybyddiaeth Canser y Croen — VTCT Lefel 2 | Clwydian Academy",
       "desc": "Dyfarniad VTCT Lefel 2 undydd mewn Ymwybyddiaeth Canser y Croen yn Llanelwy i drinwyr gwallt, barbwyr a therapyddion. £195, dim rhagofynion, gostyngiadau tîm."
-    }
+    },
+    "cpd_unit": "UV21577"
   },
   {
     "key": "apprenticeships",
