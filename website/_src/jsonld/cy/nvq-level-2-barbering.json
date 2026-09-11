@@ -1,0 +1,70 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "@id": "https://clwydianacademy.co.uk/cy/cyrsiau/barbro-nvq-lefel-2/#course",
+    "name": "Diploma NVQ Lefel 2 mewn Barbro — Carlam",
+    "inLanguage": "cy",
+    "description": "Cwrs barbro carlam chwe mis dwys yn Llanelwy: dau ddiwrnod academi yn olynol bob pythefnos ynghyd â dysgu o bell dan arweiniad, yn arwain at gymhwyster barbro VTCT NVQ Lefel 2.",
+    "provider": {
+      "@id": "https://clwydianacademy.co.uk/#organization"
+    },
+    "url": "https://clwydianacademy.co.uk/cy/cyrsiau/barbro-nvq-lefel-2/",
+    "coursePrerequisites": "Ar agor i oedolion 19+. Nid oes angen profiad blaenorol; gall trinwyr gwallt cymwysedig groesfapio unedau presennol.",
+    "hasCourseInstance": {
+      "@type": "CourseInstance",
+      "courseMode": "Blended",
+      "courseWorkload": "P6M",
+      "location": {
+        "@type": "Place",
+        "name": "Clwydian Academy, St Asaph",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "St Asaph",
+          "addressRegion": "Denbighshire",
+          "addressCountry": "GB"
+        }
+      }
+    },
+    "offers": [
+      {
+        "@type": "Offer",
+        "category": "Paid",
+        "price": "4500",
+        "priceCurrency": "GBP",
+        "description": "Lle hunan-ariannu"
+      },
+      {
+        "@type": "Offer",
+        "category": "Free",
+        "price": "0",
+        "priceCurrency": "GBP",
+        "description": "Wedi'i ariannu'n llawn i ddysgwyr cymwys drwy lwybrau Llywodraeth Cymru, gan gynnwys prentisiaethau"
+      }
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Hafan",
+        "item": "https://clwydianacademy.co.uk/cy/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Cyrsiau",
+        "item": "https://clwydianacademy.co.uk/cy/cyrsiau/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Barbro NVQ Lefel 2",
+        "item": "https://clwydianacademy.co.uk/cy/cyrsiau/barbro-nvq-lefel-2/"
+      }
+    ]
+  }
+]

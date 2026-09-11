@@ -1,0 +1,54 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "@id": "https://clwydianacademy.co.uk/cy/cyrsiau/cwrs-estyniadau-gwallt/#course",
+    "name": "Dosbarth Meistr Gwasanaethau Estyniadau Gwallt Creadigol (Uned VTCT UHB206)",
+    "inLanguage": "cy",
+    "description": "Dosbarth meistr DPP pedwar dydd Llun yn Llanelwy yn arwain at uned VTCT Lefel 2 UHB206 reoledig gydag ardystiad brand moethus ychwanegol: gosod, asio, cynnal a chadw a sgiliau busnes estyniadau.",
+    "provider": {
+      "@id": "https://clwydianacademy.co.uk/#organization"
+    },
+    "url": "https://clwydianacademy.co.uk/cy/cyrsiau/cwrs-estyniadau-gwallt/",
+    "coursePrerequisites": "Trin Gwallt Lefel 2 neu brofiad diwydiant cyfatebol.",
+    "hasCourseInstance": {
+      "@type": "CourseInstance",
+      "courseMode": "Blended",
+      "courseWorkload": "P4W",
+      "location": {
+        "@type": "Place",
+        "name": "Clwydian Academy, St Asaph",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "St Asaph",
+          "addressRegion": "Denbighshire",
+          "addressCountry": "GB"
+        }
+      }
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Hafan",
+        "item": "https://clwydianacademy.co.uk/cy/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Cyrsiau",
+        "item": "https://clwydianacademy.co.uk/cy/cyrsiau/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Cwrs Estyniadau Gwallt",
+        "item": "https://clwydianacademy.co.uk/cy/cyrsiau/cwrs-estyniadau-gwallt/"
+      }
+    ]
+  }
+]

@@ -1,0 +1,76 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "@id": "https://clwydianacademy.co.uk/courses/nvq-level-2-hairdressing/#course",
+    "name": "NVQ Level 2 Diploma in Hairdressing — Fast-Track",
+    "inLanguage": "en",
+    "description": "Intensive six-month fast-track hairdressing course for adults: two consecutive academy days each fortnight in St Asaph plus guided distance learning, leading to a VTCT NVQ Level 2 qualification.",
+    "provider": {
+      "@id": "https://clwydianacademy.co.uk/#organization"
+    },
+    "url": "https://clwydianacademy.co.uk/courses/nvq-level-2-hairdressing/",
+    "educationalCredentialAwarded": "NVQ Level 2 Diploma in Hairdressing",
+    "coursePrerequisites": "Open to adults aged 19+. No prior hairdressing experience required.",
+    "offers": [
+      {
+        "@type": "Offer",
+        "category": "Paid",
+        "price": "4500",
+        "priceCurrency": "GBP",
+        "description": "Self-funded place"
+      },
+      {
+        "@type": "Offer",
+        "category": "Free",
+        "price": "0",
+        "priceCurrency": "GBP",
+        "description": "Fully funded for eligible learners through Welsh Government routes, including apprenticeships"
+      }
+    ],
+    "hasCourseInstance": {
+      "@type": "CourseInstance",
+      "courseMode": "Blended",
+      "courseWorkload": "P6M",
+      "courseSchedule": {
+        "@type": "Schedule",
+        "repeatFrequency": "P2W",
+        "repeatCount": 13
+      },
+      "location": {
+        "@type": "Place",
+        "name": "Clwydian Academy, St Asaph",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "St Asaph",
+          "addressRegion": "Denbighshire",
+          "addressCountry": "GB"
+        }
+      }
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://clwydianacademy.co.uk/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Courses",
+        "item": "https://clwydianacademy.co.uk/courses/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "NVQ Level 2 Hairdressing",
+        "item": "https://clwydianacademy.co.uk/courses/nvq-level-2-hairdressing/"
+      }
+    ]
+  }
+]

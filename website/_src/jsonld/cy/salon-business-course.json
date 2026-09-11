@@ -1,0 +1,54 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "@id": "https://clwydianacademy.co.uk/cy/cyrsiau/cwrs-busnes-salon/#course",
+    "name": "Dosbarth Meistr Busnes y Steilydd Annibynnol a'r Salon (Uned VTCT UNHB379)",
+    "inLanguage": "cy",
+    "description": "Dosbarth meistr DPP cyfunol pedair wythnos yn Llanelwy yn arwain at uned VTCT Lefel 3 UNHB379 reoledig: hyrwyddo, cadw cleientiaid, rheoli stoc a rheoli tîm i weithwyr gwallt proffesiynol.",
+    "provider": {
+      "@id": "https://clwydianacademy.co.uk/#organization"
+    },
+    "url": "https://clwydianacademy.co.uk/cy/cyrsiau/cwrs-busnes-salon/",
+    "coursePrerequisites": "Ar agor i bob triniwr gwallt, barbwr a gweithiwr salon proffesiynol.",
+    "hasCourseInstance": {
+      "@type": "CourseInstance",
+      "courseMode": "Blended",
+      "courseWorkload": "P4W",
+      "location": {
+        "@type": "Place",
+        "name": "Clwydian Academy, St Asaph",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "St Asaph",
+          "addressRegion": "Denbighshire",
+          "addressCountry": "GB"
+        }
+      }
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Hafan",
+        "item": "https://clwydianacademy.co.uk/cy/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Cyrsiau",
+        "item": "https://clwydianacademy.co.uk/cy/cyrsiau/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Dosbarth Meistr Busnes Salon",
+        "item": "https://clwydianacademy.co.uk/cy/cyrsiau/cwrs-busnes-salon/"
+      }
+    ]
+  }
+]
