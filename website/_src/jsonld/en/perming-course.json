@@ -5,7 +5,7 @@
     "@id": "https://clwydianacademy.co.uk/courses/perming-course/#course",
     "name": "Modern Perming & Texture Services Masterclass (VTCT Unit UHB204)",
     "inLanguage": "en",
-    "description": "Four-Monday blended CPD masterclass in St Asaph leading to the regulated VTCT Level 2 unit UHB204: perm chemistry, commercial winding patterns, neutralising and live-model assessment.",
+    "description": "Six-Monday blended CPD masterclass in St Asaph leading to the regulated VTCT Level 2 unit UHB204: perm chemistry, commercial winding patterns, neutralising and live-model assessment.",
     "provider": {
       "@id": "https://clwydianacademy.co.uk/#organization"
     },
@@ -14,7 +14,7 @@
     "hasCourseInstance": {
       "@type": "CourseInstance",
       "courseMode": "Blended",
-      "courseWorkload": "P4W",
+      "courseWorkload": "P6W",
       "location": {
         "@type": "Place",
         "name": "Clwydian Academy, St Asaph",

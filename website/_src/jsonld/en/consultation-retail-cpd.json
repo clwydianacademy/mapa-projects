@@ -5,7 +5,7 @@
     "@id": "https://clwydianacademy.co.uk/courses/consultation-retail-cpd/#course",
     "name": "Instruct & Advise on Products & Services Masterclass (VTCT Unit UNHB385)",
     "inLanguage": "en",
-    "description": "Four-Monday blended CPD masterclass in St Asaph leading to the regulated VTCT Level 3 unit UNHB385: advanced consultation, hair and scalp analysis, lifestyle profiling and retail communication.",
+    "description": "Five-Monday blended CPD masterclass in St Asaph leading to the regulated VTCT Level 2 unit UNHB385: advanced consultation, hair and scalp analysis, lifestyle profiling and retail communication.",
     "provider": {
       "@id": "https://clwydianacademy.co.uk/#organization"
     },
@@ -14,7 +14,7 @@
     "hasCourseInstance": {
       "@type": "CourseInstance",
       "courseMode": "Blended",
-      "courseWorkload": "P4W",
+      "courseWorkload": "P5W",
       "location": {
         "@type": "Place",
         "name": "Clwydian Academy, St Asaph",

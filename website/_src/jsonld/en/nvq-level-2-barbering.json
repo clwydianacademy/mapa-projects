@@ -3,9 +3,9 @@
     "@context": "https://schema.org",
     "@type": "Course",
     "@id": "https://clwydianacademy.co.uk/courses/nvq-level-2-barbering/#course",
-    "name": "NVQ Level 2 Diploma in Barbering — Fast-Track",
+    "name": "NVQ Level 2 Diploma in Barbering — Twilight",
     "inLanguage": "en",
-    "description": "Intensive six-month fast-track barbering course in St Asaph: two consecutive academy days each fortnight plus guided distance learning, leading to a VTCT NVQ Level 2 barbering qualification.",
+    "description": "32-week twilight barbering course in St Asaph: one evening a week (Tuesdays 5pm–9pm) plus timetabled distance learning, leading to a VTCT NVQ Level 2 barbering qualification.",
     "provider": {
       "@id": "https://clwydianacademy.co.uk/#organization"
     },
@@ -14,7 +14,7 @@
     "hasCourseInstance": {
       "@type": "CourseInstance",
       "courseMode": "Blended",
-      "courseWorkload": "P6M",
+      "courseWorkload": "P32W",
       "location": {
         "@type": "Place",
         "name": "Clwydian Academy, St Asaph",

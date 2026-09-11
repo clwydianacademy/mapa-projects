@@ -5,7 +5,7 @@
     "@id": "https://clwydianacademy.co.uk/courses/salon-business-course/#course",
     "name": "The Independent Stylist & Salon Business Masterclass (VTCT Unit UNHB379)",
     "inLanguage": "en",
-    "description": "Four-week blended CPD masterclass in St Asaph leading to the regulated VTCT Level 3 unit UNHB379: promotion, retention, stock control and team management for hair professionals.",
+    "description": "Six-Monday blended CPD masterclass in St Asaph leading to the regulated VTCT Level 2 unit UNHB379: promotion, retention, stock control and team management for hair professionals.",
     "provider": {
       "@id": "https://clwydianacademy.co.uk/#organization"
     },
@@ -14,7 +14,7 @@
     "hasCourseInstance": {
       "@type": "CourseInstance",
       "courseMode": "Blended",
-      "courseWorkload": "P4W",
+      "courseWorkload": "P6W",
       "location": {
         "@type": "Place",
         "name": "Clwydian Academy, St Asaph",

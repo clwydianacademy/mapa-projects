@@ -5,7 +5,7 @@
     "@id": "https://clwydianacademy.co.uk/courses/hair-relaxing-course/#course",
     "name": "Chemical Relaxing, Straightening & Smoothing Masterclass (VTCT Unit UHB205)",
     "inLanguage": "en",
-    "description": "Six-Monday blended CPD masterclass in St Asaph leading to the regulated VTCT Level 2 unit UHB205: chemical relaxing, permanent straightening and modern smoothing systems with live-model assessment.",
+    "description": "Eight-Monday blended CPD masterclass in St Asaph leading to the regulated VTCT Level 2 unit UHB205: chemical relaxing, permanent straightening and modern smoothing systems with live-model assessment.",
     "provider": {
       "@id": "https://clwydianacademy.co.uk/#organization"
     },
@@ -14,7 +14,7 @@
     "hasCourseInstance": {
       "@type": "CourseInstance",
       "courseMode": "Blended",
-      "courseWorkload": "P6W",
+      "courseWorkload": "P8W",
       "location": {
         "@type": "Place",
         "name": "Clwydian Academy, St Asaph",
@@ -32,7 +32,7 @@
         "category": "Paid",
         "price": "695",
         "priceCurrency": "GBP",
-        "description": "Complete six-week programme including exam fees"
+        "description": "Complete eight-week programme including exam fees"
       }
     ]
   },

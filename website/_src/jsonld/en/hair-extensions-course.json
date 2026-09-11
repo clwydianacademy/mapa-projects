@@ -5,7 +5,7 @@
     "@id": "https://clwydianacademy.co.uk/courses/hair-extensions-course/#course",
     "name": "Creative Hair Extension Services Masterclass (VTCT Unit UHB206)",
     "inLanguage": "en",
-    "description": "Four-Monday CPD masterclass in St Asaph leading to the regulated VTCT Level 2 unit UHB206 with additional luxury brand certification: application, blending, maintenance and extension business skills.",
+    "description": "Six-Monday CPD masterclass in St Asaph leading to the regulated VTCT Level 2 unit UHB206 with additional luxury brand certification: application, blending, maintenance and extension business skills.",
     "provider": {
       "@id": "https://clwydianacademy.co.uk/#organization"
     },
@@ -14,7 +14,7 @@
     "hasCourseInstance": {
       "@type": "CourseInstance",
       "courseMode": "Blended",
-      "courseWorkload": "P4W",
+      "courseWorkload": "P6W",
       "location": {
         "@type": "Place",
         "name": "Clwydian Academy, St Asaph",
