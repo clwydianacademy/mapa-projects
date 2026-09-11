@@ -687,3 +687,147 @@ right thing to fill the end of a run with.
 5. Run all four guards plus the build and put the output in `REPORT 04`.
 
 Do not start Brief 05.
+
+
+---
+
+## REPORT 02
+
+**Coder, 11 September 2026, 21:10.** Brief 02 complete. Both gates pass. `main` still `40723c9`. Nothing pushed.
+
+| SHA | Step |
+|---|---|
+| `8deb647` | 1/5 corrected `check_claims.py`, amended `CLAUDE.md` (with Mark's footer decision recorded), PM's VERIFICATION 01 + BRIEF 02 |
+| `0dcffd2` | 2/5 housekeeping — README/CNAME deleted, ORG `legalName` + `identifier`, git `lastmod`, linter reach |
+| `6b425d1` | 3/5 English claim fixes |
+| `8c4b260` | RELAY: RUN INSTRUCTION, BRIEF 03, BRIEF 04 as the PM wrote them (committed as instructed) |
+| `42ad4db` | 4/5 Welsh claim fixes |
+| `bb57d3b` | 4b Welsh contact meta description (last CDP) |
+| `d9c0e44` | 5/5 build output — linter clean |
+| `cf79128` | 6 contact-form 'fast-track' barbering option; CPD hub eyebrow |
+| `a7eb941` | 7 build output — linter clean |
+
+### Gates
+
+```
+python3 scripts/check_claims.py "clwydian-academy 2"        -> check_claims: 40 pages scanned — clean.
+python3 website/_src/build.py && git status --porcelain     -> (empty)
+```
+
+### Mark's instruction on the footer
+
+Mark, to the coder, 11 September: "Keep it as it is currently for the address please." I read
+that as overriding decision 1 (registered line site-wide). The footer is unchanged — the
+registered line stays on `/funding/` and `/cy/ffioedd-a-chyllid/` only — and `CLAUDE.md`'s
+trading-disclosure section now records that as Mark's decision, with the statutory point left
+open for him. If the PM reads Mark's sentence differently, it is a one-word change per page in
+`pages.json` and no other code.
+
+### What changed (all in `website/_src/`, output regenerated)
+
+- **Levels** — UNHB385 and UNHB379 are Level 2 / Lefel 2 on both hubs, both course pages, their
+  JSON-LD, EN and CY. "Regulated advanced unit" → "Regulated unit".
+- **Durations** — UHB204 6, UHB205 8, UHB206 6, UNHB385 5, UNHB379 6 Mondays, in every kicker,
+  eyebrow, Duration row, lede, section heading, JSON-LD description and `courseWorkload`
+  (P6W/P8W/P5W), EN and CY. CPD hub "four or six of them" → "five to eight of them". Relaxing
+  "just over £115 per week" → "under £90 per week" (695 ÷ 8 = £86.88).
+- **Barbering** — 32-week Tuesday twilight course, 5pm–9pm, timetabled distance learning,
+  Saturday showcase: h1, lede, eyebrow, Duration and Format rows, section h2 and paragraph,
+  progression line, JSON-LD name/description/`courseWorkload` P32W, page title and meta
+  description, and the barbering cards on `/` and `/courses/`. EN and CY. The "six months, not
+  two years" framing is gone from the page.
+- **PLA** — CTAs on barbering, NVQ2, NVQ3 → "Am I funded? Check your options" (the August
+  homepage CTA) / "Ydw i'n cael cyllid? Gwiriwch eich opsiynau" (the Welsh homepage CTA).
+  "; PLA drawdown follows Medr registration" removed from Centre status on all ten course pages,
+  and its Welsh "; daw cyllid CDP yn dilyn cofrestriad Medr" from nine. No PLA/CDP outside
+  `/funding/`, `/funders/` and their Welsh mirrors.
+- **QA** — "independent internal quality assurance" / "sicrwydd ansawdd mewnol annibynnol" on
+  apprenticeships, NVQ2, for-salons (EN 4 places, CY 5 — the Welsh had one more bare "mewnol").
+- **Franchise** — barbering progression line and NVQ2 "supported franchise business through the
+  Charlotte Eleanor Group" → employment, chair rental or a mobile business, EN and CY.
+
+### Done that the brief did not list
+
+1. **The Welsh site was carrying PLA under its Welsh name.** The linter's PLA rule was
+   English-only, and its `PLA_ALLOWED` list used guessed slugs (`/cy/funding/`) rather than the
+   real ones, so no Welsh page could ever trip it. Added `CDP` / `Cyfrif Dysgu Personol` to the
+   rule and the real slugs to the allow-list: 14 findings surfaced — three "Gwirio cyllid CDP"
+   buttons, nine Centre-status clauses, the contact form's "cymhwysedd CDP" option and label, and
+   the contact page's meta description. All fixed (commits 4/5, 4b).
+2. **`Charlotte Eleanor Group` banned outright** in the linter (the email domain does not match
+   the regex; the funders page has no other use of the phrase). It caught the NVQ2 "franchise
+   business through the Charlotte Eleanor Group" line that `franchise network` missed.
+3. Contact form option "NVQ Level 2 Barbering (fast-track)" and the CPD hub eyebrow "1–5 day
+   intensives" corrected (commit 6). Neither is linter-reachable.
+4. The relaxing JSON-LD offer text "Complete six-week programme" → eight-week.
+5. Housekeeping items 4–7 from Verification 01 done as decided (commit 2/5).
+
+### WELSH FOR REVIEW
+
+No native-speaker review has happened. Every changed Welsh string, with the English it renders.
+Mechanical numeral/level changes first, then drafted prose.
+
+**Mechanical** (same change on every page listed):
+| Welsh (after) | English | Where |
+|---|---|---|
+| `Lefel 2 UNHB385`, `Lefel 2 UNHB379` (was Lefel 3) | Level 2 | cyrsiau, cyrsiau-dpp, dpp-ymgynghori-a-manwerthu, cwrs-busnes-salon + JSON-LD |
+| `6 dydd Llun` (was 4) · `Y chwe dydd Llun` (was Y pedwar) · `chwe dydd Llun` in JSON-LD | 6 Mondays / The six Mondays | UHB204 cwrs-permio, UHB206 cwrs-estyniadau-gwallt, both hubs |
+| `8 dydd Llun` (was 6) · `wyth dydd Llun` · `Wyth dydd Llun, wedi'u strwythuro` · `Rhaglen wyth wythnos gyflawn` | 8 Mondays / Eight Mondays, structured / Complete eight-week programme | UHB205 cwrs-llacio-gwallt + JSON-LD, both hubs |
+| `5 dydd Llun` (was 4) · `Y pum dydd Llun` · `pum dydd Llun` | 5 Mondays / The five Mondays | UNHB385 dpp-ymgynghori-a-manwerthu + JSON-LD, both hubs |
+| `6 dydd Llun` (was `4 wythnos`) · `chwe dydd Llun hwn` (was `pedair wythnos hwn`) · `6 dydd Llun, amserlen strwythuredig` | 6 Mondays (was 4 weeks) / this six-Monday masterclass / 6 Mondays, structured timetable | UNHB379 cwrs-busnes-salon + JSON-LD, both hubs |
+| `rhwng pump ac wyth ohonynt` (was `pedwar neu chwech ohonynt`) | five to eight of them | cyrsiau-dpp |
+| `Llai na £90 yr wythnos` (was `Ychydig dros £115`) | Under £90 per week | cwrs-llacio-gwallt |
+| `Arholiad theori allanol swyddogol VTCT + asesiad ymarferol model byw` (week numbers removed) | Official VTCT external theory exam + live-model practical assessment | cwrs-permio, cwrs-llacio-gwallt |
+| `Uned reoledig — statws proffesiynol go iawn, nid seminar gwerthu` (was `Uned uwch reoledig — bri proffesiynol go iawn…`) | Regulated unit — genuine professional standing, not a sales seminar | dpp-ymgynghori-a-manwerthu |
+| `Mae'r dosbarth meistr Lefel 2 hwn` (was Lefel 3) | This Level 2 masterclass | dpp-ymgynghori-a-manwerthu lede |
+| `Daw'r gymeradwyaeth cyn cyflwyno` / `…cyn y garfan gyntaf` (clause after `;` removed) | Approval precedes first delivery / the first cohort | nine course pages |
+| `sicrwydd ansawdd mewnol annibynnol` (was `…mewnol` or `…mewnol yn cael ei redeg gennym ni ein hunain`) | independent internal quality assurance | prentisiaethau ×3, trin-gwallt-nvq-lefel-2, i-salonau |
+| `32 wythnos, un noson yr wythnos` (was `6 mis`) | 32 weeks, one evening a week | barbering cards on /cy/ and /cy/cyrsiau/ |
+
+**Drafted** — barbering page `/cy/cyrsiau/barbro-nvq-lefel-2/` and its JSON-LD:
+| Welsh (new) | English it renders |
+|---|---|
+| Cwrs gyda'r hwyr · Dechreuwyr a thrinwyr gwallt sy'n croesfapio | Twilight course · Beginners & cross-mapping hairdressers (also fixes the typo `s'yn` → `sy'n`) |
+| Barbro NVQ Lefel 2, un noson yr wythnos. | NVQ Level 2 Barbering, one evening a week. |
+| …mae ein diploma gyda'r hwyr 32 wythnos yn mynd â chi yno un nos Fawrth yr wythnos, o amgylch y swydd sydd gennych eisoes. | …our 32-week twilight diploma takes you there one Tuesday evening a week, around the job you already have. |
+| 32 wythnos, carfannau wedi'u capio ar 10 | 32 weeks, cohorts capped at 10 |
+| Un noson yr wythnos — nos Fawrth, 5pm i 9pm, yn Llanelwy / Dysgu o bell wedi'i amserlennu rhwng sesiynau; digwyddiad dydd Sadwrn yw'r arddangosfa | One evening a week — Tuesdays, 5pm to 9pm, at St Asaph / Timetabled distance learning between sessions; the showcase is a Saturday event |
+| Un noson yr wythnos. Nid tri diwrnod yr wythnos yn y coleg, nid dwy flynedd o ryddhau am ddiwrnod. | One evening a week. Not three days a week at college, not two years on day-release. |
+| Mae ein model gyda'r hwyr — un nos Fawrth yr wythnos yn yr academi, 5pm i 9pm, gyda dysgu o bell wedi'i amserlennu rhyngddynt — yn eich cael yn gymwysedig mewn 32 wythnos heb ildio'ch swydd bob dydd. | Our twilight model — one Tuesday evening a week at the academy, 5pm to 9pm, with timetabled distance learning between — gets you qualified in 32 weeks without giving up your day job. |
+| Llwybrau ymlaen i Drin Gwallt NVQ Lefel 2 a Lefel 3, a llwybrau graddedigion i gyflogaeth, rhentu cadair neu fusnes symudol | Progression routes into NVQ Level 2 Hairdressing and Level 3, and graduate routes into employment, chair rental or a mobile business |
+| JSON-LD name: Diploma NVQ Lefel 2 mewn Barbro — Gyda'r Hwyr | NVQ Level 2 Diploma in Barbering — Twilight |
+| JSON-LD description: Cwrs barbro gyda'r hwyr 32 wythnos yn Llanelwy: un noson yr wythnos (nos Fawrth 5pm–9pm) ynghyd â dysgu o bell wedi'i amserlennu, yn arwain at gymhwyster barbro VTCT NVQ Lefel 2. | 32-week twilight barbering course in St Asaph: one evening a week (Tuesdays 5pm–9pm) plus timetabled distance learning, leading to a VTCT NVQ Level 2 barbering qualification. |
+| Title: Cwrs Barbro NVQ Lefel 2, Un Noson yr Wythnos \| Clwydian Academy | NVQ Level 2 Barbering Course, One Evening a Week |
+| Meta: Barbwr cymwysedig mewn 32 wythnos, un nos Fawrth yr wythnos. … | Qualified barber in 32 weeks, one Tuesday evening a week. … |
+
+**Drafted** — elsewhere:
+| Welsh (new) | English | Where |
+|---|---|---|
+| Ydw i'n cael cyllid? Gwiriwch eich opsiynau | Am I funded? Check your options (copied from the live Welsh homepage) | barbro, trin-gwallt-nvq-lefel-2, trin-gwallt-nvq-lefel-3 |
+| Cwestiwn cyllid — ReAct+, prentisiaethau, rhandaliadau | Funding question — ReAct+, apprenticeships, instalments | cysylltu form option |
+| (yn ein helpu i wirio eich opsiynau cyllid) | (helps us check your funding options) | cysylltu form label |
+| …holwch am eich opsiynau cyllid… | …ask about funding options… | cysylltu meta description |
+| neu fusnes symudol eich hun gyda chefnogaeth lawn | or a fully supported mobile business of your own (copied from the live Welsh homepage) | trin-gwallt-nvq-lefel-2 |
+| Barbro NVQ Lefel 2 (gyda'r hwyr, un noson yr wythnos) | NVQ Level 2 Barbering (twilight, one evening a week) | cysylltu form option |
+| I weithwyr proffesiynol cymwysedig · O un diwrnod i wyth dydd Llun | For qualified professionals · From one day to eight Mondays | cyrsiau-dpp eyebrow |
+
+### NEEDS A HUMAN
+
+1. **The CPD week-by-week schedules are now shorter than the courses.** Perming, extensions
+   and consultation list four "Week n" items under a heading that now says six (or five)
+   Mondays; relaxing lists weeks 1–6 under eight. I did not write weeks 5–8 — that is scheme-of-
+   learning content I do not have. The exam/practical week numbers in the Assessment rows were
+   removed rather than guessed. The PM has the schemes: supply the week plans (EN; I will draft
+   CY) and the exam placement, and the blocks can be completed. Until then the pages are
+   incomplete, not wrong.
+2. **"Twilight"** is my word for the barbering format, chosen because CLAUDE.md uses it. If
+   Mark markets it as something else ("evening course", "Tuesday club"), it is in eleven
+   strings, all listed above.
+3. **`/courses/` section eyebrow** still says "Fast-track NVQ diplomas · 6 months" over three
+   cards, one of which is now the 32-week barbering course. The two hairdressing diplomas are
+   six months, so the line is two-thirds true. Suggest "NVQ diplomas · fast-track and twilight",
+   but that is copy, so not done.
+4. **CPD hub pricing sentence** ("Relaxing & Smoothing is £695 and Skin Cancer Awareness £195;
+   the remaining masterclasses are enquire-for-pricing while launch dates are finalised") is
+   about to be false once Brief 03 publishes the tariff. Brief 03 replaces it with data-driven
+   text; noting here so the PM knows it was seen.
