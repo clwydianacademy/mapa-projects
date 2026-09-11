@@ -831,3 +831,148 @@ Mechanical numeral/level changes first, then drafted prose.
    the remaining masterclasses are enquire-for-pricing while launch dates are finalised") is
    about to be false once Brief 03 publishes the tariff. Brief 03 replaces it with data-driven
    text; noting here so the PM knows it was seen.
+
+
+---
+
+## REPORT 03
+
+**Coder, 11 September 2026, 21:17.** Brief 03 complete. All three gates pass. `main` still `40723c9`. Nothing pushed.
+
+| SHA | Step |
+|---|---|
+| `9c4dd71` | 1/4 `_data/cpd-2027.json` as supplied; `scripts/check_dates.py` |
+| `978e2ca` | 2/4 `website/_src/cpd.py`, build integration, registry entry, placeholders, links |
+| `0baa29b` | 3/4 build output |
+| *(this)* | 4/4 REPORT 03 |
+
+### Gates
+
+```
+python3 scripts/check_dates.py                              -> 10 cohorts, 54 dates, 5 closures — 0 problems.
+python3 scripts/check_claims.py "clwydian-academy 2"        -> 42 pages scanned — clean.
+python3 website/_src/build.py && git status --porcelain     -> (empty)
+```
+Every JSON-LD block on the built site parses (114 blocks; 38 `CourseInstance`s carry
+`startDate`/`endDate`). 1,569 root-relative references, 0 broken. Both navs 9 links.
+
+### What was built
+
+- **`_data/cpd-2027.json`** committed unchanged. Nothing in it looked wrong; the guard
+  re-derives every rule the brief listed and passes. A deliberately broken copy trips six.
+- **`/courses/cpd-calendar/` and `/cy/cyrsiau/calendr-dpp/`**, rendered by `cpd.py` from the
+  data: the two strands side by side (weekday, hours, teaching days, seats), each cohort as a
+  card with unit, level (Award where flagged), GLH, day count, start and end, the full date run
+  grouped by month, price per seat (with the UHB206 kit note), assessment and what to bring, and
+  a link to its course page. UNHB374 links to the CPD hub with "Course page to follow". Then the
+  tariff as the formula it is (`£160.81 + £4.274 × GLH`, rounded to £5, both anchors named, the
+  £50 kit supplement), the team-rate tiers, the closure list, and a CTA.
+- **Each of the six CPD course pages** gains two rows in its at-a-glance panel, EN and CY:
+  *Next start* (weekday date · strand · day count · price per seat · seats) and *2027 dates*
+  (the full run; two cohorts where the unit runs twice) with a link to the calendar. The rows
+  are injected at build from a `<!-- cpd-dates -->` placeholder — no date is typed in a fragment.
+- **JSON-LD**: the calendar page carries one `Course` per unit (seven) each with its
+  `CourseInstance`s; every CPD course page's existing `Course` block now has a
+  `hasCourseInstance` list from the data — `startDate`, `endDate`, `courseMode` Blended,
+  `courseWorkload` `PT<GLH>H`, St Asaph `location`, `maximumAttendeeCapacity` 10, and an
+  `Offer` in GBP at the seat price, plus a `Course`-level `Offer`. `@id`s are shared between the
+  calendar and the course page so both describe the same entity.
+- **Navigation**: the footer's *Courses* column (the nav labelled "Courses") gains "CPD calendar
+  2027" / "Calendr DPP 2027"; the CPD hub's pricing paragraph and its CTA lede now point at the
+  calendar; the courses hub's CPD lede links to it. Sitemap has 40 URLs with alternates.
+- `lastmod` for the calendar and the six CPD pages also follows the data file and `cpd.py`.
+
+### WELSH FOR REVIEW
+
+All new. The course names are the ones on the live Welsh CPD hub, except UNHB374 (drafted,
+marked). Chrome and labels for the calendar, from `cpd.py`:
+
+| Welsh | English |
+|---|---|
+| Hafan | Home |
+| Cyrsiau | Courses |
+| Calendr DPP 2027 | CPD Calendar 2027 |
+| Dosbarthiadau meistr DPP · Ionawr – Gorffennaf 2027 · Llanelwy | CPD masterclasses · January – July 2027 · St Asaph |
+| Calendr DPP 2027. | The 2027 CPD calendar. |
+| Dau linyn, deg carfan, pob dyddiad wedi’i bennu. Mae pob carfan wedi’i chapio ar ddeg sedd. Daw’r prisiau o un tariff cyhoeddedig, nid o drafodaeth. | Two strands, ten cohorts, every date fixed. Each cohort is capped at ten seats. Prices come from one published tariff, not a negotiation. |
+| Holi / cadw sedd | Enquire / reserve a seat |
+| Llinyn | Strand |
+| diwrnod dysgu | teaching days |
+| Lefel | Level |
+| Dyfarniad | Award |
+| GLH | GLH |
+| sedd y garfan | seats per cohort |
+| Yn dechrau | Starts |
+| yn gorffen | ends |
+| Dyddiadau | Dates |
+| Pris | Price |
+| y sedd | per seat |
+| Asesu | Assessment |
+| Beth i ddod gyda chi | What you bring |
+| Manylion y cwrs | Course details |
+| Tudalen cwrs i ddilyn — gweler dosbarthiadau meistr DPP | Course page to follow — see CPD masterclasses |
+| Dyddiau cau’r academi | Academy closures |
+| Nid oes carfan yn cyfarfod ar y dyddiau hyn; mae’r dyddiadau uchod eisoes yn eu hepgor. | No cohort meets on these days; the dates above already skip them. |
+| Wythnos yn dechrau | Week commencing |
+| Sut mae pob pris yn cael ei osod | How every price is set |
+| Y tariff | The tariff |
+| Un fformiwla yw pob pris sedd ar y dudalen hon: <strong>£{fixed} + £{per_glh} × oriau dysgu dan arweiniad</strong>, wedi’i dalgrynnu i’r £{round_to} agosaf. | Every seat price on this page is one formula: <strong>£{fixed} + £{per_glh} × guided learning hours</strong>, rounded to the nearest £{round_to}. |
+| Mae wedi’i angori ar ddau bris cyhoeddedig — {anchors} — ac mae Estyniadau Gwallt yn cario atodiad o £50 am wallt a phecyn y brand partner. | It is anchored on two published prices — {anchors} — and Hair Extensions carries a £50 supplement for brand-partner hair and kit. |
+| Cyfraddau tîm | Team rates |
+| Archebwch o un salon, campfa neu glinig a chaiff yr archeb gyfan ei gostwng: | Book from one salon, gym or clinic and the whole booking is discounted: |
+| {a}–{b} o bobl: {pct}% i ffwrdd | {a}–{b} people: {pct}% off |
+| {a} o bobl (carfan gyfan): {pct}% i ffwrdd | {a} people (a whole cohort): {pct}% off |
+| Dewiswch ddyddiad. Yna dywedwch wrthym. | Pick a date. Then tell us. |
+| Cofrestrwch eich diddordeb gyda’r garfan rydych ei heisiau a byddwn yn cadarnhau’r sedd. | Register your interest with the cohort you want and we will confirm the seat. |
+| Cofrestru diddordeb | Register interest |
+| Dechrau nesaf | Next start |
+| Dyddiadau 2027 | 2027 dates |
+| Calendr llawn, dyddiau cau a thariff: | Full calendar, closures and tariff: |
+| Calendr DPP 2027 | CPD calendar 2027 |
+| Carfan | Cohort |
+| Llinyn | Strand |
+| Lliwio a Goleuo *(UNHB374 — drafted, no Welsh page exists)* | Colour & Lightening |
+| Calendr DPP 2027 *(footer)* | CPD calendar 2027 |
+| Calendr DPP Ionawr – Gorffennaf 2027 \| Clwydian Academy *(title)* | CPD Calendar January – July 2027 |
+| Pob carfan DPP 2027 yn Llanelwy gyda dyddiadau, prisiau, lefelau ac oriau dysgu dan arweiniad — llinynnau dydd Llun a dydd Mercher, dyddiau cau'r academi a'r tariff cyhoeddedig. *(meta)* | Every 2027 CPD cohort at St Asaph with dates, prices, levels and guided learning hours — Monday and Wednesday strands, academy closures and the published tariff. |
+| Mae pob carfan 2027 — dyddiadau, prisiau, lefelau ac oriau dysgu dan arweiniad — ar y calendr DPP, ynghyd â'r tariff y daw'r prisiau ohono. *(cyrsiau-dpp)* | Every 2027 cohort — dates, prices, levels and guided learning hours — is on the CPD calendar, together with the tariff the prices come from. |
+| Mae calendr 2027 wedi'i gyhoeddi — dewiswch eich dyddiadau, yna cofrestrwch eich diddordeb. *(cyrsiau-dpp CTA)* | The 2027 calendar is published — choose your dates, then register your interest. |
+| Mae pob dyddiad 2027 ar y calendr DPP. *(cyrsiau)* | Every 2027 date is on the CPD calendar. |
+
+Assessment, requirement and price-note strings — the data supplies these in English only:
+
+| Welsh | English |
+|---|---|
+| Portffolio a phapur amlddewis allanol | Portfolio and an external multiple-choice paper |
+| Portffolio | Portfolio |
+| Portffolio, papur uned a phapur trosfwaol | Portfolio, a unit paper and an overarching paper |
+| Gwybodaeth yn unig | Knowledge only |
+| Tri chleient ar wahanol gamau aildyfiant, a phedwerydd i lenwi bylchau | Three clients at different stages of regrowth, plus a fourth to fill gaps |
+| Modelau ar draws y technegau dirwyn a ddysgir | Models across the winding techniques taught |
+| Un arsylwad ar gleient sydd eisoes ag estyniadau wedi’u gosod | One observation on a client who already has extensions fitted |
+| Cleientiaid ar gyfer tystiolaeth ymgynghori a manwerthu | Clients for consultation and retail evidence |
+| Dim — dim angen cymhwyster blaenorol | None — no prior qualification needed |
+| Prawf croen wedi’i archebu a’i gofnodi cyn pob sesiwn cleient | A skin test booked and recorded before every client session |
+| Mae’r tri arsylwad yn digwydd mewn amgylchedd gwaith go iawn | All three observations take place in a real working environment |
+| yn cynnwys gwallt a phecyn y brand partner | includes brand-partner hair and kit |
+
+Month and weekday names (Ionawr … Gorffennaf; Dydd Llun, Dydd Mercher) are standard.
+
+### NEEDS A HUMAN
+
+1. **"Nav entry under Courses."** The primary nav is flat — no dropdowns exist in the CSS or
+   JS — so I put the entry in the footer nav that is labelled *Courses*, and linked from both
+   hubs. If Mark wants it in the header bar, that is a ninth top-level item and a design call.
+2. **Prices are now published for four units that were "enquire for pricing"** on the live
+   site: Perming £560, Extensions £595, Consultation £415, Salon Business £480 — on the calendar
+   and in the *Next start* row of each course page. They are the tariff's own figures, but they
+   were not public before today.
+3. **UNHB374 in Welsh** is "Lliwio a Goleuo" — drafted, nothing to copy from.
+4. **"Next start" moves with the build date.** It is the first cohort starting on or after the
+   day of the build. Once a cohort has started, the row is stale until someone rebuilds; there
+   is no scheduled rebuild. Worth a note in whatever release routine emerges.
+5. **Data observation, not a correction:** `UV21577` is flagged `"award": true` and rendered as
+   "Level 2 (Award)"; the live course page says "VTCT Level 2 Award". Consistent. Nothing else
+   in the file gave me pause.
+6. The CPD hub cards still show a price on only two of six (the two the live site had). Adding
+   the tariff price to every card is a one-line change in `cpd.py` if wanted — left as is.
