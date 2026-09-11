@@ -424,3 +424,167 @@ cd "/Users/markparker/Desktop/Clwydian Academy/mapa-projects" && git push -u ori
 
 Added to NEEDS A HUMAN as item 8. Section 4's "site-rebuild is pushed" is therefore not yet
 true.
+
+---
+
+## COWORK VERIFICATION 01
+
+**PM, 11 September 2026.** Verified from the repository, not from REPORT 01. Everything below
+was re-derived independently before reading the report's corresponding claim.
+
+### Verified
+
+| Claim | How checked | Result |
+|---|---|---|
+| `main` untouched | `git log main` | tip still `40723c9`. Clean. |
+| Six commits on `site-rebuild`, tree clean | `git log main..site-rebuild`, `git status` | Confirmed (five + the addendum). |
+| **The committed output is the generator's output** | re-ran `python3 website/_src/build.py`, then `git status` | **No diff.** This is the claim that mattered most and it holds. |
+| Deployed-folder diff is small and named | `git diff --numstat main..site-rebuild -- "clwydian-academy 2"` | 38 files, +131 / −153. |
+| No body copy changed | `git diff -w --ignore-blank-lines`, unique changed lines | Only Organization JSON-LD (27+/26−), three `/cy/ffioedd-a-chyllid/` chrome lines, sitemap. Nothing else. |
+| 25 × `Charlotte Parker` on live | `git grep -o` on `main` | Exactly 25, across 25 files. |
+| 0 after the build | `git grep -o` on `site-rebuild` | Zero. |
+| Organization block now uniform | parsed every `EducationalOrganization` block in the built tree | 39 pages, **1 distinct variant**. `alternateName` Clwydian Academy CBC · no `parentOrganization` · St Asaph / Denbighshire · Mark Parker + Charlotte Roberts. |
+| Linter 83 → 58 | ran `check_claims.py` against `main` (via `git archive`) and against the build | 83 and 58, kind-for-kind. |
+
+REPORT 01 contained one inaccuracy — §4's "site-rebuild is pushed" — which the coder found and
+corrected itself in the addendum before I read it. Nothing else in the report overstated what
+the diff does.
+
+### One defect, and it is mine
+
+**Seven of the nineteen LEVEL findings are false positives caused by my linter, not by the site.**
+`/contact/` and `/cy/cysylltu/` carry an enquiry dropdown:
+
+```
+NVQ Level 3 Hairdressing (fast-track)
+CPD — Hair Extensions (UHB206)
+CPD — Perming & Texture (UHB204)
+```
+
+My 220-character proximity window read the `Level 3` from one `<option>` as a claim about the
+unit code in the next one. UHB204/205/206 are not labelled Level 3 anywhere on those pages.
+
+Fixed: level and duration claims are now tested **within a single block-level element**, so a
+claim cannot bleed across list items, table rows or options. Inline tags don't break a segment,
+so `<strong>Level 3</strong> UNHB385` still trips correctly.
+
+**True counts: 76 on the live site, 51 on the build output** — not 83 and 58. The corrected
+`check_claims.py` is in `../website rebuild handoff/`. Move it in as the first commit of Brief 02
+so the fix is a reviewable diff.
+
+### Decisions on NEEDS A HUMAN
+
+1. **Footer legal line — go site-wide.** I read the statute rather than a summary of it.
+   Regulation 25 of the Company, LLP and Business (Names and Trading Disclosures) Regulations
+   2015 requires disclosure **"on — (a) its business letters; (b) its order forms; and (c) its
+   websites"** of the part of the UK in which the company is registered, the registered number,
+   and the registered office address — and it separately requires a **community interest company
+   to identify its status**. Websites are named in the regulation. Practitioner guidance is that
+   it need not be on every page so long as it is easily found, but a footer is the cheap,
+   unambiguous answer. So: `legal: true` on all 39 pages.
+   Two conditions. **(a)** Take the "part of the United Kingdom" wording verbatim from the
+   Companies House record for 17330962 — do not infer it from the address. **(b)** The current
+   line names a residential registered office; Mark has been told and it is his call, and when
+   the St Asaph lease completes and the registered office moves, the footer follows from one
+   string in `pages.json`.
+2. **Organization JSON-LD extras — put both back, site-wide.** `legalName: "Clwydian Academy
+   CBC"` is the correct current legal name and `identifier` 17330962 is a verifiable Companies
+   House number that helps search engines resolve the entity to the right company. `CLAUDE.md`
+   bans the *old* legalName only; I have amended it to say so explicitly. Add
+   `"legalName": "Clwydian Academy CBC"` and the `identifier` to `ORG`.
+3. **25 findings cleared early — approved.** The alternative was a generator that emits a banned
+   name. Right call.
+4. **`README.md` in the deployed folder — delete it.** It describes GitHub Pages hosting that is
+   dead and calls the academy a "trading name of Charlotte Eleanor Academy C.I.C." — the exact
+   related-party claim this whole exercise removes. That it currently 404s is a hosting
+   coincidence, not a safeguard. Delete, and extend the linter to scan `.md` and `.txt` in the
+   deployed tree so the next one cannot hide.
+5. **`CNAME` — delete.** GitHub Pages artefact, served at `/CNAME` with a 200.
+6. **`sameAs` — keep the LinkedIn URL.** My opening brief said "empty until Mark confirms"; you
+   were right to flag rather than delete something already published. It is Mark's public
+   professional profile and it strengthens entity linkage. Keep exactly the one URL.
+7. **`sitemap.xml` `lastmod` — derive from git.** A sitemap claiming all 38 URLs changed today on
+   every build teaches crawlers to ignore the field. Use the last commit date touching that
+   page's source fragment (`git log -1 --format=%cI -- <fragment>`), falling back to the build
+   date for a page with no history.
+8. **Push — Mark's, not ours.** Neither of us touches the credential. He adds `mapa-projects` to
+   the token's repository list or runs the push himself.
+
+Brief 02 follows.
+
+---
+
+## BRIEF 02 — make every claim on the site one the academy can evidence
+
+**Why.** 51 true findings stand on the build output. They are not cosmetic: a course sold as
+Level 3 that is Level 2, a six-week course advertised as four, and a PLA funding promise the
+academy cannot honour are the three things most likely to be read by a Medr or National Lottery
+assessor, or by a salon owner who later feels misled. Everything here is a correction toward
+what is already true in the schemes of learning.
+
+**Order of work.** Commit 1: the corrected linter. Commit 2: housekeeping (items 4–7 above).
+Commit 3: English claim fixes. Commit 4: Welsh. Commit 5: rebuild + report.
+
+### 1. Levels — 12 findings
+
+`UNHB385` and `UNHB379` are **Level 2**, not Level 3, everywhere they appear: `/courses/`,
+`/courses/cpd-courses/`, `/courses/consultation-retail-cpd/`, `/courses/salon-business-course/`
+and the four Welsh counterparts. `UNHB374` stays Level 3 — it genuinely is.
+
+### 2. Durations — 18 findings
+
+Replace with the true figures from the schemes of learning. These are the awarding body's
+guided-learning hours, not marketing lengths:
+
+| Unit | Currently advertised | Correct | GLH |
+|---|---|---|---|
+| UHB204 Perming | 4 Mondays | **6 Mondays** | 93 |
+| UHB205 Relaxing | 6 Mondays | **8 Mondays** | 125 |
+| UHB206 Extensions | 4 Mondays | **6 Mondays** | 90 |
+| UNHB385 Consultation | 4 Mondays | **5 Mondays** | 60 |
+| UNHB379 Salon Business | 4 weeks / 4 wythnos | **6 Mondays / 6 dydd Llun** | 75 |
+
+Welsh numerals and `Lefel 3` → `Lefel 2` are mechanical — make them directly.
+
+### 3. Barbering — 4 findings
+
+`/courses/nvq-level-2-barbering/` sells a six-month fast-track. The course is **32 weeks,
+one evening a week — Tuesdays 5pm to 9pm — plus timetabled distance learning**, with the
+showcase as a Saturday event. Rewrite the four six-month phrasings to that. Do not carry the
+"six months, not two years" framing across from the hairdressing page; it is not true here.
+
+While you are on that page: `franchise network` → graduate routes are **employment, chair
+rental, or a mobile business** (the August wording used elsewhere on the site).
+
+### 4. PLA — 9 findings plus 3 CTAs
+
+Remove `Check PLA funding` from the barbering, NVQ2 and NVQ3 course pages; the August standard
+CTA is **"Am I funded? Check your options"** linking to `/funding/`. Remove every other `PLA` /
+`Personal Learning Account` occurrence from the nine English course pages, in body copy and in
+JSON-LD. Permitted funding language, and the only permitted funding language: fully funded
+apprenticeship route under the Welsh framework · ReAct+ support up to £1,500 · instalments of
+£500 plus £500 × 8 · self-funded £4,500. PLA survives only on `/funding/` and `/funders/`.
+
+### 5. In-house quality assurance — 4 findings
+
+`/apprenticeships/` ×2, `/courses/nvq-level-2-hairdressing/`, `/for-salons/`. Use the phrase
+already deployed elsewhere: **"independent internal quality assurance"**. Do not upgrade it into
+a claim about external verification that has not happened.
+
+### 6. Welsh
+
+Numerals and level numbers: change directly. **Prose changes — barbering, the franchise line,
+the PLA sentences — draft them, do not skip them** (leaving a wrong Welsh claim live is worse
+than an unreviewed correct one), and list **every** new or changed Welsh string under
+`### WELSH FOR REVIEW` with the English it renders. A native-speaker review of the whole Welsh
+site is an open action of Mark's from August; this list feeds it.
+
+**Acceptance.** `check_claims.py` returns **0** on the build output · a second build is a no-op ·
+`main` untouched · every changed Welsh string listed · no claim strengthened beyond what the
+schemes of learning support · `git diff -w` reviewed by you before committing.
+
+**Not in this brief.** The CPD calendar and the `_data/cpd-2027.json` work — that is Brief 03,
+and the PM has the verified dataset ready. Do not start it.
+
+**Supplied.** Corrected `check_claims.py` and an amended `CLAUDE.md` in
+`/Users/markparker/Desktop/Clwydian Academy/website rebuild handoff/`.

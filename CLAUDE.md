@@ -17,7 +17,9 @@ under `### NEEDS A HUMAN` rather than following the brief.
   a Community Interest Company, not a separate legal form). `alternateName` is
   "Clwydian Academy CBC".
 - **No `parentOrganization`. No `legalName` of "Charlotte Eleanor Academy C.I.C.". No
-  "Charlotte Eleanor Academy CIC" anywhere.** The academy was renamed from Charlotte Eleanor
+  "Charlotte Eleanor Academy CIC" anywhere.** The *current* legal name is correct and wanted:
+  `legalName: "Clwydian Academy CBC"` and `identifier` (Companies House) `17330962` belong in
+  the site-wide Organization block. Only the OLD name is banned. The academy was renamed from Charlotte Eleanor
   Academy precisely to hold it at arm's length from Charlotte Eleanor Group Cyf for funding
   eligibility. Any copy or structured data implying a parent, sister or franchise relationship
   is a regression.
@@ -34,6 +36,21 @@ under `### NEEDS A HUMAN` rather than following the brief.
   "Check PLA funding" buttons, no PLA in any meta description or JSON-LD.
 - Permitted funding language: fully funded apprenticeship route (Welsh framework), ReAct+
   support up to £1,500, instalments (£500 + £500 × 8), self-funded £4,500.
+
+## Trading disclosure — statutory, not optional
+- Regulation 25 of the Company, LLP and Business (Names and Trading Disclosures) Regulations
+  2015 requires disclosure **on a company's websites** of: the part of the UK in which the
+  company is registered, the registered number, and the registered office address — and
+  requires a **community interest company to identify its status**. Company number **17330962**,
+  incorporated 9 July 2026, private company limited by guarantee, CIC.
+- **Mark's decision, 11 September 2026: the footer stays as it is.** The registered line
+  (number + registered office) appears on `/funding/` and `/cy/ffioedd-a-chyllid/` only; every
+  other page carries the community-benefit line. Do not roll the registered office out
+  site-wide without a new instruction from Mark. The statutory point above stays open for him.
+  If and when it goes site-wide, take the "part of the United Kingdom" wording verbatim from the
+  Companies House record — never infer it from the address.
+- The registered office is a residential address. When the St Asaph premises are taken and the
+  registered office is changed at Companies House, the footer follows from one string.
 
 ## Location
 - **St Asaph, Denbighshire, North Wales.** Confirmed by Mark, 11 September 2026.

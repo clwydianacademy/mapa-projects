@@ -39,10 +39,25 @@ WEEK_WORD = {1:"one",2:"two",3:"three",4:"four",5:"five",6:"six",7:"seven",8:"ei
 LEVEL_RE = re.compile(r"(?:Level|Lefel)\s*([123])", re.I)
 WEEKS_RE = re.compile(r"(\d+)\s*(?:weeks?|wythnos|Mondays?|Wednesdays?|Llun|Mercher)", re.I)
 
+# Block-level tags end a segment; inline tags do not. Level and duration claims are only
+# checked WITHIN one segment, so a <option>NVQ Level 3 Hairdressing</option> cannot be read
+# as a claim about the UHB206 in the option below it. (Fixed 11 Sep 2026 after that exact
+# false positive on /contact/ and /cy/cysylltu/.)
+BLOCK = (r"p|div|section|article|aside|header|footer|main|nav|ul|ol|li|dl|dt|dd|"
+         r"table|thead|tbody|tr|td|th|h[1-6]|option|optgroup|select|label|fieldset|"
+         r"legend|form|figure|figcaption|blockquote|pre|hr|details|summary|tfoot|caption")
+BLOCK_RE = re.compile(rf"</?(?:{BLOCK})\b[^>]*>", re.I)
+
 def text_of(html):
-    """Strip tags so prose and JSON-LD are both searchable but markup isn't."""
-    html = re.sub(r"<(script|style)[^>]*>.*?</\1>", lambda m: m.group(0), html, flags=re.S|re.I)
+    """Whole-page text, tags stripped — used for the banned-phrase scan."""
     return re.sub(r"<[^>]+>", " ", html)
+
+def segments(html):
+    """Page text split at block boundaries, so a claim cannot bleed across list items."""
+    for chunk in BLOCK_RE.split(html):
+        txt = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", chunk)).strip()
+        if txt:
+            yield txt
 
 def check(root):
     findings = []
@@ -56,7 +71,7 @@ def check(root):
             url = rel.replace("/index.html", "/")
             pages += 1
             raw = open(path, encoding="utf-8", errors="replace").read()
-            body = text_of(raw)
+            body = text_of(raw)  # banned-phrase + barbering scan
 
             for rx, why in BANNED:
                 for m in re.finditer(rx, raw, re.I):
@@ -67,9 +82,9 @@ def check(root):
                     findings.append((url, "PLA", m.group(0),
                                      "PLA may only appear on the funding and funders pages"))
 
+            segs = list(segments(raw))
             for code, (level, weeks) in UNITS.items():
-                for m in re.finditer(re.escape(code), body, re.I):
-                    window = body[max(0, m.start()-220): m.end()+220]
+                for window in [s for s in segs if re.search(re.escape(code), s, re.I)]:
                     for lm in LEVEL_RE.finditer(window):
                         if int(lm.group(1)) != level:
                             findings.append((url, "LEVEL", f"{code} shown as Level {lm.group(1)}",
