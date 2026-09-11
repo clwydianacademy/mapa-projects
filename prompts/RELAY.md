@@ -976,3 +976,81 @@ Month and weekday names (Ionawr … Gorffennaf; Dydd Llun, Dydd Mercher) are sta
    in the file gave me pause.
 6. The CPD hub cards still show a price on only two of six (the two the live site had). Adding
    the tariff price to every card is a one-line change in `cpd.py` if wanted — left as is.
+
+
+---
+
+## REPORT 04
+
+**Coder, 11 September 2026, 21:18.** Brief 04 complete. Four guards, all passing, all committed. `main` still
+`40723c9`. Nothing pushed.
+
+| SHA | Step |
+|---|---|
+| `9bd43ae` | 1/5 `check_claims.py` scans `.json` as well as `.html`, `.md`, `.txt` |
+| `7f24065` | 2/5 `scripts/check_links.py` |
+| `06029c3` | 3/5 `scripts/check_locale.py` |
+| — | 4/5 alt-text audit — nothing to change, see below |
+| *(this)* | 5/5 REPORT 04 |
+
+### The guards and the build, run together
+
+```
+$ python3 website/_src/build.py | tail -1
+built sitemap.xml (40 urls), robots.txt
+$ python3 scripts/check_claims.py "clwydian-academy 2"
+check_claims: 42 pages scanned — clean.
+$ python3 scripts/check_dates.py
+check_dates: 10 cohorts, 54 dates, 5 closures — 0 problems.
+$ python3 scripts/check_links.py "clwydian-academy 2"
+check_links: 1571 internal references checked — 0 broken.
+$ python3 scripts/check_locale.py "clwydian-academy 2"
+check_locale: 41 pages — every EN page has a CY mirror and back, navs match, sitemap complete.
+$ git --no-optional-locks status --porcelain
+(empty)
+```
+
+Each guard was also run against a deliberately broken copy of the tree and failed as it
+should (a removed Welsh page, a misspelt href, a Tuesday date, a wrong price, a duplicate date).
+
+### What each guard covers
+
+- **`check_claims.py`** — banned phrases (old entity, parent organisation, Charlotte Eleanor
+  Group, Charlotte Parker, franchise/sister framing, in-house QA, Deeside, PLA CTAs), PLA/CDP
+  outside the funding pages, unit level and duration per segment, barbering six-month
+  phrasings; `.html`, `.md`, `.txt`, `.json` anywhere in the deployed tree.
+- **`check_dates.py`** — `_data/cpd-2027.json`: weekday per strand, closures, no shared dates
+  in a strand, date counts, strand totals, term bounds, tariff arithmetic.
+- **`check_links.py`** — every root-relative `href`, `src`, `srcset`, `poster`, `data` in the
+  built HTML resolves to a file (directory URLs need an `index.html`).
+- **`check_locale.py`** — `<html lang>`, the three `hreflang`s with `x-default` = `en`, the
+  counterpart exists and points straight back, the header language switch agrees, nav link
+  counts match, and the sitemap lists every indexable page in both languages and nothing else.
+
+### Alt-text audit
+
+145 `<img>` elements in the built tree have no non-empty `alt`. All 145 already carry
+`alt=""`; none is missing the attribute.
+
+| Count | Image | Context | Verdict |
+|---|---|---|---|
+| 82 | `seal.svg` | brand mark inside `<a class="brand" aria-label="Clwydian Academy — home">` (header + footer) | decorative, the link is labelled — correct as is |
+| 62 | `seal.svg` | `class="watermark" aria-hidden="true"` section backdrops | decorative — correct as is |
+| 1 | `seal-512.png` | `/404.html`, the seal above "Page not found" | **content image with empty alt — PM to decide.** The same image on the homepage has `alt="Clwydian Academy seal on a heather field"`; on a 404 page it may be decorative, in which case `alt=""` is right. Not guessed. |
+
+No image was changed.
+
+### NEEDS A HUMAN
+
+1. The 404 page seal — decorative (leave `alt=""`) or content (PM supplies the words)?
+
+---
+
+## RUN SUMMARY
+
+Briefs 02, 03 and 04 completed in one run (23 commits on `site-rebuild` since `main`,
+none pushed, `main` untouched). Gates: after 02 — `check_claims` 0 and clean rebuild, passed;
+after 03 — `check_dates` 0, `check_claims` 0, clean rebuild, passed; after 04 — all four guards
+and the build, passed. Under NEEDS A HUMAN: 4 items in REPORT 02, 6 in REPORT 03, 1 in
+REPORT 04 — 11 in total, none blocking. Still open from before the run: the push (token scope,
+Mark's) and Mark's footer decision, which is applied and recorded in CLAUDE.md.
