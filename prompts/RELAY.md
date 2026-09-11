@@ -588,3 +588,102 @@ and the PM has the verified dataset ready. Do not start it.
 
 **Supplied.** Corrected `check_claims.py` and an amended `CLAUDE.md` in
 `/Users/markparker/Desktop/Clwydian Academy/website rebuild handoff/`.
+
+---
+
+## RUN INSTRUCTION — continuous working, from Mark
+
+Mark has asked for a continuous run rather than a stop after each brief. **Work 02 → 03 → 04
+without waiting for a COWORK VERIFICATION between them.** The PM verifies afterwards, from the
+commits. Three things make that safe, and they are not optional.
+
+**1. Each brief is gated by a machine check, not by your judgement.** Do not begin the next
+brief until the gate on the one before it passes:
+
+| Gate | Command | Must be |
+|---|---|---|
+| after 02 | `python3 scripts/check_claims.py "clwydian-academy 2"` | `0 findings` |
+| after 02 and 03 | `python3 website/_src/build.py && git --no-optional-locks status --porcelain` | empty |
+| after 03 | `python3 scripts/check_dates.py` (you write it — see Brief 03) | `0 problems` |
+
+If a gate fails, stay on that brief until it passes. A failing gate is the one thing that
+legitimately consumes the whole hour.
+
+**2. Never halt the run for a decision — log it and move on.** Anything needing Mark goes under
+`### NEEDS A HUMAN` in that brief's report and you continue with the next item. The only things
+that stop work entirely: a credential prompt of any kind, anything that would touch `main`, and
+anything that would publish. Stop, write it down, carry on with what is left.
+
+**3. Commit per step, never in a lump.** Small commits with real messages are what lets the PM
+unpick a wrong turn without losing the right ones. Nothing is pushed. Nothing goes near `main`.
+
+Write a separate `## REPORT 02`, `## REPORT 03`, `## REPORT 04` as you finish each, not one
+report at the end — if the run is interrupted, whatever is finished is still reviewable. Finish
+with a one-line `## RUN SUMMARY` naming which briefs completed, which gates passed, and how many
+items are sitting under NEEDS A HUMAN.
+
+Commit `prompts/RELAY.md` as it stands now as your first commit — the PM edited it in the
+working tree and cannot commit to this repo.
+
+---
+
+## BRIEF 03 — the CPD calendar, from data
+
+**Why.** Ten cohorts, 54 dates, seven prices derived from one tariff, in two languages. Kept as
+prose it will be wrong within a month and wrong in Welsh first. Kept as data it regenerates,
+and it can carry `CourseInstance` structured data with real start dates — which is what lets a
+search for "hair extensions course St Asaph" surface an actual date.
+
+**Supplied.** `../website rebuild handoff/cpd-2027.json` → commit to `_data/cpd-2027.json`.
+Every date, price, level, GLH and day-count in it has been generated and independently
+re-verified. **Treat it as read-only input.** If something in it looks wrong, say so in the
+report — do not correct it.
+
+**Do.**
+
+1. `scripts/check_dates.py` — a guard, the same shape as `check_claims.py`. Re-derives from
+   `_data/cpd-2027.json`: every date falls on its strand's weekday; no date falls on a listed
+   closure; no two cohorts in one strand share a date; `len(dates) == days`; and
+   `price == round((fixed + per_glh × glh) / 5) × 5`, plus £50 for UHB206. Exit 1 on any
+   problem. This is the gate for this brief and it must pass.
+2. New page `/courses/cpd-calendar/` and its Welsh counterpart, generated from the data:
+   the two strands side by side, each cohort with its unit code, level, GLH, academy days, the
+   individual dates, price, assessment and client requirement; the closure list; the tariff
+   stated as the formula it is (`£160.81 + £4.274 × GLH`, rounded to £5) with both published
+   anchors named; and the team-rate tiers. Nav entry under Courses in both languages.
+3. On each existing CPD course page, inject that unit's **next start date and full date list**
+   from the same data — EN and CY. No dates typed by hand anywhere.
+4. `Course` + `CourseInstance` JSON-LD on the calendar page and on each CPD course page:
+   `startDate`, `endDate`, `courseMode` `Blended`, `location` St Asaph, `offers` with the seat
+   price in GBP, `maximumAttendeeCapacity` 10. Validate the JSON parses before committing.
+5. `UNHB374 Colour & Lightening` has **no course page yet** — it appears on the calendar and
+   links to `/courses/cpd-courses/`. Do not invent a page for it; that is Brief 05 with copy
+   from the PM.
+6. Welsh: take course names, and any phrasing you can, from the existing Welsh course pages
+   rather than translating afresh. Everything genuinely new goes under `WELSH FOR REVIEW`.
+
+**Acceptance.** `check_dates.py` 0 · `check_claims.py` still 0 · build is a no-op on second run ·
+every date on the site traceable to `_data/cpd-2027.json` · JSON-LD parses · nav parity.
+
+---
+
+## BRIEF 04 — the guards, widened
+
+Overflow work. All of it is machine-checkable and none of it needs a decision, so it is the
+right thing to fill the end of a run with.
+
+1. **Linter scans more than HTML.** Extend `check_claims.py` to `.md`, `.txt` and `.json` in the
+   deployed tree. The `README.md` that Verification 01 told you to delete is the reason; the
+   guard should mean the next one cannot hide.
+2. **`scripts/check_links.py`** — commit the internal link check you ran by hand in Brief 01, so
+   it is repeatable: every root-relative `href`/`src` in the built tree resolves to a file.
+   Exit 1 on any break.
+3. **`scripts/check_locale.py`** — every EN page has a CY counterpart and the reverse (`/404.html`
+   excepted); every page's `hreflang` pair round-trips to a page that points back; nav item
+   counts match between locales.
+4. **Alt text audit.** List every `<img>` in the built tree without a non-empty `alt`. Fix the
+   decorative ones with `alt=""`; anything needing real words goes in the report for the PM to
+   write, not guessed.
+5. Run all four guards plus the build and put the output in `REPORT 04`.
+
+Do not start Brief 05.
