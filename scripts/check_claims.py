@@ -14,12 +14,14 @@ and say why in prompts/RELAY.md.
 import os, re, sys
 
 # Pages where PLA may honestly be discussed. Everywhere else it is a banned promise.
-PLA_ALLOWED = ("/funding/", "/funders/", "/cy/funding/", "/cy/funders/", "/cy/ariannu/", "/cy/cyllid/")
+# The Welsh mirrors are /cy/ffioedd-a-chyllid/ and /cy/cyllidwyr/ (the real slugs, 11 Sep 2026).
+PLA_ALLOWED = ("/funding/", "/funders/", "/cy/ffioedd-a-chyllid/", "/cy/cyllidwyr/")
 
 # (regex, why it fails)
 BANNED = [
     (r"Charlotte\s+Eleanor\s+Academy",      "old entity name — renamed to Clwydian Academy CBC for funding separation"),
     (r"parentOrganization",                 "no parent organisation: the CIC is independent by design"),
+    (r"Charlotte\s+Eleanor\s+Group",        "no related-party framing: the academy is independent of Charlotte Eleanor Group Cyf"),
     (r"Charlotte\s+Parker",                 "wrong name — Charlotte Roberts, Director of the Academy"),
     (r"franchise\s+network",                "no graduate route into a CEG franchise network"),
     (r"sister\s+compan(y|ies)",             "related-party framing removed in August"),
@@ -64,7 +66,7 @@ def check(root):
     pages = 0
     for dirpath, _dirs, files in os.walk(root):
         for fn in files:
-            if not fn.endswith(".html"):
+            if not fn.endswith((".html", ".md", ".txt")):
                 continue
             path = os.path.join(dirpath, fn)
             rel = "/" + os.path.relpath(path, root).replace(os.sep, "/")
@@ -78,7 +80,8 @@ def check(root):
                     findings.append((url, "BANNED", m.group(0).strip(), why))
 
             if not any(a in url for a in PLA_ALLOWED):
-                for m in re.finditer(r"Personal\s+Learning\s+Account|\bPLA\b", raw):
+                # CDP = Cyfrif Dysgu Personol, the Welsh form of PLA
+                for m in re.finditer(r"Personal\s+Learning\s+Account|\bPLA\b|Cyfrif\s+Dysgu\s+Personol|\bCDP\b", raw):
                     findings.append((url, "PLA", m.group(0),
                                      "PLA may only appear on the funding and funders pages"))
 

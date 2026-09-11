@@ -12,7 +12,7 @@ language, with which title and description.
 Output goes to `clwydian-academy 2` — the Vercel root directory. Nothing is written for
 GitHub Pages (no CNAME, no .nojekyll); that hosting is dead.
 """
-import datetime, json, os, sys
+import datetime, json, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
@@ -20,14 +20,16 @@ OUT = os.path.join(REPO, "clwydian-academy 2")
 DOMAIN = "https://clwydianacademy.co.uk"
 LOCALES = ("en", "cy")
 
-# Organization — one block, both languages, identical to the live homepage on 11 Sep 2026.
-# No parentOrganization, no old legalName: see CLAUDE.md "The entity".
+# Organization — one block, both languages: the live homepage block of 11 Sep 2026 plus the
+# current legalName and Companies House identifier (COWORK VERIFICATION 01, decision 2).
+# No parentOrganization, no OLD legalName: see CLAUDE.md "The entity".
 ORG = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
     "@id": DOMAIN + "/#organization",
     "name": "Clwydian Academy",
     "alternateName": "Clwydian Academy CBC",
+    "legalName": "Clwydian Academy CBC",
     "description": "Fast-track vocational hairdressing and barbering academy in St Asaph, North Wales. VTCT-standard NVQ diplomas, CPD masterclasses and Welsh-framework apprenticeships, with fully funded routes for eligible learners.",
     "url": DOMAIN + "/",
     "logo": DOMAIN + "/assets/img/seal-512.png",
@@ -35,6 +37,7 @@ ORG = {
     "email": "markp@charlotteeleanorgroup.uk",
     "telephone": "+447714198743",
     "foundingDate": "2026",
+    "identifier": {"@type": "PropertyValue", "propertyID": "Companies House", "value": "17330962"},
     "knowsLanguage": ["en", "cy"],
     "address": {"@type": "PostalAddress", "addressLocality": "St Asaph", "addressRegion": "Denbighshire", "addressCountry": "GB"},
     "areaServed": ["North Wales", "Denbighshire", "Conwy", "Flintshire", "Wrexham", "Chester", "Cheshire", "North West England"],
@@ -263,6 +266,16 @@ def footer(page, loc):
 </html>
 '''
 
+def lastmod(page, loc, fallback):
+    """Date of the last commit touching this page's fragment or JSON-LD; the build date if none."""
+    paths = [os.path.join("pages", loc, page["key"] + ".html"), os.path.join("jsonld", loc, page["key"] + ".json")]
+    try:
+        out = subprocess.run(["git", "--no-optional-locks", "log", "-1", "--format=%cI", "--", *paths],
+                             cwd=HERE, capture_output=True, text=True, check=True).stdout.strip()
+        return out[:10] if out else fallback
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return fallback
+
 def read(*parts):
     with open(os.path.join(HERE, *parts), encoding="utf-8") as f:
         return f.read()
@@ -297,7 +310,7 @@ def build():
     for loc in LOCALES:
         for page in urls[loc]:
             en, cy = DOMAIN + page["en"]["path"], DOMAIN + page["cy"]["path"]
-            sm += [f'  <url><loc>{DOMAIN + page[loc]["path"]}</loc><lastmod>{today}</lastmod><priority>{page["priority"]}</priority>',
+            sm += [f'  <url><loc>{DOMAIN + page[loc]["path"]}</loc><lastmod>{lastmod(page, loc, today)}</lastmod><priority>{page["priority"]}</priority>',
                    f'    <xhtml:link rel="alternate" hreflang="en" href="{en}"/>',
                    f'    <xhtml:link rel="alternate" hreflang="cy" href="{cy}"/>',
                    f'    <xhtml:link rel="alternate" hreflang="x-default" href="{en}"/>',
