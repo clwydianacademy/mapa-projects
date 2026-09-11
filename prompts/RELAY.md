@@ -408,3 +408,19 @@ No new Welsh was written. Three existing strings were chosen between or moved:
 6. **`sameAs`** — see section 5.
 7. **`sitemap.xml` `lastmod`** is now the build date for every URL on every build. Fine, or
    derive from git?
+
+**Addendum, 11 September 2026, 12:05 — branch not pushed.** `git push -u origin site-rebuild`
+was refused: `Permission to markp-del/mapa-projects.git denied to markp-del` (HTTP 403). The
+keychain token is the same one that pushes `charlotte-eleanor-booking` fine, so it is almost
+certainly a fine-grained token limited to selected repositories that does not include
+`mapa-projects`. I have not touched the credential. All five commits are local on
+`site-rebuild` in the shared folder, so the PM can read them now; the Vercel preview will
+appear once Mark either adds `mapa-projects` to the token's repository list or runs the push
+himself:
+
+```
+cd "/Users/markparker/Desktop/Clwydian Academy/mapa-projects" && git push -u origin site-rebuild
+```
+
+Added to NEEDS A HUMAN as item 8. Section 4's "site-rebuild is pushed" is therefore not yet
+true.
