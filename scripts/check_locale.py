@@ -11,11 +11,14 @@ For every page except /404.html:
   * the header language switch points at the same counterpart
   * the primary nav has the same number of links in both languages
   * sitemap.xml lists the page (unless noindex) and its counterpart
+  * the canonical is self-referential on HOST, and every og:url, hreflang href and sitemap
+    <loc> uses HOST — never the apex, never http
 Exit 0 = clean, 1 = problems, 2 = no dir.
 """
 import os, re, sys
 
-DOMAIN = "https://clwydianacademy.co.uk"
+HOST = "https://www.clwydianacademy.co.uk"   # the one canonical host; the apex 301s here at Vercel
+DOMAIN = HOST
 
 def pages(root):
     out = {}
@@ -34,7 +37,13 @@ def check(root):
     problems = []
     site = pages(root)
     sm_path = os.path.join(root, "sitemap.xml")
-    sitemap = set(strip(u) for u in re.findall(r"<loc>(.*?)</loc>", open(sm_path, encoding="utf-8").read())) if os.path.exists(sm_path) else None
+    sitemap = None
+    if os.path.exists(sm_path):
+        sm_text = open(sm_path, encoding="utf-8").read()
+        for u in re.findall(r'(?:<loc>|href=")(https?://[^<"]+)', sm_text):
+            if not u.startswith(HOST + "/"):
+                problems.append(f"sitemap.xml: {u} is not on {HOST}")
+        sitemap = set(strip(u) for u in re.findall(r"<loc>(.*?)</loc>", sm_text))
     for url, html in sorted(site.items()):
         if url == "/404.html":
             continue
@@ -44,6 +53,15 @@ def check(root):
         want = "cy" if is_cy else "en-GB"
         if not lang or lang.group(1) != want:
             problems.append(f"{url}: <html lang> is {lang.group(1) if lang else 'missing'}, expected {want}")
+        canon = re.search(r'<link rel="canonical" href="([^"]+)">', head)
+        if not canon or canon.group(1) != HOST + url:
+            problems.append(f"{url}: canonical is {canon.group(1) if canon else 'missing'}, expected {HOST + url}")
+        og = re.search(r'<meta property="og:url" content="([^"]+)">', head)
+        if not og or og.group(1) != HOST + url:
+            problems.append(f"{url}: og:url is {og.group(1) if og else 'missing'}, expected {HOST + url}")
+        for k, v in re.findall(r'<link rel="alternate" hreflang="([\w-]+)" href="([^"]+)">', head):
+            if not v.startswith(HOST + "/"):
+                problems.append(f"{url}: hreflang {k} href {v} is not on {HOST}")
         alts = dict((k, strip(v)) for k, v in re.findall(r'<link rel="alternate" hreflang="([\w-]+)" href="([^"]+)">', head))
         for k in ("en", "cy", "x-default"):
             if k not in alts:
@@ -82,7 +100,7 @@ def main():
         print(f"check_locale: no such directory: {root}"); return 2
     problems, n = check(root)
     if not problems:
-        print(f"check_locale: {n} pages — every EN page has a CY mirror and back, navs match, sitemap complete."); return 0
+        print(f"check_locale: {n} pages — every EN page has a CY mirror and back, navs match, sitemap complete, one host ({HOST})."); return 0
     print(f"check_locale: {n} pages — {len(problems)} problem(s)\n")
     for p in problems: print("  ", p)
     print("\nFAIL — fix pages.json / build.py, then rebuild.")
