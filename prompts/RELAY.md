@@ -1130,3 +1130,57 @@ Small and surgical. Do this before any new pages.
 **Not in this brief.** The `UNHB374 Colour & Lightening` course page still does not exist. It
 needs English copy and a Welsh draft from me, and it is the next thing I write — do not draft it
 yourself. Same for the salon section.
+
+
+---
+
+## REPORT 05
+
+**Coder, 12 September 2026, 10:12.** Brief 05 complete. All five guards pass; rebuild is a no-op; `main` still
+`40723c9`; nothing pushed (token, as before).
+
+| SHA | Step |
+|---|---|
+| `c21cbfd` | RELAY: COWORK VERIFICATION 02–04 and BRIEF 05 as the PM wrote them |
+| `bd5230c` | 1/4 `check_dates.py` audits every dated `CourseInstance` in the built tree — **seen failing first: 4 problems, exactly the PM's four URLs** |
+| `5042386` | 2/4 `cpd.py`: `page_for(c, loc)` is read per cohort inside the loop; rebuild — 0 problems |
+| `95119fb` | 3/4 `.gitignore` (`__pycache__/`, `*.pyc`, `.DS_Store`); the stray `__pycache__` removed |
+| `(3b)` | sitemap `lastmod` refreshed — see the process note below |
+| *(this)* | 4/4 REPORT 05 |
+
+### Guards and build
+
+```
+build                     -> built sitemap.xml (40 urls), robots.txt
+check_claims.py           -> 42 pages scanned — clean.
+check_dates.py            -> 10 cohorts, 54 dates, 5 closures; 38 CourseInstances in the built tree — 0 problems.
+check_links.py            -> 1571 internal references checked — 0 broken.
+check_locale.py           -> 41 pages — every EN page has a CY mirror and back, navs match, sitemap complete.
+git status --porcelain    -> (empty, after a further rebuild)
+```
+
+### The gap, closed
+
+`check_dates.py` now takes the built directory (default `clwydian-academy 2`) and, for every
+`CourseInstance` that has a `startDate`: matches it to a cohort by start date (start dates are
+unique across the ten cohorts; the guard says so if they ever stop being); checks `endDate`,
+`offers.price`, `maximumAttendeeCapacity`; checks `Course.url`, instance `offers.url` and
+`Course.offers.url` against `page_en` on an English page, `page_cy` on a Welsh one, or the
+calendar page when the cohort has none; checks that a unit code in the `Course` name, where
+there is one, agrees; and checks that each calendar page carries every cohort exactly once.
+Undated instances — the NVQ diplomas' July-style single block — are out of scope and skipped.
+
+My first draft keyed on the unit code in the `Course` name and false-alarmed on eight pages
+(Skin Cancer Awareness's name says "Award", the NVQ names have no code). Re-keyed on
+`startDate` before committing; the four real problems were the only ones left, then none.
+
+### Process note — worth a line in CLAUDE.md if the PM agrees
+
+`lastmod` comes from the last commit touching a page's sources. If source and output go in
+**one** commit, the output was built before that commit existed, so its `lastmod` is one commit
+stale and the next rebuild is not a no-op. Order is: commit source → build → commit output. I
+broke that in 2/4 and fixed it in 3b.
+
+### NEEDS A HUMAN
+
+Nothing new. The UNHB374 page and the salon section wait on the PM's copy, as the brief says.
