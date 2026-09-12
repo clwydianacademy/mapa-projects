@@ -1,0 +1,26 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://clwydianacademy.co.uk/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "For Salons",
+        "item": "https://clwydianacademy.co.uk/for-salons/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Train your team",
+        "item": "https://clwydianacademy.co.uk/for-salons/train-your-team/"
+      }
+    ]
+  }
+]

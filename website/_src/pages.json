@@ -127,13 +127,64 @@
     "legal": "plain",
     "en": {
       "path": "/for-salons/",
-      "title": "Apprentice Training for Salons | Clwydian Academy",
-      "desc": "75% of salons say recruitment is getting harder. Clwydian Academy trains your apprentices for you in St Asaph — plus CPD for your team."
+      "title": "For Salons — Train Your Team Without Closing the Floor | Clwydian Academy",
+      "desc": "Two strands, {{cpd:strandDays}}, {{cpd:seatsWord}} seats a cohort. One member of your team, one day a week, back with regulated VTCT credit — {{cpd:unitsWord}} units, {{cpd:minPrice}} to {{cpd:maxPrice}}, dates published to {{cpd:termEnd}}."
     },
     "cy": {
       "path": "/cy/i-salonau/",
-      "title": "Hyfforddi Prentisiaid i Salonau | Clwydian Academy",
-      "desc": "Mae 75% o salonau'n dweud bod recriwtio'n mynd yn anoddach. Mae Clwydian Academy yn hyfforddi eich prentisiaid drosoch yn Llanelwy — a DPP i'ch tîm."
+      "title": "I Salonau — Hyfforddwch eich Tîm heb Gau'r Llawr | Clwydian Academy",
+      "desc": "Dau linyn, {{cpd:strandDays}}, {{cpd:seatsWord}} sedd y garfan. Un aelod o'ch tîm, un diwrnod yr wythnos, yn ôl gyda chredyd VTCT rheoledig — {{cpd:unitsWord}} uned, {{cpd:minPrice}} i {{cpd:maxPrice}}, dyddiadau wedi'u cyhoeddi hyd at {{cpd:termEnd}}."
+    }
+  },
+  {
+    "key": "train-your-team",
+    "nav": "/for-salons/",
+    "noindex": false,
+    "priority": "0.6",
+    "legal": "plain",
+    "en": {
+      "path": "/for-salons/train-your-team/",
+      "title": "CPD for Your Salon Team — {{cpd:UnitsWord}} VTCT Units, One Price List | Clwydian Academy",
+      "desc": "{{cpd:UnitsWord}} regulated VTCT units, {{cpd:ndates}} dates to {{cpd:termEnd}}, {{cpd:minPrice}} to {{cpd:maxPrice}}. Skin Cancer Awareness in a day, Relaxing & Smoothing, Colour & Lightening at Level 3 — one person, one day a week, at St Asaph."
+    },
+    "cy": {
+      "path": "/cy/i-salonau/hyfforddi-eich-tim/",
+      "title": "DPP i Dîm eich Salon — {{cpd:UnitsWord}} Uned VTCT, Un Rhestr Brisiau | Clwydian Academy",
+      "desc": "{{cpd:UnitsWord}} uned VTCT reoledig, {{cpd:ndates}} o ddyddiadau hyd at {{cpd:termEnd}}, {{cpd:minPrice}} i {{cpd:maxPrice}}. Ymwybyddiaeth Canser y Croen mewn diwrnod, Llacio a Llyfnhau, Lliwio a Goleuo ar Lefel 3 — un person, un diwrnod yr wythnos, yn Llanelwy."
+    }
+  },
+  {
+    "key": "take-an-apprentice",
+    "nav": "/for-salons/",
+    "noindex": false,
+    "priority": "0.6",
+    "legal": "plain",
+    "en": {
+      "path": "/for-salons/take-an-apprentice/",
+      "title": "Take On an Apprentice — We Train Them, You Keep the Chair Full | Clwydian Academy",
+      "desc": "An apprentice on your floor earning from the start, trained to the Welsh framework at St Asaph with the paperwork handled here. Training fully funded for eligible apprentices — you pay the wage, never the course."
+    },
+    "cy": {
+      "path": "/cy/i-salonau/cymryd-prentis/",
+      "title": "Cymryd Prentis — Ni Sy'n eu Hyfforddi, Chi Sy'n Cadw'r Gadair yn Llawn | Clwydian Academy",
+      "desc": "Prentis ar eich llawr yn ennill o'r dechrau, wedi'i hyfforddi i fframwaith Cymru yn Llanelwy gyda'r gwaith papur yn cael ei drin yma. Hyfforddiant wedi'i ariannu'n llawn i brentisiaid cymwys — chi sy'n talu'r cyflog, byth y cwrs."
+    }
+  },
+  {
+    "key": "what-it-costs",
+    "nav": "/for-salons/",
+    "noindex": false,
+    "priority": "0.6",
+    "legal": "plain",
+    "en": {
+      "path": "/for-salons/what-it-costs/",
+      "title": "What It Costs — One Published Tariff for Salons | Clwydian Academy",
+      "desc": "Every seat price is {{cpd:fixed}} + {{cpd:perGlh}} × guided learning hours, rounded to the nearest {{cpd:roundTo}}. Team rates from {{cpd:tierFrom:1}} people. Check the arithmetic before you book."
+    },
+    "cy": {
+      "path": "/cy/i-salonau/y-gost/",
+      "title": "Beth yw'r Gost — Un Tariff Cyhoeddedig i Salonau | Clwydian Academy",
+      "desc": "{{cpd:fixed}} + {{cpd:perGlh}} × oriau dysgu dan arweiniad yw pob pris sedd, wedi'i dalgrynnu i'r {{cpd:roundTo}} agosaf. Cyfraddau tîm o {{cpd:tierFrom:1}} o bobl. Gwiriwch y rhifyddeg cyn archebu."
     }
   },
   {
