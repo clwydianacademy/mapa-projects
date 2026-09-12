@@ -8,7 +8,7 @@ scripts/check_dates.py.
 Welsh strings in T["cy"] and in CY_UNIT / CY_TEXT are machine-written and unreviewed
 (CLAUDE.md "Bilingual"); every one is listed in REPORT 03 under WELSH FOR REVIEW.
 """
-import datetime, json, os
+import datetime, json, os, re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
@@ -59,6 +59,23 @@ CY_TEXT = {
     "All three observations take place in a real working environment": "Mae&rsquo;r tri arsylwad yn digwydd mewn amgylchedd gwaith go iawn",
     "includes brand-partner hair and kit": "yn cynnwys gwallt a phecyn y brand partner",
 }
+CY_UNIT["UNHB374"] = "Lliwio a Goleuo"
+
+ONES = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
+        "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+CY_ONES = ["dim", "un", "dau", "tri", "pedwar", "pump", "chwech", "saith", "wyth", "naw", "deg"]
+# Welsh numerals before a noun (the forms used in "chwe dydd Llun")
+CY_BEFORE_NOUN = {1: "un", 2: "dau", 3: "tri", 4: "pedwar", 5: "pum", 6: "chwe", 7: "saith", 8: "wyth", 9: "naw", 10: "deg"}
+
+def number_word(n, loc, before_noun=False):
+    if loc == "cy":
+        if before_noun and n in CY_BEFORE_NOUN: return CY_BEFORE_NOUN[n]
+        return CY_ONES[n] if 0 <= n <= 10 else str(n)
+    if n < 20: return ONES[n]
+    if n < 100: return TENS[n // 10] + ("-" + ONES[n % 10] if n % 10 else "")
+    return str(n)
+
 
 T = {
     "en": dict(
@@ -314,3 +331,114 @@ def calendar_jsonld(loc, page):
             courses.append(seen[u])
         seen[u]["hasCourseInstance"].append(_instance(c, data, href or url))
     return courses + [crumbs]
+
+
+# ---------------------------------------------------------------- {{cpd:...}} tokens in fragments and metadata
+
+def _unit_cohorts(data, unit):
+    return sorted([c for c in data["cohorts"] if c["unit"] == unit], key=lambda c: c["dates"][0])
+
+def _pound(n):
+    return f"&pound;{n:,}" if isinstance(n, int) else f"&pound;{n}"
+
+def token(name, loc, data):
+    """Resolve one {{cpd:NAME}} token. Unknown tokens raise — a typo must fail the build."""
+    t = T[loc]; strands = {s["id"]: s for s in data["strands"]}; tf = data["tariff"]
+    parts = name.split(":")
+    key, arg = parts[0], (parts[1] if len(parts) > 1 else None)
+    cap = key[:1].isupper(); key = key[0].lower() + key[1:]
+    def out(v):
+        v = str(v); return (v[:1].upper() + v[1:]) if cap else v
+    if arg and arg.upper() in {c["unit"] for c in data["cohorts"]}:
+        cs = _unit_cohorts(data, arg.upper()); c = cs[0]; st = strands[c["strand"]]
+        if key == "price": return out(_pound(c["price"]))
+        if key == "level": return out(c["level"])
+        if key == "glh": return out(c["glh"])
+        if key == "ndays": return out(c["days"])
+        if key == "days": return out(days_label(c, st, loc))
+        if key == "daysWord":
+            wd = st["weekday"] + ("s" if c["days"] != 1 else "") if loc == "en" else st["weekday_cy"].replace("Dydd ", "dydd ")
+            return out(f"{number_word(c['days'], loc, before_noun=True)} {wd}")
+        if key == "ndaysWord": return out(number_word(c["days"], loc))
+        if key == "start": return out(long_date(c["dates"][0], loc))
+        if key == "startShort":
+            dd = _d(c["dates"][0]); return out(f"{dd.day} {MONTHS[loc][dd.month - 1]}")
+        if key == "end": return out(long_date(c["dates"][-1], loc))
+        if key == "starts":   # every cohort's first day, "6 January and 28 July"
+            ds = [f"{_d(x['dates'][0]).day} {MONTHS[loc][_d(x['dates'][0]).month - 1]}" for x in cs]
+            j = " and " if loc == "en" else " a "
+            return out(j.join(ds) if len(ds) < 3 else ", ".join(ds[:-1]) + j + ds[-1])
+        if key == "strand": return out(f"{t['strand']} {st['id']}")
+        if key == "weekday": return out(st["weekday"] + "s" if loc == "en" else st["weekday_cy"])
+        if key == "hours": return out(st["hours"])
+        if key == "title": return out(title(c, loc))
+        raise KeyError(f"cpd token {name!r}: unknown field {key!r}")
+    if key == "seats": return out(data["seats_per_cohort"])
+    if key == "seatsWord": return out(number_word(data["seats_per_cohort"], loc))
+    if key == "units": return out(len({c["unit"] for c in data["cohorts"]}))
+    if key == "unitsWord": return out(number_word(len({c["unit"] for c in data["cohorts"]}), loc))
+    if key == "ndates": return out(sum(len(c["dates"]) for c in data["cohorts"]))
+    if key == "ndatesWord": return out(number_word(sum(len(c["dates"]) for c in data["cohorts"]), loc))
+    if key == "cohorts": return out(len(data["cohorts"]))
+    if key == "cohortsWord": return out(number_word(len(data["cohorts"]), loc))
+    if key == "minPrice": return out(_pound(min(c["price"] for c in data["cohorts"])))
+    if key == "maxPrice": return out(_pound(max(c["price"] for c in data["cohorts"])))
+    if key == "minDays": return out(number_word(min(c["days"] for c in data["cohorts"]), loc))
+    if key == "maxDays": return out(number_word(max(c["days"] for c in data["cohorts"]), loc))
+    if key == "termEnd":
+        dd = _d(data["term"]["last_day"]); return out(f"{MONTHS[loc][dd.month - 1]} {dd.year}")
+    if key == "termLabel": return out(data["term"]["label_" + loc])
+    if key == "strandDays":
+        names = [st["weekday"] + "s" if loc == "en" else st["weekday_cy"] for st in data["strands"]]
+        return out((" and " if loc == "en" else " a ").join(names))
+    if key == "fixed": return out(f"&pound;{tf['fixed']:.2f}")
+    if key == "perGlh": return out(f"&pound;{tf['per_glh']:.3f}")
+    if key == "roundTo": return out(f"&pound;{tf['round_to']}")
+    if key == "anchors":
+        return out((" and " if loc == "en" else " a ").join(a.replace("£", "&pound;") for a in tf["anchors"]))
+    if key == "kit": return out(_pound(50))
+    if key.startswith("tier"):
+        i = int(arg) - 1; tier = data["team_discounts"][i]
+        if key == "tierPct": return out(tier["pct"])
+        if key == "tierFrom": return out(tier["from"])
+        if key == "tierTo": return out(tier["to"])
+        if key == "tierFromWord": return out(number_word(tier["from"], loc))
+        if key == "tierRange":
+            return out(f"{tier['from']}&ndash;{tier['to']}" if tier["from"] != tier["to"] else str(tier["from"]))
+    if key == "calendarList": return calendar_list(loc, data)
+    if key == "priceList": return price_list(loc, data)
+    if key == "calendarUrl": return CAL[loc]["path"]
+    raise KeyError(f"cpd token {name!r} is not defined")
+
+TOKEN_RE = re.compile(r"\{\{cpd:([A-Za-z0-9:_-]+)\}\}")
+
+def render(text, loc):
+    if "{{cpd:" not in text:
+        return text
+    data = load()
+    return TOKEN_RE.sub(lambda m: token(m.group(1), loc, data), text)
+
+def calendar_list(loc, data):
+    """Every cohort in date order as meta rows: date range -> unit, title, level, days, price."""
+    t = T[loc]; strands = {s["id"]: s for s in data["strands"]}
+    rows = []
+    for c in sorted(data["cohorts"], key=lambda c: c["dates"][0]):
+        st = strands[c["strand"]]
+        href = page_for(c, loc)
+        name = f'<a href="{href}">{title(c, loc)}</a>' if href else title(c, loc)
+        when = long_date(c["dates"][0], loc, weekday=True) if len(c["dates"]) == 1 else f"{long_date(c['dates'][0], loc, weekday=True)} &ndash; {long_date(c['dates'][-1], loc)}"
+        rows.append(f'<div class="meta-row"><dt>{when}</dt><dd>{c["unit"]} &middot; {name} <small>{level_label(c, loc)} &middot; {days_label(c, st, loc)} &middot; {t["strand"]} {st["id"]} &middot; {_pound(c["price"])} {t["per_seat"]}</small></dd></div>')
+    return '<div class="meta-panel">\n<dl>\n' + "\n".join(rows) + "\n</dl>\n</div>"
+
+def price_list(loc, data):
+    """One row per unit: GLH -> the tariff arithmetic -> the price."""
+    t = T[loc]; tf = data["tariff"]; seen = set(); rows = []
+    for c in sorted(data["cohorts"], key=lambda c: c["price"]):
+        if c["unit"] in seen: continue
+        seen.add(c["unit"])
+        base = round((tf["fixed"] + tf["per_glh"] * c["glh"]) / tf["round_to"]) * tf["round_to"]
+        extra = f" + {_pound(c['price'] - base)}" if c["price"] != base else ""
+        href = page_for(c, loc)
+        name = f'<a href="{href}">{title(c, loc)}</a>' if href else title(c, loc)
+        rows.append(f'<div class="meta-row"><dt>{c["unit"]}</dt><dd>{name} &middot; <strong>{_pound(c["price"])}</strong> {t["per_seat"]} <small>{level_label(c, loc)} &middot; {c["glh"]} {t["glh"]}: &pound;{tf["fixed"]:.2f} + &pound;{tf["per_glh"]:.3f} &times; {c["glh"]} = &pound;{tf["fixed"] + tf["per_glh"] * c["glh"]:.2f} &rarr; {_pound(base)}{extra}</small></dd></div>')
+    return '<div class="meta-panel">\n<dl>\n' + "\n".join(rows) + "\n</dl>\n</div>"

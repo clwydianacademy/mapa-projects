@@ -316,6 +316,8 @@ def build():
             if "<!-- cpd-dates -->" in body:
                 body = body.replace("<!-- cpd-dates -->", cpd.date_rows(loc, page))
                 jsonld = cpd.enrich(jsonld, loc, page)
+            body = cpd.render(body, loc)                       # {{cpd:...}} facts from the data file
+            page = dict(page, **{loc: dict(page[loc], title=cpd.render(page[loc]["title"], loc), desc=cpd.render(page[loc]["desc"], loc))})
             html = head(page, loc, jsonld) + "\n" + header(page, loc) + "\n" + body + footer(page, loc)
             rel = out_path(page[loc]["path"])
             write(rel, html)

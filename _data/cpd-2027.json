@@ -41,7 +41,7 @@
       "assessment_en": "Knowledge only", "requirement_en": "None — no prior qualification needed",
       "dates": ["2027-01-06"] },
     { "id": "unhb374-b", "unit": "UNHB374", "title_en": "Colour & Lightening", "level": 3, "glh": 158, "days": 10, "price": 835, "strand": "B",
-      "page_en": null, "page_cy": null, "page_note": "No course page exists yet — link to /courses/cpd-courses/. The page is Brief 05, with copy from the PM.",
+      "page_en": "/courses/colour-and-lightening/", "page_cy": "/cy/cyrsiau/cwrs-lliwio-a-goleuo/",
       "assessment_en": "Portfolio, a unit paper and an overarching paper",
       "requirement_en": "A skin test booked and recorded before every client session",
       "dates": ["2027-01-13","2027-01-20","2027-01-27","2027-02-03","2027-02-10","2027-02-17","2027-02-24","2027-03-03","2027-03-10","2027-03-17"] },

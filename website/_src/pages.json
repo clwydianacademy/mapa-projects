@@ -330,6 +330,24 @@
     "cpd_unit": "UV21577"
   },
   {
+    "key": "colour-and-lightening",
+    "nav": "/courses/",
+    "noindex": false,
+    "priority": "0.9",
+    "legal": "plain",
+    "cpd_unit": "UNHB374",
+    "en": {
+      "path": "/courses/colour-and-lightening/",
+      "title": "Colour & Lightening Course — VTCT Level {{cpd:level:UNHB374}} Unit UNHB374 | Clwydian Academy",
+      "desc": "{{cpd:DaysWord:UNHB374}} of colour and lightening on live clients in St Asaph, leading to the regulated Level {{cpd:level:UNHB374}} VTCT unit UNHB374 — {{cpd:glh:UNHB374}} guided learning hours, {{cpd:price:UNHB374}} on the published tariff, from {{cpd:start:UNHB374}}."
+    },
+    "cy": {
+      "path": "/cy/cyrsiau/cwrs-lliwio-a-goleuo/",
+      "title": "Cwrs Lliwio a Goleuo — Uned VTCT Lefel {{cpd:level:UNHB374}} UNHB374 | Clwydian Academy",
+      "desc": "{{cpd:DaysWord:UNHB374}} o liwio a goleuo ar gleientiaid byw yn Llanelwy, yn arwain at uned VTCT Lefel {{cpd:level:UNHB374}} UNHB374 reoledig — {{cpd:glh:UNHB374}} awr ddysgu dan arweiniad, {{cpd:price:UNHB374}} ar y tariff cyhoeddedig, o {{cpd:start:UNHB374}}."
+    }
+  },
+  {
     "key": "apprenticeships",
     "nav": "/apprenticeships/",
     "noindex": false,
