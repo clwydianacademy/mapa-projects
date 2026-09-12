@@ -1270,3 +1270,204 @@ calendar fallback · every new or changed Welsh string under `WELSH FOR REVIEW` 
 kind — a wrong generated URL is a generator bug, not a data-file bug.
 
 **Then stop.** The enquiry form is the next real piece of work and the PM will brief it.
+
+---
+
+## BRIEF 07 — the verified SEO fixes (queued behind 06; do not start early)
+
+**Supplied:** `../website rebuild handoff/research-pack-sep2026.md`. Four research agents ran in
+parallel; the PM re-verified every checkable claim before writing it down. **Section 5 of that pack
+lists five findings that were asserted and are false** — including a confident claim that the site
+has no structured data at all, which it plainly does. Act only on the confirmed list.
+
+1. **Canonical host.** Every canonical and every sitemap URL uses the apex
+   `https://clwydianacademy.co.uk/`; the site is served and linked as `www.`. Settle on one host in
+   the generator — `DOMAIN` in `build.py` — and make canonicals, `hreflang`, `og:url` and the
+   sitemap all agree with it. Recommend `www.` to match how it is actually linked, but say in the
+   report if the repo gives a reason to prefer the apex. **The 301 itself is a Vercel setting and
+   therefore Mark's, not yours** — put it under NEEDS A HUMAN with the exact setting named.
+2. **`/funding/` title is 72 characters** and truncates on mobile. Shorten to end on a complete
+   clause, keeping "North Wales". Check every other title while you are in there; report any over
+   60 rather than silently rewriting them — titles are copy, and copy is the PM's.
+3. **CPD hub H1.** `/courses/cpd-courses/` leads with "Add a new service line by Friday." Keep that
+   line — it is the right line for a salon owner — but demote it to a subhead and put a
+   keyword-bearing H1 above it: *CPD courses for working hairdressers: barbering, colour,
+   extensions*. Welsh mirror to match, drafted and flagged.
+4. **A guard for the host.** Extend `check_locale.py`, or add `check_canonical.py`: every canonical,
+   `og:url`, `hreflang` and sitemap URL on every page uses the one chosen host, and every canonical
+   is self-referential. Watch it fail against the current output first, as before.
+
+**Not yours:** the Google Business Profile, the citations list, the NAP (blocked on the lease), and
+every article in the content plan. Those are Mark's and the PM's.
+
+**Acceptance.** All guards pass including the new one · rebuild a no-op · no copy changed beyond
+items 2 and 3 · Welsh flagged · `main` untouched.
+
+
+---
+
+## REPORT 06
+
+**Coder, 12 September 2026, 10:39.** Brief 06 complete. All five guards pass on 50 files / 49 pages; a further
+rebuild is a no-op; `main` still `40723c9`; nothing pushed. Stopping here as instructed.
+
+| SHA | Step |
+|---|---|
+| `2dcf239` | RELAY: VERIFICATION 05 + BRIEF 06 as the PM wrote them (committed first, as asked) |
+| `7b10791` | 0/3 `CLAUDE.md` from the handoff **with Mark's footer paragraph kept** (see NEEDS A HUMAN 1); `check_dates.py` message by failure kind |
+| `79ff518` | 1/3 Colour & Lightening page, EN + CY; token layer; data file names the page |
+| `873e4ee` | 2/3 the salon section, EN + CY, section nav |
+| `b615e93` | 3/3 build output |
+
+Source → build → output, as separate commits, per the new build-discipline section.
+
+### Gates
+
+```
+check_claims.py   -> 50 pages scanned — clean.
+check_dates.py    -> 10 cohorts, 54 dates, 5 closures; 40 CourseInstances in the built tree — 0 problems.
+check_links.py    -> 1959 internal references checked — 0 broken.
+check_locale.py   -> 49 pages — every EN page has a CY mirror and back, navs match, sitemap complete.
+rebuild           -> git status --porcelain empty
+```
+`check_dates` sees the Colour page: the UNHB374 `CourseInstance` on `/courses/colour-and-lightening/`,
+on the calendar, and on `/for-salons/train-your-team/`'s list resolves to the course page, not the
+calendar fallback — because `_data/cpd-2027.json` now names it (`page_en` / `page_cy` on
+`unhb374-b`, `page_note` removed). That is the one edit to the data file; no date, price, level
+or GLH was touched.
+
+### The Colour page — and the `[VERIFY]` block
+
+The verbatim scheme of learning is on this Mac
+(`Llandrillo Pitch/SOL/SoL_Clwydian_CPD_UNHB374_Colour_and_Lighten_the_Hair_L3.docx`, with the
+unit digest PDF beside it), so the block was checked, not skipped. The PM's five bullets were
+rewritten to the awarding body's range:
+
+- "Full-head and partial colouring" → the unit's **three** techniques: full-head colouring,
+  re-growth colouring, and woven foil highlights and lowlights, on live clients across three
+  observed sessions. "Partial" is not a term the unit uses.
+- "Consultation that sets expectations and price" → consultation at Level 3: the service plan,
+  service history, informed consent and the **six diagnostic tests**. Price is not in the unit.
+- Colour theory → the International Colour Code, depth and tone, neutralising unwanted tone,
+  percentage of white hair, formulation — the scheme's week-2 content.
+- Colour correction → kept, worded as the scheme has it: principles, problems, causes and
+  remedies, reading service history and build-up. (It is distance-learning content in week 8,
+  not an observed technique — the bullet no longer implies otherwise.)
+- Products/COSHH → the product families named in the range, developer strengths and lift, and
+  the fourteen-step service protocol.
+
+Assessment as the scheme states it: portfolio, three observations, the unit's external paper and
+the overarching external paper, both set and marked by VTCT Skills (the 70% pass mark is in the
+scheme; I did not put it on the page). Skin test: verbatim from the scheme's constraint.
+
+**One claim in the copy I did not publish.** "Regulated credit that banks toward a Level 3
+Diploma … a third of the way into a Level 3" and "carries into a Level 3 Diploma". The scheme of
+learning says the opposite: UNHB374 "is an optional unit of the VTCT Skills Level 2 Diploma in
+Barbering (HBN2D17) and of the HBN Level 2 hairdressing diploma. Learners who go on to either
+diploma carry this unit across; learners who stop here hold a regulated unit certificate." The page
+says that instead, in both languages, and the salon page's "bank toward a Level 3 Diploma" became
+"carry across into the VTCT Skills diplomas". NEEDS A HUMAN 2.
+
+No entry requirement is stated on the page: the copy gives none, and the one I first put in the
+JSON-LD ("Level 2 Hairdressing or Barbering") was mine, so it came out (it also tripped the linter).
+
+Every number on the page is a token: `{{cpd:level:UNHB374}}`, `glh`, `days`, `daysWord`, `price`,
+`start`, `weekday`, `hours`, the tariff and the tiers — plus the injected *Next start* and *2027
+dates* rows and the data-driven `CourseInstance`. The title and meta description are tokenised too.
+
+### The salon section
+
+Four pages as specified, in both languages: `/for-salons/` (rewritten; the 75.4% figure cut, as
+recommended — no citation, no decision needed), `/for-salons/train-your-team/`,
+`/for-salons/take-an-apprentice/`, `/for-salons/what-it-costs/`; Welsh at `/cy/i-salonau/`,
+`…/hyfforddi-eich-tim/`, `…/cymryd-prentis/`, `…/y-gost/`. Funding and approval wording on the
+apprentice page is lifted sentence-for-sentence from `/apprenticeships/` ("Training is fully funded
+for eligible apprentices — you pay the wage, never the course"; "VTCT Approved Centre application
+in progress · Approval precedes first delivery"). Two data-driven blocks, rendered as the site's
+existing two-column panel since the stylesheet has no `<table>` styling: the full calendar in date
+order on *train-your-team*, and the price list with the arithmetic per unit on *what-it-costs*
+(`£160.81 + £4.274 × 158 = £836.10 → £835`). "Seven units. Fifty-four dates." and "between one and
+ten weeks" are counted from the data, in words.
+
+**Nav.** The header nav is a flat row of links with no dropdown in the CSS or the JS, so "a
+top-level parent with three children" is done as a section nav on each of the four pages
+(parent + three children as outline buttons under the hero, `aria-current` on the current one),
+in both languages, and the three cards on `/for-salons/` link down. The header item stays
+"For Salons" → `/for-salons/`. A header dropdown is a stylesheet + script change and a mobile
+design decision — NEEDS A HUMAN 4.
+
+### The thing this section cannot do yet
+
+As the copy says: there is no working enquiry form. Every "Register your salon" on these four pages,
+and "Book a seat" on the Colour page, lands on the contact form that opens the visitor's email
+client. The funnel ends in a `mailto:`. Flagged for the PM's next brief.
+
+### Carry-over from Verification 05
+
+`check_dates.py` now ends with "the data file is consistent; these are generator bugs — fix
+`website/_src/cpd.py`" when every problem is in generated output, the original data-file message
+when every problem is in the data, and names both when mixed.
+
+### WELSH FOR REVIEW
+
+**Every Welsh string on five pages is new or rewritten** — the Colour page and the four salon pages
+— plus their titles, meta descriptions, breadcrumbs and JSON-LD names. The complete list is the
+files themselves:
+
+```
+git --no-optional-locks show 79ff518 -- website/_src/pages/cy/colour-and-lightening.html website/_src/jsonld/cy/colour-and-lightening.json
+git --no-optional-locks show 873e4ee  -- website/_src/pages/cy/ website/_src/jsonld/cy/ website/_src/pages.json
+```
+
+The headline strings, with the English they render:
+
+| Welsh | English |
+|---|---|
+| Lliwio a Goleuo | Colour & Lightening |
+| Y cwrs hiraf ar ein calendr, a'r unig un sy'n gorffen gyda chredyd Lefel 3 yn eich dwylo. | The longest course on our calendar, and the only one that ends with Level 3 credit in your hands. |
+| Cadw sedd · Gweld holl ddyddiadau DPP | Book a seat · See all CPD dates |
+| Beth fyddwch chi'n ei wneud · Sut y caiff ei asesu · Beth sydd angen i chi ddod ag ef · Ffioedd · I ble mae'n arwain | What you will do · How it is assessed · What you need to bring · Fees · Where it leads |
+| lliwio pen cyfan, lliwio aildyfiant, ac uwcholeuadau ac isoleuadau ffoil gweu | full-head colouring, re-growth colouring, and woven foil highlights and lowlights |
+| y chwe phrawf diagnostig · y Côd Lliw Rhyngwladol · pedwar cam ar ddeg y gwasanaeth | the six diagnostic tests · the International Colour Code · the fourteen steps of the service |
+| Prawf croen wedi'i archebu a'i gofnodi cyn pob sesiwn cleient, yn ddieithriad. | A skin test booked and recorded before every client session, without exception. |
+| Credyd sy'n cario, nid tystysgrif mewn drôr. | Credit that carries, not a certificate in a drawer. |
+| Deg sedd, deg dydd Mercher, yn dechrau 13 Ionawr. | Ten seats, ten Wednesdays, starting 13 January. |
+| I salonau · Hyfforddi eich tîm · Cymryd prentis · Beth yw'r gost *(section nav)* | For salons · Train your team · Take on an apprentice · What it costs |
+| Hyfforddwch eich tîm heb gau'r llawr. | Train your team without closing the floor. |
+| Nid nad yw eich tîm yn fodlon dysgu. | It is not that your team won't learn. |
+| Un person, un diwrnod yr wythnos, yn ôl gydag uned reoledig. | One person, one day a week, back with a regulated unit. |
+| Mae'r rhan fwyaf o salonau ar gau ar ddydd Llun. Ni all rhai fod. | Most salons close on Mondays. Some cannot. |
+| Saith uned. 54 o ddyddiadau. Un rhestr brisiau gyhoeddedig. | Seven units. Fifty-four dates. One published price list. |
+| Yr un na all neb arall yn y rhanbarth ei gwerthu i chi | The one nobody else in the region can sell you |
+| Cyfro, yn onest | Cover, honestly |
+| Ni sy'n eu hyfforddi. Chi sy'n cadw'r gadair yn llawn. | We train them. You keep the chair full. |
+| Beth mae'r academi yn ei wneud · Beth mae'r salon yn ei wneud | What the academy does · What the salon does |
+| Y cyflog. Byth y cwrs. | The wage. Never the course. |
+| Un tariff, wedi'i gyhoeddi, i bawb. | One tariff, published, for everyone. |
+| Pris sedd = £160.81 + £4.274 × oriau dysgu dan arweiniad, wedi'i dalgrynnu i'r £5 agosaf. | Seat price = £160.81 + £4.274 × guided learning hours, rounded to the nearest £5. |
+| O'i chymharu ar bris yn unig, mae'r gymhariaeth yn anghywir. | Compared on price alone, the comparison is wrong. |
+| Pob uned, a'r rhifyddeg y tu ôl iddi. | Every unit, and the arithmetic behind it. |
+| Number words in `cpd.py`: un, dau, tri, pedwar, pump, chwech, saith, wyth, naw, deg; before a noun pum / chwe | one … ten; five / six before a noun |
+
+### NEEDS A HUMAN
+
+1. **`CLAUDE.md` and the footer.** The handoff `CLAUDE.md` was edited from the PM's own copy, so it
+   still says "the footer legal line therefore carries all of it, on every page" and omits Mark's
+   11 September instruction ("Keep it as it is currently for the address"). I took the new
+   build-discipline section and kept Mark's paragraph. The footer is unchanged. If the PM and Mark
+   have since agreed otherwise, say so and it is a one-word change per page.
+2. **"Banks toward a Level 3 Diploma."** Not what the scheme of learning says (quoted above). I
+   published the scheme's wording. If the PM has an awarding-body source for Level 3 Diploma
+   credit, supply it and the four sentences (two per language, Colour page and train-your-team)
+   change back.
+3. **Monday or Wednesday?** The scheme of learning timetables UNHB374 as "one academy Monday per
+   week"; `_data/cpd-2027.json` puts it on Strand B, Wednesdays, and the calendar and the page
+   follow the data. One of the two documents is out of date.
+4. **Header nav.** Section nav delivered; a header dropdown needs CSS/JS and a mobile design call.
+5. **Unsourced range in the PM's copy.** "Attendance courses locally run one day at around £175 to
+   £335" is published as written on `/for-salons/what-it-costs/` — the same category of claim as
+   the 75.4% the PM cut, on a page a funder may read. Cite or cut; not my call.
+6. **New payment terms** in the PM's copy — "One invoice, payable in instalments across the course"
+   — published as written. Nothing else on the site says salons can pay CPD by instalment; confirm.
+7. **No entry requirement** on the Colour page. If the unit has one, the PM supplies it.
+8. **The enquiry form** — the dead end the copy describes. Next brief, per the PM.
