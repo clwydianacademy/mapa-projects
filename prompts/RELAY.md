@@ -1471,3 +1471,114 @@ The headline strings, with the English they render:
    — published as written. Nothing else on the site says salons can pay CPD by instalment; confirm.
 7. **No entry requirement** on the Colour page. If the unit has one, the PM supplies it.
 8. **The enquiry form** — the dead end the copy describes. Next brief, per the PM.
+
+---
+
+## BRIEF 08 — the enquiry form (the biggest remaining gap)
+
+**Why.** Every enquiry route on 49 pages is a `mailto:` link. On a phone that opens a mail app the
+visitor may never have configured, and it captures nothing. The salon section, the calendar and
+the course pages all funnel into that. Until this works, the site is a shop with no till.
+
+**Decisions taken by Mark, 12 September 2026 — build to these, do not re-open them.**
+Serverless function in this repo posting to **Resend**. Email to the academy **and** an immediate
+auto-reply to the enquirer. **Enquiry only — no payments, no deposits, no Stripe.**
+
+**Build.**
+
+1. `api/enquiry.js` — a Vercel serverless function. Validates, sends two emails via Resend, returns
+   a redirect to a thank-you page. Plain `<form method="post" action="/api/enquiry">` so it works
+   with JavaScript disabled; progressive enhancement on top, never instead.
+2. **Fields, and no more than these:** name · email · phone (optional) · salon or business
+   (optional) · which enquiry (course, CPD dates, team training, apprentice, funding, other) ·
+   message · preferred language for the reply (Cymraeg / English). Collect nothing you do not need
+   — every extra field is a GDPR liability and a conversion cost.
+3. **The auto-reply is the point.** It is what stops a salon owner enquiring elsewhere while they
+   wait. Say what they asked about, what happens next, and by when. English and Welsh versions,
+   chosen by the field above; the Welsh goes under `WELSH FOR REVIEW`.
+4. **Spam:** a honeypot field plus a simple time-to-submit check, and a rate limit in the function.
+   **No CAPTCHA** — it is an accessibility tax on a form this small.
+5. **Privacy:** a short plain-English line under the submit button saying what happens to the data
+   and linking to `/privacy/`, and check `/privacy/` actually covers enquiry data. If it does not,
+   flag it — that is PM copy, not yours.
+6. **Replace every `mailto:` enquiry route** across both languages with the form. Keep a plain
+   email address visible on `/contact/` for people who prefer it; that is a choice, not a fallback.
+7. **`scripts/check_forms.py`** — no `mailto:` remains in any CTA position; every form has a
+   labelled input for each field, a honeypot, and an `action` that exists. Watch it fail first.
+
+**The API key is Mark's and never yours.** `RESEND_API_KEY` is set by Mark in the Vercel dashboard.
+Read it from `process.env`. **It must never appear in the repo, in a commit, in an example file, or
+in the report** — and do not create the Resend account or paste the key yourself. Put the exact
+steps Mark must take under NEEDS A HUMAN: create the account, verify the sending domain, generate
+the key, add the env var. Note that domain verification needs DNS records on
+`clwydianacademy.co.uk` and that sending from an unverified domain will land in spam.
+
+**Acceptance.** All guards plus the new one · rebuild a no-op · the form posts and validates with
+JS disabled · no key anywhere in the repo · Welsh flagged · `main` untouched.
+
+---
+
+## BRIEF 09 — defend the £4,500
+
+**Why.** A private academy twelve miles away sells a VTCT Level 2 for £1,575. Ours is £4,500 and
+the page states the number without defending it. That is the single most exposed commercial claim
+on the site.
+
+**Supplied:** `../website rebuild handoff/fee-defence-copy.md`. Add the block to
+`/courses/nvq-level-2-hairdressing/`, `/courses/nvq-level-2-barbering/` and
+`/courses/nvq-level-3-hairdressing/`, and the short paragraph to `/funding/`. Welsh mirrors
+drafted and flagged.
+
+**Hold to this:** no competitor is named. The comparison is between shapes of qualification, never
+between businesses. The two industry figures in the copy — 60% of high-street salons unprofitable,
+60.5% of the trade self-employed — are already published on this site; reuse the existing wording
+and any citation that sits with it rather than restating them fresh.
+
+**Acceptance.** Guards clean · rebuild a no-op · no new funding or approval claims · Welsh flagged.
+
+Then stop. Brief 10 is the cornerstone content and the PM is writing it.
+
+---
+
+## COWORK VERIFICATION 06
+
+**PM, 12 September 2026.** Guards re-run by me: `check_claims` clean over 50 files · `check_dates`
+40 CourseInstances, 0 problems · `check_links` 1,959 references, 0 broken · `check_locale` 49 pages
+· rebuild a no-op · `main` still `40723c9`. The Colour page's `CourseInstance` resolves to itself,
+the salon section exists as four pages in both languages, and 75.4% is gone. Verified.
+
+**All three of your flags are upheld. Two of them are my errors.**
+
+**1. "Banks toward a Level 3 Diploma" was wrong and you were right to publish the scheme's
+wording.** UNHB374 is a Level 3 *unit* that sits as an optional unit inside the *Level 2* diplomas.
+I wrote it as though the credit accumulated toward a Level 3 qualification. It does not. Worse, the
+true version is the better sales argument and I talked past it: a learner can finish a Level 2
+diploma **holding Level 3 units** — in the HBN barbering diploma two Level 3 units are mandatory,
+so every graduate holds them, and a learner taking the Level 3 optional units finishes Level 2 with
+four Level 3 units and 354 Level 3 guided hours behind them. That is a claim no college in the
+region makes and it appears nowhere in the current marketing. I have corrected the supplied copy
+and put an explicit do-not-claim warning in it. **Check the same phrasing has not leaked onto the
+CPD calendar page or `/courses/cpd-courses/` from my earlier drafts; if it has, correct it in
+Brief 09 and say so.**
+
+**2. Mondays versus Wednesdays — the scheme of learning is the stale document, not the site.**
+Those schemes were written in early September, when CPD was planned as a single Monday strand. Mark
+decided on **11 September** to run two strands, Mondays and Wednesdays, so that a salon can train
+more than one person without losing the same day twice. `_data/cpd-2027.json` carries that decision
+and the site is right to follow it. **Do not change the site.** The scheme of learning document
+needs its timetable updated to match — that is Mark's, it lives outside this repo, and I have
+recorded it. Leave it in your report as a NEEDS A HUMAN so it does not get lost.
+
+**3. The `CLAUDE.md` divergence was my process failure, and I have changed the process.** I edited
+my handoff copy rather than the repo's, so Mark's footer decision silently vanished from the
+version I was handing you. You caught it and kept his paragraph — exactly right, and thank you.
+**From now on the repo's `CLAUDE.md` is the master.** I have copied the repo version back over the
+handoff copy, so the two are identical as of now, and future amendments will be made to the repo
+file in the working tree for you to commit, never to a parallel copy.
+
+**4. Brief 07 sweeping into the REPORT 06 commit** is harmless — nobody's section was edited and the
+file order is right. Noted rather than fixed; rewriting history for a commit message is not worth it.
+
+**Where we are.** 36 commits, five guards, 49 pages, both languages, nothing pushed. Briefs 07, 08
+and 09 are written and waiting in this file. 08 is the enquiry form and it is the biggest remaining
+gap on the site — Mark has settled the three decisions it needed, and they are in the brief.
