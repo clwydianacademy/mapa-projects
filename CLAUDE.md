@@ -81,6 +81,16 @@ under `### NEEDS A HUMAN` rather than following the brief.
 - **The Welsh is machine-written and has never been reviewed by a native speaker.** Any new or
   changed Welsh string must be listed in the REPORT under `### WELSH FOR REVIEW`.
 
+## Build discipline
+- **Commit source, build, then commit output — in that order, as separate commits.**
+  `sitemap.xml` `lastmod` is derived from the last commit touching a page's source, so
+  committing source and output together stamps the output with the *previous* commit's date
+  and leaves every lastmod one commit stale. (Found by the coder in Brief 05, 11 Sep 2026.)
+- A guard is not a guard until you have watched it fail. When you add or extend one, run it
+  against output you know is broken, record what it said, and only then fix the thing.
+- A failure message must point at the right file. A wrong URL in generated JSON-LD is a
+  generator bug, not a data-file bug — say so.
+
 ## Safety
 - `git --no-optional-locks` for all git reads. A plain `git status` leaves an index lock that
   blocks commits.

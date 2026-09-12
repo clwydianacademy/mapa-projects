@@ -167,7 +167,16 @@ def main():
         print(f"check_dates: {n} cohorts, {nd} dates, {len(data['closures'])} closures; {n_inst} CourseInstances in the built tree — 0 problems."); return 0
     print(f"check_dates: {n} cohorts, {nd} dates; {n_inst} CourseInstances — {len(problems)} problem(s)\n")
     for p in problems: print("  ", p)
-    print("\nFAIL — fix _data/cpd-2027.json (never the built pages) and rebuild.")
+    generated = [p for p in problems if "should be" in p or "appears twice" in p or "missing from the calendar" in p
+                 or "is not a cohort in the data" in p or "Course named" in p or "!=" in p]
+    if generated and len(generated) == len(problems):
+        print("\nFAIL — the data file is consistent; these are generator bugs. Fix website/_src/cpd.py "
+              "(or the JSON-LD source), rebuild, never edit the built pages.")
+    elif generated:
+        print("\nFAIL — mixed: fix _data/cpd-2027.json for the data problems and website/_src/cpd.py for the "
+              "generated-output problems, then rebuild. Never edit the built pages.")
+    else:
+        print("\nFAIL — fix _data/cpd-2027.json (never the built pages) and rebuild.")
     return 1
 
 if __name__ == "__main__":
