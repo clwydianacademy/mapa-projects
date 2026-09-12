@@ -1184,3 +1184,89 @@ broke that in 2/4 and fixed it in 3b.
 ### NEEDS A HUMAN
 
 Nothing new. The UNHB374 page and the salon section wait on the PM's copy, as the brief says.
+
+---
+
+## COWORK VERIFICATION 05
+
+**PM, 12 September 2026.** Re-derived before reading REPORT 05.
+
+- All five guards re-run by me: `check_claims` clean over 42 files · `check_dates` 10 cohorts,
+  54 dates, 5 closures, **38 CourseInstances, 0 problems** · `check_links` 1,571 references,
+  0 broken · `check_locale` 41 pages, mirrors and navs and sitemap intact · rebuild is a no-op.
+  `main` still `40723c9`; 30 commits on `site-rebuild`; nothing pushed.
+- **The four leaked URLs are gone.** My own audit of every dated `CourseInstance` in the built
+  tree — 38 of them, both locales — finds no offer URL pointing at the wrong course.
+- **"The guard came first" — verified, not taken on trust.** I extracted the pre-fix build
+  output from `f9f89a8`, ran the *new* `check_dates.py` against it, and it failed with exit 1 on
+  exactly four entries: `uv21577-b2` and `unhb379-b2`, English and Welsh, and nothing else. That
+  is a guard that discriminates, not one that merely passes. Good work.
+- Diagnosis accepted: a single lookup outside the per-cohort loop, so a repeat inherited whatever
+  page the loop last set. One line, both locales, no data change.
+
+### Agreed — and written into `CLAUDE.md`
+
+Your sitemap ordering rule is right and it generalises, so it is now in the contract rather than
+in a report: **commit source, build, then commit output, as separate commits.** With `lastmod`
+derived from the last commit touching a page's source, a combined commit stamps the output with
+the previous commit's date and leaves every `lastmod` one behind. Two companions went in with
+it: a guard is not a guard until you have watched it fail, and a failure message must name the
+right file. Take the amended `CLAUDE.md` from the handoff folder.
+
+### One nit
+
+`check_dates.py` fails with *"fix `_data/cpd-2027.json` (never the built pages) and rebuild"*.
+For a date or price mismatch that is the right advice. For the URL class of failure it is not —
+the data file was correct and the generator was wrong, so that message would have sent someone
+editing the wrong file. Make the message depend on the failure kind. Not urgent; fold it into
+the next brief.
+
+### Where this stands
+
+Briefs 01–05 done and verified. The site now builds from source, every claim on it passes the
+content guard, the calendar comes out of one data file in two languages, and five guards stand
+between the repo and a regression. Two things are outstanding and neither is yours: **the push**
+(token scope, Mark's), and **copy from me** — the `UNHB374 Colour & Lightening` course page,
+which appears on the calendar with no page behind it, and the salon section. Hold here.
+
+---
+
+## BRIEF 06 — the Colour page and the salon section
+
+**Why.** Colour & Lightening is on the calendar with no page behind it, and it is the only Level 3
+unit we sell. `/for-salons/` carries the commercial argument for the whole academy in 359 words.
+Mark has decided salons are a co-equal front door; this is the brief that makes that true.
+
+**Supplied**, in `../website rebuild handoff/`: `colour-lightening-copy.md` and
+`salon-section-copy.md`. Both are PM-written. Follow them; where they leave a judgement to you it
+says so.
+
+**Order.** Commit 1: the Colour page, EN + CY. Commit 2: the salon section, EN + CY, and the nav
+change. Commit 3: rebuild, guards, report. Source then build then output, as separate commits —
+see the new build-discipline section in `CLAUDE.md`, which you should take from the handoff folder
+first along with the rest of this brief's inputs.
+
+**Two things to hold to.**
+
+1. **The `[VERIFY]` block in the Colour copy.** Those syllabus bullets are mine, not the awarding
+   body's. Cross-check them against the verbatim UNHB374 unit digest before publishing. If the
+   digest is not to hand, publish the page without that block and say so — a page that is short is
+   fine, a page that misstates a regulated unit is not.
+2. **Do not write new funding or approval claims.** Carry the wording that is already on the site.
+   The salon copy tells you where that matters.
+
+**Data, never retyped.** Every date, price, duration and level on both pages comes from
+`_data/cpd-2027.json` through the generator. The Colour page's own facts — Level 3, 158 GLH,
+10 Wednesdays, 13 Jan – 17 Mar, £835 — are in that file already.
+
+**The 75.4% figure** currently on `/for-salons/` is unsourced. Cut it, as the copy says. If you
+would rather keep it, it needs a real citation and that is a NEEDS A HUMAN item, not your call.
+
+**Acceptance.** All five guards pass · rebuild a no-op · nav parity in both languages ·
+`check_dates` sees the new Colour page and its `CourseInstance` resolves to it, not to the
+calendar fallback · every new or changed Welsh string under `WELSH FOR REVIEW` · `main` untouched.
+
+**Carry over from Verification 05:** make `check_dates.py`'s failure message depend on the failure
+kind — a wrong generated URL is a generator bug, not a data-file bug.
+
+**Then stop.** The enquiry form is the next real piece of work and the PM will brief it.
