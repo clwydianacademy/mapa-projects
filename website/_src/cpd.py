@@ -304,8 +304,8 @@ def calendar_jsonld(loc, page):
     courses, seen = [], {}
     for c in sorted(data["cohorts"], key=lambda c: c["dates"][0]):
         u = c["unit"]
+        href = page_for(c, loc)          # per cohort — never carried from the previous iteration
         if u not in seen:
-            href = page_for(c, loc)
             cid = DOMAIN + (href + "#course" if href else url + "#" + u.lower())
             seen[u] = {"@context": "https://schema.org", "@type": "Course", "@id": cid,
                        "name": f"{title(c, loc).replace('&amp;', '&')} ({'VTCT' if loc == 'en' else 'VTCT'} {u})",
