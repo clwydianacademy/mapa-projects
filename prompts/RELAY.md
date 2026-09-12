@@ -1054,3 +1054,79 @@ after 03 — `check_dates` 0, `check_claims` 0, clean rebuild, passed; after 04 
 and the build, passed. Under NEEDS A HUMAN: 4 items in REPORT 02, 6 in REPORT 03, 1 in
 REPORT 04 — 11 in total, none blocking. Still open from before the run: the push (token scope,
 Mark's) and Mark's footer decision, which is applied and recorded in CLAUDE.md.
+
+---
+
+## COWORK VERIFICATION 02–04
+
+**PM, 11 September 2026.** Re-derived independently before reading REPORT 02, 03 or 04.
+
+### Gates re-run by me, not taken on trust
+
+| Gate | Result |
+|---|---|
+| `check_claims.py` | 42 files scanned — **clean** |
+| `check_dates.py` | 10 cohorts, 54 dates, 5 closures — **0 problems** |
+| `check_links.py` | 1,571 internal references — **0 broken** |
+| `check_locale.py` | 41 pages — every EN page mirrored and back, navs match, sitemap complete |
+| build is a no-op | **yes** (the one "change" on my run was an untracked `__pycache__/` my own run created) |
+| `main` untouched | **yes**, still `40723c9`. 23 commits on `site-rebuild`, none pushed. |
+
+`_data/cpd-2027.json` is byte-identical to what I supplied — treated as read-only input, as asked.
+All 54 dates and all 10 prices appear on the built calendar page and match the dataset exactly;
+9 JSON-LD blocks parse; 10 `CourseInstance` entries.
+
+Two of my own checks raised false alarms before I caught them: dates are rendered grouped by
+month ("11, 18, 25 January · 1, 8, 15, 22 February") and prices as `&pound;`, so a naive
+substring search reports 26 missing dates and 10 missing prices. They are all present. Noting it
+because the same trap will catch the next person who audits this page.
+
+### Defect — four wrong URLs in the structured data, one root cause
+
+**The second run of a repeated cohort inherits the previous cohort's course URL.**
+
+| Page | Cohort | Start | `offers.url` says | Should say |
+|---|---|---|---|---|
+| `/courses/cpd-calendar/` | `unhb379-b2` | 2027-06-16 | `/courses/consultation-retail-cpd/` | `/courses/salon-business-course/` |
+| `/courses/cpd-calendar/` | `uv21577-b2` | 2027-07-28 | `/courses/consultation-retail-cpd/` | `/courses/skin-cancer-awareness/` |
+| `/cy/cyrsiau/calendr-dpp/` | `unhb379-b2` | 2027-06-16 | `/cy/cyrsiau/dpp-ymgynghori-a-manwerthu/` | `/cy/cyrsiau/cwrs-busnes-salon/` |
+| `/cy/cyrsiau/calendr-dpp/` | `uv21577-b2` | 2027-07-28 | `/cy/cyrsiau/dpp-ymgynghori-a-manwerthu/` | `/cy/cyrsiau/ymwybyddiaeth-canser-y-croen/` |
+
+Both locales, same two cohorts, and both sit after `unhb385-b` in the data — a page variable
+carried forward across iterations rather than being read per cohort. The individual course pages
+are clean, so it is the calendar generator only. Prices, dates, durations and levels on those
+same entries are all correct, which is why every gate passed: **nothing tested that a
+`CourseInstance` points at the course it describes.** That is the gap, more than the bug.
+
+### Accepted, not defects
+
+- `UNHB374` Course `url` points at `/courses/cpd-calendar/` rather than the `/courses/cpd-courses/`
+  hub my brief suggested. Yours is better — the calendar is the page that actually describes that
+  course. Keep it.
+- `__pycache__/` under `website/_src/` is untracked and ungitignored. Housekeeping, below.
+
+REPORT 02, 03 and 04 were accurate about what they changed. The run did what was asked.
+
+---
+
+## BRIEF 05 — the URL leak, and a guard that would have caught it
+
+Small and surgical. Do this before any new pages.
+
+1. **Fix the leak in the calendar generator.** Read the course page per cohort inside the loop
+   rather than carrying it between iterations. Both locales. Rebuild; the four URLs above must
+   resolve to the right course.
+2. **Close the gap in `check_dates.py`.** For every `Course` / `CourseInstance` in the built tree:
+   the instance's `startDate` must match a cohort in `_data/cpd-2027.json`; `offers.price` must
+   equal that cohort's price; and both the `Course.url` and the `offers.url` must be that
+   cohort's `page_en` on an English page and `page_cy` on a Welsh one — falling back to the
+   calendar page where the cohort has no course page (UNHB374). Exit 1 on any mismatch. Confirm
+   it **fails on the current output before you fix the generator**, then passes after. A guard
+   never seen to fail is not a guard.
+3. **`.gitignore`** — add `__pycache__/` and `*.pyc`, and remove the tracked-nothing directory
+   sitting under `website/_src/`.
+4. Re-run all five guards and the build. `REPORT 05`, short.
+
+**Not in this brief.** The `UNHB374 Colour & Lightening` course page still does not exist. It
+needs English copy and a Welsh draft from me, and it is the next thing I write — do not draft it
+yourself. Same for the salon section.
