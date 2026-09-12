@@ -35,10 +35,25 @@
     <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/ffioedd-a-chyllid/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://clwydianacademy.co.uk/funding/"/>
   </url>
-  <url><loc>https://clwydianacademy.co.uk/for-salons/</loc><lastmod>2026-09-11</lastmod><priority>0.6</priority>
+  <url><loc>https://clwydianacademy.co.uk/for-salons/</loc><lastmod>2026-09-12</lastmod><priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/for-salons/"/>
     <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/i-salonau/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://clwydianacademy.co.uk/for-salons/"/>
+  </url>
+  <url><loc>https://clwydianacademy.co.uk/for-salons/train-your-team/</loc><lastmod>2026-09-12</lastmod><priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/for-salons/train-your-team/"/>
+    <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/i-salonau/hyfforddi-eich-tim/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://clwydianacademy.co.uk/for-salons/train-your-team/"/>
+  </url>
+  <url><loc>https://clwydianacademy.co.uk/for-salons/take-an-apprentice/</loc><lastmod>2026-09-12</lastmod><priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/for-salons/take-an-apprentice/"/>
+    <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/i-salonau/cymryd-prentis/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://clwydianacademy.co.uk/for-salons/take-an-apprentice/"/>
+  </url>
+  <url><loc>https://clwydianacademy.co.uk/for-salons/what-it-costs/</loc><lastmod>2026-09-12</lastmod><priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/for-salons/what-it-costs/"/>
+    <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/i-salonau/y-gost/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://clwydianacademy.co.uk/for-salons/what-it-costs/"/>
   </url>
   <url><loc>https://clwydianacademy.co.uk/about/</loc><lastmod>2026-09-11</lastmod><priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/about/"/>
@@ -95,6 +110,11 @@
     <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/cyrsiau/ymwybyddiaeth-canser-y-croen/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://clwydianacademy.co.uk/courses/skin-cancer-awareness/"/>
   </url>
+  <url><loc>https://clwydianacademy.co.uk/courses/colour-and-lightening/</loc><lastmod>2026-09-12</lastmod><priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/courses/colour-and-lightening/"/>
+    <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/cyrsiau/cwrs-lliwio-a-goleuo/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://clwydianacademy.co.uk/courses/colour-and-lightening/"/>
+  </url>
   <url><loc>https://clwydianacademy.co.uk/apprenticeships/</loc><lastmod>2026-09-11</lastmod><priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/apprenticeships/"/>
     <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/prentisiaethau/"/>
@@ -135,10 +155,25 @@
     <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/ffioedd-a-chyllid/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://clwydianacademy.co.uk/funding/"/>
   </url>
-  <url><loc>https://clwydianacademy.co.uk/cy/i-salonau/</loc><lastmod>2026-09-11</lastmod><priority>0.6</priority>
+  <url><loc>https://clwydianacademy.co.uk/cy/i-salonau/</loc><lastmod>2026-09-12</lastmod><priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/for-salons/"/>
     <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/i-salonau/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://clwydianacademy.co.uk/for-salons/"/>
+  </url>
+  <url><loc>https://clwydianacademy.co.uk/cy/i-salonau/hyfforddi-eich-tim/</loc><lastmod>2026-09-12</lastmod><priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/for-salons/train-your-team/"/>
+    <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/i-salonau/hyfforddi-eich-tim/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://clwydianacademy.co.uk/for-salons/train-your-team/"/>
+  </url>
+  <url><loc>https://clwydianacademy.co.uk/cy/i-salonau/cymryd-prentis/</loc><lastmod>2026-09-12</lastmod><priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/for-salons/take-an-apprentice/"/>
+    <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/i-salonau/cymryd-prentis/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://clwydianacademy.co.uk/for-salons/take-an-apprentice/"/>
+  </url>
+  <url><loc>https://clwydianacademy.co.uk/cy/i-salonau/y-gost/</loc><lastmod>2026-09-12</lastmod><priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/for-salons/what-it-costs/"/>
+    <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/i-salonau/y-gost/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://clwydianacademy.co.uk/for-salons/what-it-costs/"/>
   </url>
   <url><loc>https://clwydianacademy.co.uk/cy/amdanom/</loc><lastmod>2026-09-11</lastmod><priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/about/"/>
@@ -194,6 +229,11 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/courses/skin-cancer-awareness/"/>
     <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/cyrsiau/ymwybyddiaeth-canser-y-croen/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://clwydianacademy.co.uk/courses/skin-cancer-awareness/"/>
+  </url>
+  <url><loc>https://clwydianacademy.co.uk/cy/cyrsiau/cwrs-lliwio-a-goleuo/</loc><lastmod>2026-09-12</lastmod><priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/courses/colour-and-lightening/"/>
+    <xhtml:link rel="alternate" hreflang="cy" href="https://clwydianacademy.co.uk/cy/cyrsiau/cwrs-lliwio-a-goleuo/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://clwydianacademy.co.uk/courses/colour-and-lightening/"/>
   </url>
   <url><loc>https://clwydianacademy.co.uk/cy/prentisiaethau/</loc><lastmod>2026-09-11</lastmod><priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://clwydianacademy.co.uk/apprenticeships/"/>
