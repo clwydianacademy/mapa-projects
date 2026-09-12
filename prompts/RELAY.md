@@ -1582,3 +1582,102 @@ file order is right. Noted rather than fixed; rewriting history for a commit mes
 **Where we are.** 36 commits, five guards, 49 pages, both languages, nothing pushed. Briefs 07, 08
 and 09 are written and waiting in this file. 08 is the enquiry form and it is the biggest remaining
 gap on the site — Mark has settled the three decisions it needed, and they are in the brief.
+
+
+---
+
+## REPORT 07
+
+**Coder, 12 September 2026, 10:54.** Brief 07 complete. All guards pass; rebuild a no-op; `main` still `40723c9`.
+
+| SHA | Step |
+|---|---|
+| `0a81ba3` | RELAY: VERIFICATION 06 + BRIEFs 07–09 as the PM wrote them (committed first; `CLAUDE.md` had no working-tree change — the handoff and repo copies were already identical) |
+| `0f1c61d` | 1/3 `check_locale.py` enforces one host — **seen failing first: 576 problems** on the apex output (every canonical, `og:url`, three hreflangs per page, every sitemap URL) |
+| `6670ef6` | 2/3 host → `www`; `/funding/` title; CPD hub H1 |
+| `be7d4fa` | 3/3 build output |
+
+### 1. Canonical host — `www`
+
+`curl` on 12 September: `https://clwydianacademy.co.uk/` → **301** → `https://www.clwydianacademy.co.uk/`,
+which returns 200. So the 301 the brief asks for already exists at Vercel and points apex → www;
+CLAUDE.md says the site is live at `www`; every inbound link the PM found uses `www`. Nothing in the
+repo argues for the apex — the July generator's apex `DOMAIN` was simply never revisited when the
+site moved to Vercel. `DOMAIN` is now `https://www.clwydianacademy.co.uk` in `build.py`,
+`extract.py` and `check_dates.py`; 178 apex URLs across the 44 JSON-LD source files (Course `@id`,
+`url`, `provider`, breadcrumb `item`) were rewritten; canonicals, hreflang, `og:url`, `og:image`,
+the Organization `@id`/`url`/`logo`, sitemap `<loc>` and `xhtml:link`, and `robots.txt` all follow
+`DOMAIN`. No apex string remains anywhere in source.
+
+`check_locale.py` now also checks: canonical present, self-referential and on the host; `og:url`
+equals the canonical; every hreflang href on the host; every sitemap `<loc>` and alternate on the
+host. Guard first, watched failing, then the fix.
+
+### 2. `/funding/` title
+
+"Hairdressing Course Fees & Funding in North Wales | Clwydian Academy" (72) →
+**"Course Fees & Funding in North Wales | Clwydian Academy"** (55). Ends on a complete clause,
+keeps "North Wales". Welsh title was 56 and untouched.
+
+**Every other title over 60, reported not rewritten** (rendered, entities decoded, 27 of 49 pages):
+
+| chars | page | title |
+|---|---|---|
+| 65 | `/` | Clwydian Academy | Hairdressing Training in St Asaph, North Wales |
+| 73 | `/for-salons/` | For Salons — Train Your Team Without Closing the Floor | Clwydian Academy |
+| 81 | `/for-salons/take-an-apprentice/` | Take On an Apprentice — We Train Them, You Keep the Chair Full | Clwydian Academy |
+| 66 | `/for-salons/what-it-costs/` | What It Costs — One Published Tariff for Salons | Clwydian Academy |
+| 77 | `/for-salons/train-your-team/` | CPD for Your Salon Team — Seven VTCT Units, One Price List | Clwydian Academy |
+| 62 | `/apprenticeships/` | Hairdressing Apprenticeships in North Wales | Clwydian Academy |
+| 63 | `/courses/cpd-courses/` | CPD Courses — Barbering, Colour & Extensions | Clwydian Academy |
+| 61 | `/courses/nvq-level-2-hairdressing/` | Fast-Track NVQ Level 2 Hairdressing Course | Clwydian Academy |
+| 65 | `/courses/hair-relaxing-course/` | Hair Relaxing & Smoothing Course — VTCT UHB205 | Clwydian Academy |
+| 68 | `/courses/skin-cancer-awareness/` | Skin Cancer Awareness Course — VTCT Level 2 Award | Clwydian Academy |
+| 63 | `/courses/nvq-level-3-hairdressing/` | NVQ Level 3 Hairdressing Course, North Wales | Clwydian Academy |
+| 73 | `/courses/colour-and-lightening/` | Colour & Lightening Course — VTCT Level 3 Unit UNHB374 | Clwydian Academy |
+| 67 | `/courses/nvq-level-2-barbering/` | NVQ Level 2 Barbering Course, One Evening a Week | Clwydian Academy |
+| 67 | `/courses/consultation-retail-cpd/` | Consultation & Retail Masterclass — VTCT UNHB385 | Clwydian Academy |
+| 64 | `/courses/perming-course/` | Modern Perming & Texture Course — VTCT UHB204 | Clwydian Academy |
+| 67 | `/cy/cyrsiau/ymwybyddiaeth-canser-y-croen/` | Cwrs Ymwybyddiaeth Canser y Croen — VTCT Lefel 2 | Clwydian Academy |
+| 62 | `/cy/cyrsiau/trin-gwallt-nvq-lefel-3/` | Cwrs Trin Gwallt NVQ Lefel 3, Gogledd Cymru | Clwydian Academy |
+| 61 | `/cy/cyrsiau/cyrsiau-dpp/` | Cyrsiau DPP — Barbro, Lliwio ac Estyniadau | Clwydian Academy |
+| 72 | `/cy/cyrsiau/dpp-ymgynghori-a-manwerthu/` | Dosbarth Meistr Ymgynghori a Manwerthu — VTCT UNHB385 | Clwydian Academy |
+| 62 | `/cy/cyrsiau/cwrs-llacio-gwallt/` | Cwrs Llacio a Llyfnhau Gwallt — VTCT UHB205 | Clwydian Academy |
+| 67 | `/cy/cyrsiau/cwrs-lliwio-a-goleuo/` | Cwrs Lliwio a Goleuo — Uned VTCT Lefel 3 UNHB374 | Clwydian Academy |
+| 63 | `/cy/cyrsiau/barbro-nvq-lefel-2/` | Cwrs Barbro NVQ Lefel 2, Un Noson yr Wythnos | Clwydian Academy |
+| 62 | `/cy/cyrsiau/cwrs-busnes-salon/` | Dosbarth Meistr Busnes Salon — VTCT UNHB379 | Clwydian Academy |
+| 67 | `/cy/i-salonau/` | I Salonau — Hyfforddwch eich Tîm heb Gau'r Llawr | Clwydian Academy |
+| 76 | `/cy/i-salonau/hyfforddi-eich-tim/` | DPP i Dîm eich Salon — Saith Uned VTCT, Un Rhestr Brisiau | Clwydian Academy |
+| 89 | `/cy/i-salonau/cymryd-prentis/` | Cymryd Prentis — Ni Sy'n eu Hyfforddi, Chi Sy'n Cadw'r Gadair yn Llawn | Clwydian Academy |
+| 67 | `/cy/i-salonau/y-gost/` | Beth yw'r Gost — Un Tariff Cyhoeddedig i Salonau | Clwydian Academy |
+
+Eleven of these are mine from Brief 06 (the four salon pages and the Colour page, both languages)
+and I would shorten them on the PM's nod — e.g. "Take On an Apprentice | Clwydian Academy" (41),
+"Train Your Team — CPD for Salons | Clwydian Academy" (52), "Colour & Lightening — VTCT UNHB374 |
+Clwydian Academy" (54). The rest are August copy. Titles are copy; awaiting the PM.
+
+### 3. CPD hub H1
+
+`/courses/cpd-courses/`: **H1 "CPD courses for working hairdressers: barbering, colour, extensions"**,
+with "Add a new service line by Friday." immediately beneath as a bold heather-coloured lede-style
+subhead (no new CSS; inline weight and colour on the existing `.lede`). Welsh mirror likewise.
+
+### Not touched
+
+Google Business Profile, citations, NAP, articles — the PM's and Mark's, per the brief. No copy
+changed beyond items 2 and 3.
+
+### WELSH FOR REVIEW
+
+| Welsh | English |
+|---|---|
+| Cyrsiau DPP i drinwyr gwallt sy'n gweithio: barbro, lliwio, estyniadau *(H1)* | CPD courses for working hairdressers: barbering, colour, extensions |
+| Ychwanegwch wasanaeth newydd erbyn dydd Gwener. *(now the subhead; unchanged text)* | Add a new service line by Friday. |
+
+### NEEDS A HUMAN
+
+1. **The 301 is already in place** — apex → www, verified. Nothing for Mark to set. If anyone ever
+   flips it, the setting is Vercel → Project `mapa-projects` → Settings → Domains: the apex entry
+   must stay "Redirect to www.clwydianacademy.co.uk" (308/301), not "Serve".
+2. **27 titles over 60 characters** — the table above. The PM decides which to shorten; the eleven
+   from Brief 06 can be mine to cut on a one-line nod.
