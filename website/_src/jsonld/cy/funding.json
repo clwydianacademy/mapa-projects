@@ -7,13 +7,13 @@
         "@type": "ListItem",
         "position": 1,
         "name": "Hafan",
-        "item": "https://clwydianacademy.co.uk/cy/"
+        "item": "https://www.clwydianacademy.co.uk/cy/"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Ffioedd a Chyllid",
-        "item": "https://clwydianacademy.co.uk/cy/ffioedd-a-chyllid/"
+        "item": "https://www.clwydianacademy.co.uk/cy/ffioedd-a-chyllid/"
       }
     ]
   }

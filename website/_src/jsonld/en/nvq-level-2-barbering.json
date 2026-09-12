@@ -2,14 +2,14 @@
   {
     "@context": "https://schema.org",
     "@type": "Course",
-    "@id": "https://clwydianacademy.co.uk/courses/nvq-level-2-barbering/#course",
+    "@id": "https://www.clwydianacademy.co.uk/courses/nvq-level-2-barbering/#course",
     "name": "NVQ Level 2 Diploma in Barbering — Twilight",
     "inLanguage": "en",
     "description": "32-week twilight barbering course in St Asaph: one evening a week (Tuesdays 5pm–9pm) plus timetabled distance learning, leading to a VTCT NVQ Level 2 barbering qualification.",
     "provider": {
-      "@id": "https://clwydianacademy.co.uk/#organization"
+      "@id": "https://www.clwydianacademy.co.uk/#organization"
     },
-    "url": "https://clwydianacademy.co.uk/courses/nvq-level-2-barbering/",
+    "url": "https://www.clwydianacademy.co.uk/courses/nvq-level-2-barbering/",
     "coursePrerequisites": "Open to adults aged 19+. No prior experience required; qualified hairdressers can cross-map existing units.",
     "hasCourseInstance": {
       "@type": "CourseInstance",
@@ -51,19 +51,19 @@
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://clwydianacademy.co.uk/"
+        "item": "https://www.clwydianacademy.co.uk/"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Courses",
-        "item": "https://clwydianacademy.co.uk/courses/"
+        "item": "https://www.clwydianacademy.co.uk/courses/"
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": "NVQ Level 2 Barbering",
-        "item": "https://clwydianacademy.co.uk/courses/nvq-level-2-barbering/"
+        "item": "https://www.clwydianacademy.co.uk/courses/nvq-level-2-barbering/"
       }
     ]
   }

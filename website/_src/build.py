@@ -20,7 +20,7 @@ import cpd   # everything rendered from _data/cpd-2027.json
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 OUT = os.path.join(REPO, "clwydian-academy 2")
-DOMAIN = "https://clwydianacademy.co.uk"
+DOMAIN = "https://www.clwydianacademy.co.uk"   # canonical host; the apex 301s here at Vercel
 LOCALES = ("en", "cy")
 
 # Organization — one block, both languages: the live homepage block of 11 Sep 2026 plus the

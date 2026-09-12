@@ -2,14 +2,14 @@
   {
     "@context": "https://schema.org",
     "@type": "Course",
-    "@id": "https://clwydianacademy.co.uk/cy/cyrsiau/barbro-nvq-lefel-2/#course",
+    "@id": "https://www.clwydianacademy.co.uk/cy/cyrsiau/barbro-nvq-lefel-2/#course",
     "name": "Diploma NVQ Lefel 2 mewn Barbro — Gyda'r Hwyr",
     "inLanguage": "cy",
     "description": "Cwrs barbro gyda'r hwyr 32 wythnos yn Llanelwy: un noson yr wythnos (nos Fawrth 5pm–9pm) ynghyd â dysgu o bell wedi'i amserlennu, yn arwain at gymhwyster barbro VTCT NVQ Lefel 2.",
     "provider": {
-      "@id": "https://clwydianacademy.co.uk/#organization"
+      "@id": "https://www.clwydianacademy.co.uk/#organization"
     },
-    "url": "https://clwydianacademy.co.uk/cy/cyrsiau/barbro-nvq-lefel-2/",
+    "url": "https://www.clwydianacademy.co.uk/cy/cyrsiau/barbro-nvq-lefel-2/",
     "coursePrerequisites": "Ar agor i oedolion 19+. Nid oes angen profiad blaenorol; gall trinwyr gwallt cymwysedig groesfapio unedau presennol.",
     "hasCourseInstance": {
       "@type": "CourseInstance",
@@ -51,19 +51,19 @@
         "@type": "ListItem",
         "position": 1,
         "name": "Hafan",
-        "item": "https://clwydianacademy.co.uk/cy/"
+        "item": "https://www.clwydianacademy.co.uk/cy/"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Cyrsiau",
-        "item": "https://clwydianacademy.co.uk/cy/cyrsiau/"
+        "item": "https://www.clwydianacademy.co.uk/cy/cyrsiau/"
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": "Barbro NVQ Lefel 2",
-        "item": "https://clwydianacademy.co.uk/cy/cyrsiau/barbro-nvq-lefel-2/"
+        "item": "https://www.clwydianacademy.co.uk/cy/cyrsiau/barbro-nvq-lefel-2/"
       }
     ]
   }

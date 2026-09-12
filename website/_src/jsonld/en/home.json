@@ -3,10 +3,10 @@
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Clwydian Academy",
-    "url": "https://clwydianacademy.co.uk/",
+    "url": "https://www.clwydianacademy.co.uk/",
     "inLanguage": "en",
     "publisher": {
-      "@id": "https://clwydianacademy.co.uk/#organization"
+      "@id": "https://www.clwydianacademy.co.uk/#organization"
     }
   }
 ]

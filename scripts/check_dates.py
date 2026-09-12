@@ -77,7 +77,7 @@ def check(data):
             problems.append(f"strand {sid}: {per_strand_days.get(sid, 0)} dates across cohorts but teaching_days={s['teaching_days']}")
     return problems
 
-DOMAIN = "https://clwydianacademy.co.uk"
+DOMAIN = "https://www.clwydianacademy.co.uk"   # canonical host; the apex 301s here at Vercel
 REGISTRY = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "website", "_src", "pages.json")
 UNIT_RE = re.compile(r"\b(U[A-Z]{1,3}\d{3,5})\b")
 

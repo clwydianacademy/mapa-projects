@@ -20,7 +20,7 @@ import json, os, re, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 SITE = os.path.join(REPO, "clwydian-academy 2")
-DOMAIN = "https://clwydianacademy.co.uk"
+DOMAIN = "https://www.clwydianacademy.co.uk"   # canonical host; the apex 301s here at Vercel
 
 # Registry order = the order the deployed sitemap listed the English pages, then 404.
 ORDER = ["/", "/courses/", "/courses/nvq-level-2-hairdressing/", "/courses/nvq-level-3-hairdressing/",

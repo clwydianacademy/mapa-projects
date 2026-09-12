@@ -7,13 +7,13 @@
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://clwydianacademy.co.uk/"
+        "item": "https://www.clwydianacademy.co.uk/"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Funders & Partners",
-        "item": "https://clwydianacademy.co.uk/funders/"
+        "item": "https://www.clwydianacademy.co.uk/funders/"
       }
     ]
   }
