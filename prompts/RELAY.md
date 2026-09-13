@@ -1981,3 +1981,105 @@ list rather than adding one.
 clean · rebuild a no-op · titles match the table exactly · Welsh flagged · `main` untouched.
 
 **Then stop.** Brief 11 is the three cornerstone pages and I am writing them now.
+
+
+---
+
+## REPORT 10
+
+**Coder, 13 September 2026, 18:50.** Brief 10 complete. `check_claims` is **red on the address rule and nothing
+else**; the other five guards are clean; rebuild a no-op; `main` still `40723c9`. Stopping here.
+
+| SHA | Step |
+|---|---|
+| `f1025c1` | RELAY: VERIFICATION 07–09 + BRIEF 10 as the PM wrote them (committed first) |
+| `439b552` | 1/3 the address rule in `check_claims.py` — red by design |
+| `7f02968` | 2/3 `/privacy/` section replaced, "If you enrol" added, EN + CY; 15 EN titles; 12 CY titles |
+| `0a29f4b` | 3/3 build output |
+
+### Gates
+
+```
+check_claims.py   -> 52 pages scanned — 51 finding(s), all [BANNED] '@charlotteeleanorgroup.uk'; 0 other findings
+                     (167 raw occurrences of the address across the 51 pages — footer, /contact/ intro and
+                     address block, /privacy/, and the Organization JSON-LD email — the linter reports one finding
+                     per page because it de-duplicates identical hits on a page)
+check_dates.py    -> 10 cohorts, 54 dates, 5 closures; 40 CourseInstances — 0 problems.
+check_links.py    -> 2043 internal references — 0 broken.
+check_locale.py   -> 51 pages — mirrors, navs, sitemap, one host.
+check_forms.py    -> 51 pages, 2 forms — clean.
+rebuild           -> git status --porcelain empty
+```
+
+### 1. `/privacy/`
+
+"When you contact us" replaced with the supplied copy in both languages: the form posts to our own
+server, nothing passes through the visitor's email app; what we receive (the seven fields, three of
+them optional); what we do with it and what we do not; Vercel and Resend named as processors acting
+on our instructions, no analytics or tracking; the lawful basis in plain words; retention; the
+honeypot and timing check described as collecting nothing. A new "If you enrol" section says learner
+records are kept for as long as VTCT and the funding body require and that the period will be stated
+once confirmed. "Your rights" unchanged. "Last updated" → September 2026.
+
+**The bracketed default was used**: the page now says enquiries are held for **24 months** from last
+contact. Mark had not answered by the time of the build. NEEDS A HUMAN 1.
+
+The page's lede ("this website stores nothing about you, and we only ever hold what you choose to
+send us") and "What this website collects — nothing, by itself" were left as they are: the static
+site still sets nothing, and the function holds nothing beyond the two emails it sends. If the PM
+wants the lede to mention the form, that is a copy change.
+
+### 2. Titles
+
+The fifteen English titles match the table exactly (checked against the rendered `<title>`, entities
+decoded; 0 mismatches). No title on the site is now over 60 characters.
+
+### 3. The address guard
+
+`@charlotteeleanorgroup\.uk` is a banned string with the reason "the academy's contact address must
+be its own — the independence case is why this site was rebuilt". Nothing was fixed: there is no
+academy mailbox yet. The rule stays red on purpose.
+
+### WELSH FOR REVIEW
+
+**Twelve trimmed Welsh titles** (searched words first, brand kept where it fits; none machine-
+translated from the English table):
+
+| page | new title (chars) | was |
+|---|---|---|
+| `/cy/cyrsiau/trin-gwallt-nvq-lefel-3/` | Trin Gwallt NVQ Lefel 3, Llanelwy | Clwydian Academy (52) | Cwrs Trin Gwallt NVQ Lefel 3, Gogledd Cymru | Clwydian Academy |
+| `/cy/cyrsiau/cyrsiau-dpp/` | Cyrsiau DPP i Drinwyr Gwallt | Clwydian Academy (47) | Cyrsiau DPP — Barbro, Lliwio ac Estyniadau | Clwydian Academy |
+| `/cy/i-salonau/` | Hyfforddi Staff Salon, Gogledd Cymru | Clwydian Academy (55) | I Salonau — Hyfforddwch eich Tîm heb Gau'r Llawr | Clwydian Academy |
+| `/cy/i-salonau/hyfforddi-eich-tim/` | Hyfforddiant DPP i Dîm eich Salon | Clwydian Academy (52) | DPP i Dîm eich Salon — {{cpd:UnitsWord}} Uned VTCT, Un Rhestr Brisiau | Clwydian Academy |
+| `/cy/i-salonau/cymryd-prentis/` | Cymryd Prentis Trin Gwallt | Clwydian Academy (45) | Cymryd Prentis — Ni Sy'n eu Hyfforddi, Chi Sy'n Cadw'r Gadair yn Llawn | Clwydian Academy |
+| `/cy/i-salonau/y-gost/` | Prisiau Hyfforddiant i Salonau | Clwydian Academy (49) | Beth yw'r Gost — Un Tariff Cyhoeddedig i Salonau | Clwydian Academy |
+| `/cy/cyrsiau/barbro-nvq-lefel-2/` | Barbro NVQ Lefel 2, Llanelwy | Clwydian Academy (47) | Cwrs Barbro NVQ Lefel 2, Un Noson yr Wythnos | Clwydian Academy |
+| `/cy/cyrsiau/cwrs-llacio-gwallt/` | Llacio a Llyfnhau — VTCT UHB205 | Clwydian Academy (50) | Cwrs Llacio a Llyfnhau Gwallt — VTCT UHB205 | Clwydian Academy |
+| `/cy/cyrsiau/dpp-ymgynghori-a-manwerthu/` | Ymgynghori a Manwerthu — VTCT UNHB385 | Clwydian Academy (56) | Dosbarth Meistr Ymgynghori a Manwerthu — VTCT UNHB385 | Clwydian Academy |
+| `/cy/cyrsiau/cwrs-busnes-salon/` | Busnes Salon — VTCT UNHB379 | Clwydian Academy (46) | Dosbarth Meistr Busnes Salon — VTCT UNHB379 | Clwydian Academy |
+| `/cy/cyrsiau/ymwybyddiaeth-canser-y-croen/` | Cwrs Ymwybyddiaeth Canser y Croen | Clwydian Academy (52) | Cwrs Ymwybyddiaeth Canser y Croen — VTCT Lefel 2 | Clwydian Academy |
+| `/cy/cyrsiau/cwrs-lliwio-a-goleuo/` | Lliwio a Goleuo — VTCT UNHB374 | Clwydian Academy (49) | Cwrs Lliwio a Goleuo — Uned VTCT Lefel {{cpd:level:UNHB374}} UNHB374 | Clwydian Academy |
+
+**The privacy section**, drafted from the PM's English (every string is new): "Pan anfonwch y
+ffurflen ymholiad, mae'n mynd i'n gweinydd ein hunain ac rydym yn e-bostio'n ôl atoch ar unwaith i
+gadarnhau ei bod gennym. Nid oes dim yn mynd drwy eich ap e-bost eich hun." · Beth rydym yn ei
+dderbyn · Beth rydym yn ei wneud ag ef · Pwy arall sy'n ei drin · Pam y cawn wneud hyn · Am ba hyd
+rydym yn ei gadw ("rydym yn cadw ymholiadau am 24 mis o'ch cyswllt diwethaf â ni, yna'n eu dileu") ·
+Amddiffyn rhag sbam · Os cofrestrwch · "Diweddarwyd ddiwethaf: Medi 2026". Complete text:
+`git --no-optional-locks show 7f02968 -- website/_src/pages/cy/privacy.html`.
+
+### NEEDS A HUMAN
+
+1. **[MARK] Retention period.** The privacy page publishes the bracketed default — 24 months from
+   last contact — because no answer had arrived. Confirm it or give the real figure; it is one
+   number in two files.
+2. **[MARK] Learner-record retention.** "If you enrol" promises to state the period once VTCT
+   confirms it. Someone has to ask VTCT.
+3. **[MARK] ICO registration.** From the PM's copy: check the ICO self-assessment and register as a
+   controller if required — a CIC holding enquiry and learner data very likely is.
+4. **The address guard is red until the mailbox exists.** 167 occurrences on 51 pages, all at
+   `@charlotteeleanorgroup.uk`. When Mark's DNS work creates the academy address: swap it in
+   `build.py` (`ORG.email` and the footer/contact chrome), the two contact fragments, the two privacy
+   fragments, and `api/enquiry.js` (`TO_DEFAULT`), rebuild, and the guard goes green. Until then every
+   run of `check_claims.py` will report exactly this, and nothing else should ever hide behind it —
+   the report line "0 other findings" is the thing to read.
