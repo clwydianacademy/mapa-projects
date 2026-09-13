@@ -1681,3 +1681,119 @@ changed beyond items 2 and 3.
    must stay "Redirect to www.clwydianacademy.co.uk" (308/301), not "Serve".
 2. **27 titles over 60 characters** — the table above. The PM decides which to shorten; the eleven
    from Brief 06 can be mine to cut on a one-line nod.
+
+
+---
+
+## REPORT 08
+
+**Coder, 13 September 2026, 18:38.** Brief 08 complete. Six guards pass; rebuild a no-op; `main` still `40723c9`.
+**No key anywhere** — grep for `re_…` tokens and `RESEND_API_KEY=` across the repo finds nothing;
+the function reads `process.env` only.
+
+| SHA | Step |
+|---|---|
+| `af9fc51` / `09a3100` | 1/4 `scripts/check_forms.py` — committed with a SyntaxError untested (my error, fixed in 1b), then **seen failing: 12 problems** — 10 mailto CTAs, two forms with no method/action |
+| `f1466d1` | 2/4 function, forms, thank-you pages, CTA replacements |
+| `c7830d7` / `88046a1` | 3/4 build output; then `main.js` re-applied — the output revert I run before a source commit also reverted this hand-edited asset (it lives in the deployed folder but is not a build product). Two commits, honestly labelled |
+
+### What was built
+
+- **`clwydian-academy 2/api/enquiry.js`** (Vercel Node function; the project's root directory
+  is `clwydian-academy 2`, so `api/` sits inside it). Accepts `application/x-www-form-urlencoded`
+  (plain form), a pre-parsed body, or JSON. Validates: name ≥ 2, email by pattern, enquiry type in
+  the fixed list, message ≥ 2, reply language en/cy; phone and salon optional; every field
+  length-capped. Sends **two** emails via Resend's REST API with `fetch` (no dependencies): the
+  academy notification with `reply_to` set to the enquirer, and the **auto-reply** in the
+  enquirer's language — what they asked about, what happens next, by when ("within two working
+  days"), their own message echoed. Then `303` to the thank-you page; with `Accept:
+  application/json` it answers JSON instead. Failure paths redirect back to the form with
+  `?error=` so the no-JS user lands on the form; the JS user gets an inline message.
+- **Spam:** honeypot (`website`, visually hidden, `aria-hidden`, `tabindex=-1`) → silent
+  success; time-to-submit under 3 s when the page's script stamped `ts` → silent success (no
+  stamp = no check, so a no-JS submit is never penalised); per-IP rate limit 5 / 10 min → 429 /
+  `?error=rate`. In-memory, per warm instance — best effort, as the brief accepts. No CAPTCHA.
+- **The form** (`/contact/#register`, both languages): `<form method="post"
+  action="/api/enquiry">` — works with JavaScript off. Exactly the brief's fields: name · email ·
+  phone (optional) · salon or business (optional) · which enquiry · message · reply language
+  (defaults to the page's language). Every control labelled. Privacy line under the button links to
+  `/privacy/`. `#form-error` (`role=alert`) and `#form-ok` (`role=status`) regions; a `<noscript>`
+  line explains a silent bounce-back. The plain email address stays in the intro and the address
+  block — a choice, not a fallback.
+- **`main.js`:** the mailto handler is gone. Progressive enhancement posts in the background and
+  shows the result inline; stamps `ts`; preselects the enquiry type from `?enquiry=`; surfaces
+  `?error=` after a no-JS round trip; falls back to a native submit on network failure.
+- **Thank-you pages** `/contact/thanks/` and `/cy/cysylltu/diolch/` (noindex, mirrored, in the
+  locale guard).
+- **Every mailto CTA replaced**, both languages: for-salons "Email us directly" → "Send an
+  enquiry" (`?enquiry=team`); skin-cancer "Team enquiries" (`?enquiry=team`); funders "Request the
+  plan" and "Contact the CEO" (`?enquiry=funder`). `check_forms.py` guards it.
+- **`check_forms.py`:** no `mailto:` in any `.btn`; every form POSTs to an action that exists
+  (`/api/<name>` → `api/<name>.js` present); every visible control has an id and a `<label for>`;
+  honeypot, stamp and the five fixed fields present.
+
+### Tested locally (no key in the environment)
+
+```
+GET                              405
+honeypot filled                  303 → /cy/cysylltu/diolch/   (silent)
+submitted < 3 s after stamp      303 → /cy/cysylltu/diolch/   (silent)
+invalid fields, plain form       303 → /cy/cysylltu/?error=name,email,enquiry,message#register
+invalid fields, JSON             400 {"ok":false,"error":"name,email,enquiry,message"}
+valid, no RESEND_API_KEY, form   303 → /cy/cysylltu/?error=config#register
+valid, no RESEND_API_KEY, JSON   500 {"ok":false,"error":"config"}
+6th post from one IP in 10 min   303 → ?error=rate
+```
+The Resend send itself is untested — it needs the key, which is Mark's. The built forms have 8
+labelled controls each and post to `/api/enquiry`.
+
+### WELSH FOR REVIEW
+
+Form labels: Enw · E-bost · Ffôn (dewisol) · Salon neu fusnes (dewisol) · Am beth mae eich
+ymholiad? · Dewiswch un… · Cwrs — NVQ Lefel 2 neu 3 · Dyddiadau DPP · Hyfforddiant tîm i'm salon ·
+Cymryd prentis · Cyllid · Ymholiad cyllidwr neu bartner · Rhywbeth arall · Atebwch fi yn · Eich
+neges · Anfon ymholiad · Gwefan (gadewch hwn yn wag) *(honeypot label, hidden)*.
+Privacy line: "Rydym yn defnyddio'r hyn a anfonwch i ateb yr ymholiad hwn ac i ddim arall. Caiff
+ei e-bostio atom ni ac atoch chi drwy ein gwasanaeth e-bost, a gallwch ofyn i ni ei ddileu unrhyw
+bryd." — *We use what you send to answer this enquiry and for nothing else. It is emailed to us and
+to you through our email service, and you can ask us to delete it at any time.*
+Inline success: "Diolch — mae eich ymholiad gennym. Mae cadarnhad ar ei ffordd i'ch mewnflwch, a
+bydd person yn ateb o fewn dau ddiwrnod gwaith." Noscript line; the four JS error messages
+(rate / config / send / fields) in `main.js`; contact intro "Yn well gennych e-bost? Mae … yn
+cyrraedd yr un person." CTA labels "Anfon ymholiad". Thank-you page: title, description, h1
+"Diolch — mae eich ymholiad gennym.", lede. **The auto-reply email in Welsh** (`api/enquiry.js`,
+`NEXT.cy`): subject "Mae eich ymholiad gennym — … — Clwydian Academy" and the body — *Hello …,
+thank you, we have your enquiry about …; a person reads it, not a pipeline; we reply within two
+working days by email from this address; if it is about a specific cohort or date we confirm the
+seat in that reply; what you told us; reply to this email if anything changes.* Also the Welsh
+enquiry-type labels in `ENQUIRY`.
+
+### NEEDS A HUMAN
+
+1. **Resend — Mark's steps, in order.** (a) Create the account at resend.com. (b) Domains → Add
+   `clwydianacademy.co.uk` → add the DNS records Resend shows (an SPF TXT, DKIM CNAME/TXT records,
+   optionally a DMARC TXT) at the registrar → wait for "Verified". **Sending from an unverified
+   domain lands in spam** and Resend's sandbox will only deliver to the account's own address.
+   (c) API Keys → Create → "Sending access" → copy it once. (d) Vercel → Project `mapa-projects` →
+   Settings → Environment Variables → `RESEND_API_KEY` = the key, Production (and Preview if the
+   branch should send). Optional: `ENQUIRY_TO` (defaults to markp@charlotteeleanorgroup.uk) and
+   `ENQUIRY_FROM` (defaults to `Clwydian Academy <enquiries@clwydianacademy.co.uk>` — the mailbox
+   need not exist, but the domain must be the verified one). Redeploy. Until (d), the form answers
+   "The form is not connected yet. Please email us directly."
+2. **`/privacy/` is now wrong.** It says the form "works through your own email app" and the site
+   "stores nothing about you". The function processes name, email, phone, business and message and
+   sends them through Resend (a US processor, with EU data-residency available on the account).
+   The note under the button says what happens, but the policy must too — PM copy, both languages.
+3. **"Within two working days"** is my number for the auto-reply and the thank-you page. Mark
+   should confirm he can keep it, or give me the real one — it is in four places.
+4. **A seventh enquiry type, "Funder or partner enquiry".** The brief listed six. The funders
+   page's two CTAs ("Request the plan", "Contact the CEO") needed a home that is not "Something
+   else", and the notification subject line carries the type so Mark sees it at a glance. Cut it
+   if unwanted — one option in two fragments and one entry in the function.
+5. **No-JS error feedback is thin.** A no-JS user whose submission fails is returned to the form at
+   `#register` with `?error=` in the URL and only the `<noscript>` line to explain. Rendering the
+   error server-side means the function would have to serve the page; not done.
+6. **Rate limit is per warm instance**, so it is a nuisance to a bot, not a wall. Adequate for a
+   form this size; noted so nobody thinks it is more.
+7. **Send failures are logged, not stored.** If Resend is down the enquirer sees "We could not send
+   your enquiry" and nothing is kept. A queue is beyond this brief.
