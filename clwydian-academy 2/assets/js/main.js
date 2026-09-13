@@ -45,35 +45,56 @@
     revealEls.forEach(function (el) { el.classList.add("is-in"); });
   }
 
-  // Register-interest form → opens the visitor's email client pre-filled.
-  // (Swap for a hosted form service any time — see README.md.)
+  // Enquiry form — progressive enhancement over a plain POST to /api/enquiry.
+  // Without JavaScript the browser posts the form and follows the redirect; with it we post in
+  // the background and show the result inline. Also stamps the time-to-submit check, preselects
+  // the enquiry type from ?enquiry=, and surfaces ?error= after a no-JS round trip.
   var form = document.getElementById("interest-form");
   if (form) {
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var v = function (n) {
-        var el = form.querySelector('[name="' + n + '"]');
-        return el ? el.value.trim() : "";
-      };
-      var cy = (document.documentElement.lang || "").indexOf("cy") === 0;
-      var subject = (cy ? "Cofrestru diddordeb — " : "Register interest — ") + (v("course") || "Clwydian Academy");
-      var body = [
-        (cy ? "Enw: " : "Name: ") + v("name"),
-        (cy ? "E-bost: " : "Email: ") + v("email"),
-        (cy ? "Ffôn: " : "Phone: ") + v("phone"),
-        (cy ? "Cwrs o ddiddordeb: " : "Course of interest: ") + v("course"),
-        (cy ? "Byw yng Nghymru: " : "Live in Wales: ") + v("wales"),
-        "",
-        (cy ? "Neges:" : "Message:"),
-        v("message"),
-      ].join("\n");
-      window.location.href =
-        "mailto:markp@charlotteeleanorgroup.uk?subject=" +
-        encodeURIComponent(subject) +
-        "&body=" +
-        encodeURIComponent(body);
-      var ok = document.getElementById("form-ok");
-      if (ok) ok.hidden = false;
-    });
+    var cy = (document.documentElement.lang || "").indexOf("cy") === 0;
+    var stamp = form.querySelector('[name="ts"]');
+    if (stamp) stamp.value = String(Date.now());
+    var params = new URLSearchParams(window.location.search);
+    var pre = params.get("enquiry");
+    var sel = form.querySelector('[name="enquiry"]');
+    if (pre && sel && sel.querySelector('option[value="' + pre + '"]')) sel.value = pre;
+    var errBox = document.getElementById("form-error");
+    var okBox = document.getElementById("form-ok");
+    var say = function (box, text) {
+      if (!box) return;
+      if (text) box.textContent = text;
+      box.hidden = false;
+      box.setAttribute("tabindex", "-1");
+      box.focus();
+    };
+    var messages = {
+      rate: cy ? "Gormod o ymholiadau o'r cyfeiriad hwn — rhowch gynnig arall mewn ychydig funudau." : "Too many enquiries from this address — please try again in a few minutes.",
+      config: cy ? "Nid yw'r ffurflen wedi'i chysylltu eto. E-bostiwch ni'n uniongyrchol." : "The form is not connected yet. Please email us directly.",
+      send: cy ? "Ni allem anfon eich ymholiad. Rhowch gynnig arall, neu e-bostiwch ni." : "We could not send your enquiry. Please try again, or email us.",
+      fields: cy ? "Gwiriwch y meysydd sydd wedi'u marcio a rhowch gynnig arall." : "Please check the highlighted fields and try again.",
+    };
+    if (params.get("error")) say(errBox, messages[params.get("error")] || messages.fields);
+    if (window.fetch && window.FormData) {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var btn = form.querySelector('button[type="submit"]');
+        if (btn) btn.disabled = true;
+        if (errBox) errBox.hidden = true;
+        fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } })
+          .then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
+          .then(function (r) {
+            if (r.body && r.body.ok) {
+              form.reset();
+              if (stamp) stamp.value = String(Date.now());
+              say(okBox);
+            } else {
+              var code = (r.body && r.body.error) || "fields";
+              say(errBox, messages[code] || messages.fields);
+            }
+          })
+          .catch(function () { form.submit(); })   // network failure: let the browser do it
+          .then(function () { if (btn) btn.disabled = false; });
+      });
+    }
   }
 })();
