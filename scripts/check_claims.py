@@ -22,6 +22,7 @@ BANNED = [
     (r"Charlotte\s+Eleanor\s+Academy",      "old entity name — renamed to Clwydian Academy CBC for funding separation"),
     (r"parentOrganization",                 "no parent organisation: the CIC is independent by design"),
     (r"Charlotte\s+Eleanor\s+Group",        "no related-party framing: the academy is independent of Charlotte Eleanor Group Cyf"),
+    (r"@charlotteeleanorgroup\.uk",         "the academy's contact address must be its own — the independence case is why this site was rebuilt (red until the academy mailbox exists; PM NOTE 13 Sep 2026)"),
     (r"Charlotte\s+Parker",                 "wrong name — Charlotte Roberts, Director of the Academy"),
     (r"franchise\s+network",                "no graduate route into a CEG franchise network"),
     (r"sister\s+compan(y|ies)",             "related-party framing removed in August"),
