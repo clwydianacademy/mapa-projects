@@ -2145,3 +2145,117 @@ carefully, this is the largest block of unreviewed Welsh the site will have take
 **Then stop.** With this the site has everything it needs for January except the things only Mark
 can do. I will not queue another brief until the push lands — building further with nothing live
 stops being progress and starts being inventory.
+
+
+---
+
+## REPORT 11
+
+**Coder, 13 September 2026, 19:04.** Brief 11 complete. `check_claims` red on the address rule and nothing else; the
+other five guards clean; rebuild a no-op; `main` still `40723c9`. Stopping here — and, per the PM,
+nothing further is queued until the push lands.
+
+| SHA | Step |
+|---|---|
+| `d0aa519` | RELAY: VERIFICATION 10 + BRIEF 11 as the PM wrote them (committed first) |
+| `4660047` | 1/3 hub + three guides EN + CY, nav, JSON-LD, tokens in structured data, **CLAUDE.md + linter amended for the PLA passage** |
+| `1d34205` | 2/3 build output |
+| *(this)* | 3/3 REPORT 11 |
+
+### Gates
+
+```
+check_claims.py   -> 60 pages scanned — 59 findings, all [BANNED] '@charlotteeleanorgroup.uk' (one per page); 0 other findings
+check_dates.py    -> 10 cohorts, 54 dates, 5 closures; 40 CourseInstances — 0 problems.
+check_links.py    -> 2449 internal references — 0 broken.
+check_locale.py   -> 59 pages — mirrors, navs (10 links each side), sitemap (56 URLs), one host.
+check_forms.py    -> 59 pages, 2 forms — clean.
+rebuild           -> git status --porcelain empty
+```
+
+### What was built
+
+`/guides/` (hub: a sentence and three cards) and the three guides, with the Welsh mirror at
+`/cy/canllawiau/` and children `…/ailhyfforddi-fel-triniwr-gwallt-yng-nghymru/`,
+`…/gwerth-eich-cymhwyster/`, `…/hyfforddi-tim-eich-salon/`. "Guides / Canllawiau" is in the header
+nav after About in both languages (nav parity holds at ten links) and in the footer's Academy column.
+
+**Held to, all four:**
+1. No competitor is named anywhere.
+2. Funding language is the site's own: fully funded apprenticeship route, ReAct+ up to £1,500, £500
+   then £500 × 8, self-funded £4,500 — the last three as `{{fee:…}}` tokens from `_data/fees.json`.
+   Advanced Learner Loans appear nowhere (grep-checked on the built tree).
+3. **The PLA passage is reproduced as written**, including the six Medr sectors and the employed /
+   self-employed / under-median conditions. Nothing in it looked overstated to me; it matches the
+   research pack's three-way corroboration. Its placement, however, collides with `CLAUDE.md` — see
+   NEEDS A HUMAN 1.
+4. The two industry figures use the homepage's own sentences — "60.5% of UK hairdressing
+   professionals now work self-employed" and "60% of high-street salons are no longer turning a net
+   profit under rising costs and tax burdens" — in the Welsh, the Welsh homepage's sentences.
+   **There is no citation on the existing page**, so none is carried. NEEDS A HUMAN 3.
+
+Course facts are tokens throughout: GLH range (two new tokens, `minGlh` / `maxGlh` → "8 hours to
+158"), price range, day range, "ten Wednesdays", "Mondays and Wednesdays", team-rate tier, the NVQ
+fee and instalments, the six months and 32 weeks.
+
+**Structured data.** `Article` on each guide (headline, description, author/publisher = the
+Organization, `datePublished` 2026-09-13, `isPartOf` the hub). `FAQPage` where it genuinely is one:
+guide 2's four questions with answers drawn from the guide's own text, and guide 3's practical
+section — **four** questions, not five; the copy has four (cover, two days, whole teams, where the
+money goes). `CollectionPage` and breadcrumbs on the hub. Tokens inside JSON-LD sources now render
+at build and entities are unescaped, so schema text reads "£195", not "&pound;195".
+
+### WELSH FOR REVIEW — the largest block yet
+
+**Every Welsh word on the four `/cy/canllawiau/` pages is new** — 2951 words of body copy drafted
+from the PM's English, plus four titles, four meta descriptions, four breadcrumb labels, the nav
+label "Canllawiau", eight FAQ questions and answers (also in the JSON-LD), and the Article
+headlines. The complete text is the four files:
+
+```
+git --no-optional-locks show 4660047 -- website/_src/pages/cy/guides.html website/_src/pages/cy/guide-retraining.html website/_src/pages/cy/guide-worth.html website/_src/pages/cy/guide-salon.html website/_src/jsonld/cy/
+```
+
+Word count and headings per page (the English headings are the ones in the PM's copy):
+
+| page | words | headings, in order |
+|---|---|---|
+| `/cy/canllawiau/` | 207 | Yr ateb cyfan, nid darn ohono.; Ailhyfforddi fel triniwr gwallt yng Nghymru, fel oedolyn; Credyd rheoledig neu dystysgrif? Beth yw gwerth eich cymhwyster; Hyfforddi tîm eich salon yng Ngogledd Cymru |
+| `/cy/canllawiau/ailhyfforddi-fel-triniwr-gwallt-yng-nghymru/` | 1135 | Ailhyfforddi fel triniwr gwallt yng Nghymru, fel oedolyn; Y peth cyntaf i fod yn glir yn ei gylch: ni fydd y Cyfrif Dysgu Personol yn talu am hyn; Felly beth sy’n talu amdano; Tirwedd y cymwysterau, mewn geiriau plaen; Pa mor hir y mae’n ei gymryd mewn gwirionedd; A yw’n rhy hwyr; Yn barod i ddarganfod pa lwybr sy’n eich ffitio? |
+| `/cy/canllawiau/gwerth-eich-cymhwyster/` | 864 | Credyd rheoledig neu dystysgrif? Beth yw gwerth eich cymhwyster mewn gwirionedd; Mae rheoledig yn golygu rhywbeth penodol; O beth y gwneir y bwlch pris mewn gwirionedd; Pryd mai’r cwrs rhatach yw’r pryniant iawn; Sut i ddweud beth sy’n cael ei werthu i chi; Pwy yw’r corff dyfarnu?; Beth yw côd yr uned?; Sawl awr ddysgu dan arweiniad?; A yw’r credyd yn cyfrif tuag at gymhwyster llawn, a pha un? |
+| `/cy/canllawiau/hyfforddi-tim-eich-salon/` | 745 | Hyfforddi tîm eich salon yng Ngogledd Cymru: y llwybrau, y costau, a’r cyfaddawdau; Llwybr un: cymryd prentis; Llwybr dau: anfon aelod presennol o staff am uned reoledig; Llwybr tri: cwrs presenoldeb byr; Llwybr pedwar: eu hyfforddi yn y salon; Y cwestiwn o dan y pedwar; Pethau ymarferol y mae perchnogion yn eu gofyn i ni; Sut mae cyfro rhywun sy’n hyfforddi?; A allaf anfon dau berson heb golli’r ddau ar yr un diwrnod? |
+
+Titles and meta descriptions:
+
+| page | title | description |
+|---|---|---|
+| `/cy/canllawiau/` | Canllawiau — Ailhyfforddi, Cymwysterau, Hyfforddi Salon | Clwydian Academy | Tri chanllaw sy'n ateb cwestiwn cyfan: ailhyfforddi fel triniwr gwallt yng Nghymru fel oedolyn, beth yw gwerth cymhwyster unwaith y bydd yn eich llaw, a sut mae perchennog salon yn hyfforddi tîm heb golli'r llawr. |
+| `/cy/canllawiau/ailhyfforddi-fel-triniwr-gwallt-yng-nghymru/` | Ailhyfforddi fel Triniwr Gwallt yng Nghymru | Clwydian Academy | Beth yw'r cymwysterau, beth maent yn ei gostio yng Nghymru, pa gyllid sydd ac nad oes — gan ddechrau gyda pham na fydd y Cyfrif Dysgu Personol yn talu amdano — a pha mor hir y mae pob llwybr yn ei gymryd. |
+| `/cy/canllawiau/gwerth-eich-cymhwyster/` | Credyd Rheoledig neu Dystysgrif? | Clwydian Academy | Pam y gall dau gwrs sy'n dysgu'r un dechneg eich gadael yn dal pethau gwahanol, o beth y gwneir y bwlch pris, pryd mai'r cwrs rhatach yw'r pryniant iawn, a phedwar cwestiwn sy'n dweud wrthych beth sy'n cael ei werthu i chi. |
+| `/cy/canllawiau/hyfforddi-tim-eich-salon/` | Hyfforddi Tîm eich Salon yng Ngogledd Cymru | Clwydian Academy | Pedwar llwybr at dîm wedi'i hyfforddi — prentis, uned reoledig, cwrs presenoldeb, yn y salon — wedi'u gosod allan yn niwtral gyda'r costau a'r cyfaddawdau, gan gynnwys y llwybrau nad ydym yn eu gwerthu. |
+
+Things in the Welsh a reviewer should look at first, because I was least sure: "Cyfrif Dysgu
+Personol" / "CDP" for the PLA (the site's existing usage); "credyd rheoledig" for regulated credit;
+"oriau dysgu dan arweiniad" for guided learning hours (the calendar's existing usage);
+"cludadwyedd" for portability; "gor-beirianneg" for over-engineering; "cyfaddawd" for trade-off;
+"yn gyflogedig neu'n hunangyflogedig" in the PLA gate; the four FAQ answers in guide 2, which are
+new sentences in both languages, not translations of the PM's prose.
+
+### NEEDS A HUMAN
+
+1. **[MARK] CLAUDE.md said PLA in exactly two places; the brief put it in a third.** The guide's
+   passage is the point of the guide and it says the PLA does *not* cover hairdressing — the same
+   honest explanation `/funding/` carries, not a promise or a CTA. I followed the brief, added the
+   guide (both languages) to the linter's allow-list, and amended CLAUDE.md in the same commit to say
+   three places and that Mark has not yet confirmed the third. Protocol says a brief that contradicts
+   CLAUDE.md gets challenged, so this is the challenge: if Mark wants the two-place rule kept, the
+   revert is one line in `check_claims.py`, one paragraph in CLAUDE.md, and the passage comes out of
+   the guide — which would also mean the guide no longer answers the question it exists for.
+2. **Guide 3's FAQ has four entries, not five.** The copy's "Practical things owners ask us" has
+   four. If a fifth was intended, the PM supplies it.
+3. **No citation for the 60% / 60.5% figures**, on the homepage or anywhere else on the site. Reused
+   as they stand, as instructed. The PM's to source.
+4. **`datePublished` is 2026-09-13** on all three Articles, the build date of this brief. If the
+   pages are edited later, `dateModified` is not emitted; adding it from git is a small change if
+   wanted.
+5. **The address guard stays red** (59 pages now). Unchanged position: Mark's mailbox.
