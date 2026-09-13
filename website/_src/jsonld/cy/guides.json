@@ -1,0 +1,32 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": "https://www.clwydianacademy.co.uk/cy/canllawiau/#guides",
+    "name": "Canllawiau",
+    "url": "https://www.clwydianacademy.co.uk/cy/canllawiau/",
+    "inLanguage": "cy",
+    "isPartOf": {
+      "@type": "WebSite",
+      "url": "https://www.clwydianacademy.co.uk/"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Hafan",
+        "item": "https://www.clwydianacademy.co.uk/cy/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Canllawiau",
+        "item": "https://www.clwydianacademy.co.uk/cy/canllawiau/"
+      }
+    ]
+  }
+]

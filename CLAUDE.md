@@ -31,9 +31,12 @@ under `### NEEDS A HUMAN` rather than following the brief.
 
 ## Funding language
 - The **Personal Learning Account (PLA) is not a promise the academy can make.** PLA may appear
-  in exactly two places and nowhere else: the honest explanation on `/funding/`, and the
-  advocacy card on `/funders/` ("fair funding for this trade"). No PLA CTAs, no
-  "Check PLA funding" buttons, no PLA in any meta description or JSON-LD.
+  in exactly three places and nowhere else: the honest explanation on `/funding/`, the
+  advocacy card on `/funders/` ("fair funding for this trade"), and the "it will not pay for
+  this" passage on `/guides/retraining-as-a-hairdresser-in-wales/` (Brief 11, 13 Sep 2026 —
+  the coder added this third place on the PM's brief; Mark has not yet confirmed it). All three
+  say the PLA does not cover hairdressing. No PLA CTAs, no "Check PLA funding" buttons, no PLA
+  in any meta description or JSON-LD.
 - Permitted funding language: fully funded apprenticeship route (Welsh framework), ReAct+
   support up to £1,500, instalments (£500 + £500 × 8), self-funded £4,500.
 

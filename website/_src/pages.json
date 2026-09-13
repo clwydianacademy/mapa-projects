@@ -205,6 +205,74 @@
     }
   },
   {
+    "key": "guides",
+    "nav": "/guides/",
+    "noindex": false,
+    "priority": "0.7",
+    "legal": "plain",
+    "en": {
+      "path": "/guides/",
+      "title": "Guides — Retraining, Qualifications, Salon Training | Clwydian Academy",
+      "desc": "Three guides that answer a whole question: retraining as a hairdresser in Wales as an adult, what a qualification is worth once you hold it, and how a salon owner trains a team without losing the floor."
+    },
+    "cy": {
+      "path": "/cy/canllawiau/",
+      "title": "Canllawiau — Ailhyfforddi, Cymwysterau, Hyfforddi Salon | Clwydian Academy",
+      "desc": "Tri chanllaw sy'n ateb cwestiwn cyfan: ailhyfforddi fel triniwr gwallt yng Nghymru fel oedolyn, beth yw gwerth cymhwyster unwaith y bydd yn eich llaw, a sut mae perchennog salon yn hyfforddi tîm heb golli'r llawr."
+    }
+  },
+  {
+    "key": "guide-retraining",
+    "nav": "/guides/",
+    "noindex": false,
+    "priority": "0.7",
+    "legal": "plain",
+    "en": {
+      "path": "/guides/retraining-as-a-hairdresser-in-wales/",
+      "title": "Retraining as a Hairdresser in Wales, as an Adult | Clwydian Academy",
+      "desc": "What the qualifications are, what they cost in Wales, what funding does and does not exist — starting with why the Personal Learning Account will not pay for it — and how long each route takes."
+    },
+    "cy": {
+      "path": "/cy/canllawiau/ailhyfforddi-fel-triniwr-gwallt-yng-nghymru/",
+      "title": "Ailhyfforddi fel Triniwr Gwallt yng Nghymru | Clwydian Academy",
+      "desc": "Beth yw'r cymwysterau, beth maent yn ei gostio yng Nghymru, pa gyllid sydd ac nad oes — gan ddechrau gyda pham na fydd y Cyfrif Dysgu Personol yn talu amdano — a pha mor hir y mae pob llwybr yn ei gymryd."
+    }
+  },
+  {
+    "key": "guide-worth",
+    "nav": "/guides/",
+    "noindex": false,
+    "priority": "0.7",
+    "legal": "plain",
+    "en": {
+      "path": "/guides/what-your-qualification-is-worth/",
+      "title": "Regulated Credit or a Certificate? | Clwydian Academy",
+      "desc": "Why two courses teaching the same technique can leave you holding different things, what the price gap is made of, when the cheaper course is the right buy, and four questions that tell you which you are being sold."
+    },
+    "cy": {
+      "path": "/cy/canllawiau/gwerth-eich-cymhwyster/",
+      "title": "Credyd Rheoledig neu Dystysgrif? | Clwydian Academy",
+      "desc": "Pam y gall dau gwrs sy'n dysgu'r un dechneg eich gadael yn dal pethau gwahanol, o beth y gwneir y bwlch pris, pryd mai'r cwrs rhatach yw'r pryniant iawn, a phedwar cwestiwn sy'n dweud wrthych beth sy'n cael ei werthu i chi."
+    }
+  },
+  {
+    "key": "guide-salon",
+    "nav": "/guides/",
+    "noindex": false,
+    "priority": "0.7",
+    "legal": "plain",
+    "en": {
+      "path": "/guides/training-your-salon-team/",
+      "title": "Training Your Salon Team in North Wales | Clwydian Academy",
+      "desc": "Four routes to a trained team — apprentice, regulated unit, attendance course, in-house — set out neutrally with the costs and trade-offs, including the routes we do not sell."
+    },
+    "cy": {
+      "path": "/cy/canllawiau/hyfforddi-tim-eich-salon/",
+      "title": "Hyfforddi Tîm eich Salon yng Ngogledd Cymru | Clwydian Academy",
+      "desc": "Pedwar llwybr at dîm wedi'i hyfforddi — prentis, uned reoledig, cwrs presenoldeb, yn y salon — wedi'u gosod allan yn niwtral gyda'r costau a'r cyfaddawdau, gan gynnwys y llwybrau nad ydym yn eu gwerthu."
+    }
+  },
+  {
     "key": "funders",
     "nav": "/funders/",
     "noindex": false,

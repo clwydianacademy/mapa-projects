@@ -384,6 +384,8 @@ def token(name, loc, data):
     if key == "minPrice": return out(_pound(min(c["price"] for c in data["cohorts"])))
     if key == "maxPrice": return out(_pound(max(c["price"] for c in data["cohorts"])))
     if key == "minDays": return out(number_word(min(c["days"] for c in data["cohorts"]), loc))
+    if key == "minGlh": return out(min(c["glh"] for c in data["cohorts"]))
+    if key == "maxGlh": return out(max(c["glh"] for c in data["cohorts"]))
     if key == "maxDays": return out(number_word(max(c["days"] for c in data["cohorts"]), loc))
     if key == "termEnd":
         dd = _d(data["term"]["last_day"]); return out(f"{MONTHS[loc][dd.month - 1]} {dd.year}")

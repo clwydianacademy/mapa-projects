@@ -13,6 +13,7 @@ Output goes to `clwydian-academy 2` — the Vercel root directory. Nothing is wr
 GitHub Pages (no CNAME, no .nojekyll); that hosting is dead.
 """
 import datetime, json, os, subprocess, sys
+import html as html_mod
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import cpd   # everything rendered from _data/cpd-2027.json
@@ -58,6 +59,7 @@ NAV = [
     {"en": ("/funding/", "Fees &amp; Funding"),    "cy": ("/cy/ffioedd-a-chyllid/", "Ffioedd a Chyllid")},
     {"en": ("/for-salons/", "For Salons"),         "cy": ("/cy/i-salonau/", "I Salonau")},
     {"en": ("/about/", "About"),                   "cy": ("/cy/amdanom/", "Amdanom")},
+    {"en": ("/guides/", "Guides"),                 "cy": ("/cy/canllawiau/", "Canllawiau")},
     {"en": ("/funders/", "Funders"),               "cy": ("/cy/cyllidwyr/", "Cyllidwyr")},
     {"en": ("/contact/", "Contact"),               "cy": ("/cy/cysylltu/", "Cysylltu")},
 ]
@@ -85,6 +87,7 @@ CHROME = {
                  ("/apprenticeships/", "Apprenticeships"),
                  ("/for-salons/", "For Salons"),
                  ("/funders/", "Funders &amp; Partners"),
+                 ("/guides/", "Guides"),
                  ("/contact/", "Contact")],
         visit_label="Visit &amp; Contact",
         address=("St Asaph", "Denbighshire, North Wales"),
@@ -114,6 +117,7 @@ CHROME = {
                  ("/cy/prentisiaethau/", "Prentisiaethau"),
                  ("/cy/i-salonau/", "I Salonau"),
                  ("/cy/cyllidwyr/", "Cyllidwyr a Phartneriaid"),
+                 ("/cy/canllawiau/", "Canllawiau"),
                  ("/cy/cysylltu/", "Cysylltu")],
         visit_label="Ymweld a Chysylltu",
         address=("Llanelwy (St Asaph)", "Sir Ddinbych, Gogledd Cymru"),
@@ -312,7 +316,10 @@ def build():
                 jsonld = cpd.calendar_jsonld(loc, page)
             else:
                 body = read("pages", loc, page["key"] + ".html")
-                jsonld = json.loads(read("jsonld", loc, page["key"] + ".json"))
+                raw_ld = read("jsonld", loc, page["key"] + ".json")
+                if "{{" in raw_ld:                             # tokens in structured data render as plain text, not entities
+                    raw_ld = html_mod.unescape(cpd.render(raw_ld, loc))
+                jsonld = json.loads(raw_ld)
             if "<!-- cpd-dates -->" in body:
                 body = body.replace("<!-- cpd-dates -->", cpd.date_rows(loc, page))
                 jsonld = cpd.enrich(jsonld, loc, page)
