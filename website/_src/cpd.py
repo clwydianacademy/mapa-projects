@@ -411,12 +411,36 @@ def token(name, loc, data):
     raise KeyError(f"cpd token {name!r} is not defined")
 
 TOKEN_RE = re.compile(r"\{\{cpd:([A-Za-z0-9:_-]+)\}\}")
+FEE_RE = re.compile(r"\{\{fee:([A-Za-z0-9_-]+)\}\}")
+FEES_PATH = os.path.join(REPO, "_data", "fees.json")
+
+def fee_token(name, loc):
+    """{{fee:...}} — the NVQ figures from _data/fees.json (fee, deposit, instalment, instalments,
+    months, seats, barberingWeeks; -Word variants spell the number; a capital initial capitalises)."""
+    with open(FEES_PATH, encoding="utf-8") as f:
+        fees = json.load(f)
+    cap = name[:1].isupper(); key = name[0].lower() + name[1:]
+    word = key.endswith("Word"); base = key[:-4] if word else key
+    field = {"nvq": "nvq", "fee": "nvq", "deposit": "deposit", "instalment": "instalment", "instalments": "instalments",
+             "months": "months", "seats": "seats", "barberingWeeks": "barbering_weeks"}.get(base)
+    if field is None:
+        raise KeyError(f"fee token {name!r} is not defined")
+    v = fees[field]
+    if word:
+        out = number_word(v, loc)
+    elif field in ("nvq", "deposit", "instalment"):
+        out = _pound(v)
+    else:
+        out = str(v)
+    return (out[:1].upper() + out[1:]) if cap else out
 
 def render(text, loc):
-    if "{{cpd:" not in text:
-        return text
-    data = load()
-    return TOKEN_RE.sub(lambda m: token(m.group(1), loc, data), text)
+    if "{{cpd:" in text:
+        data = load()
+        text = TOKEN_RE.sub(lambda m: token(m.group(1), loc, data), text)
+    if "{{fee:" in text:
+        text = FEE_RE.sub(lambda m: fee_token(m.group(1), loc), text)
+    return text
 
 def calendar_list(loc, data):
     """Every cohort in date order as meta rows: date range -> unit, title, level, days, price."""
