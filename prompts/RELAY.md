@@ -2083,3 +2083,65 @@ Amddiffyn rhag sbam · Os cofrestrwch · "Diweddarwyd ddiwethaf: Medi 2026". Com
    fragments, and `api/enquiry.js` (`TO_DEFAULT`), rebuild, and the guard goes green. Until then every
    run of `check_claims.py` will report exactly this, and nothing else should ever hide behind it —
    the report line "0 other findings" is the thing to read.
+
+---
+
+## COWORK VERIFICATION 10
+
+**PM, 13 September 2026.** Re-run by me. `check_claims` red on the address rule and **nothing else**
+— 51 findings, one reason, exactly as designed. The other five guards clean: dates 40 instances 0
+problems · links 2,043 references 0 broken · locale 51 pages one host · forms 51 pages 2 forms.
+Rebuild a no-op. 55 commits, `main` untouched, tree clean. No title over 60 characters anywhere,
+English or Welsh.
+
+**Your count is right and mine was wrong.** 167 occurrences, not 57. I counted `mailto:` hrefs and
+missed the JSON-LD `email` field and the repeated footer instances. Recorded, because the number
+goes in front of Mark and it should be the true one.
+
+Using the bracketed 24-month default and flagging it was the correct call — a privacy notice with a
+blank in it is worse than one carrying a stated default that Mark can change in a sentence.
+
+---
+
+## BRIEF 11 — the three cornerstone guides
+
+**Why.** These are the pages that answer a whole question rather than a slice of one: the pages
+someone links to, sends to a friend, or finds two years from now. The site currently has nothing of
+the kind. They also do commercial work no other page does — the first tells an adult the truth
+about funding before they waste an application, the second makes the tariff and the £4,500
+defensible on their own terms, and the third gives a salon owner a neutral comparison of four
+routes including the ones we do not sell.
+
+**Supplied:** `../website rebuild handoff/cornerstone-copy.md`. Three guides plus a short hub, at
+`/guides/` with a Welsh mirror at `/cy/canllawiau/`. Nav entry in both languages.
+
+**Four things to hold to.**
+
+1. **No competitor is named anywhere in any of the three.** Comparisons are between shapes of
+   training — apprenticeship, regulated unit, attendance course, in-house — never between
+   businesses.
+2. **No funding claim beyond what the site already says.** Permitted: the fully funded
+   apprenticeship route, ReAct+ up to £1,500, instalments of £500 then £500 × 8, self-funded £4,500.
+   **Do not mention Advanced Learner Loans — they are England-only**, and putting an English funding
+   product on a Welsh academy's site is precisely the class of error Brief 02 existed to remove.
+3. **The PLA passage in Guide 1 is the most load-bearing text on the site.** It names Medr's six
+   priority sectors and the employment and earnings conditions. Reproduce it as written. If you
+   think any part of it overstates, stop and flag rather than softening it yourself.
+4. **The two industry figures** — three in five self-employed, most high-street salons unprofitable
+   — are already published on this site. Reuse the existing wording and carry any citation that
+   sits with it. If there is no citation on the existing page, say so in the report; that is mine to
+   fix, not yours to invent.
+
+**Also in this brief:** `Article` or `FAQPage` structured data where it genuinely fits — Guide 2's
+"how to tell which you are being sold" is four real questions and answers, and Guide 3's practical
+section is five. Do not force schema onto prose that is not actually a Q&A.
+
+**Acceptance.** `check_claims` still red on the address rule and nothing else · other five guards
+clean · rebuild a no-op · `/guides/` and `/cy/canllawiau/` in nav in both languages, parity intact ·
+every new Welsh string under `WELSH FOR REVIEW` — and there will be a lot of it, so list it
+carefully, this is the largest block of unreviewed Welsh the site will have taken on in one go ·
+`main` untouched.
+
+**Then stop.** With this the site has everything it needs for January except the things only Mark
+can do. I will not queue another brief until the push lands — building further with nothing live
+stops being progress and starts being inventory.
