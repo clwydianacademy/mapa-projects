@@ -15,54 +15,59 @@
   <div class="wrap split" style="align-items:start">
     <div class="reveal">
       <h2 style="font-size:clamp(1.7rem,3vw,2.4rem)">Cofrestrwch eich diddordeb</h2>
-      <p class="mt-1" style="color:var(--muted)">Caiff lleoedd y garfan sefydlu, cyrsiau DPP a phartneriaethau salon i gyd eu dyrannu yn nhrefn cofrestru.</p>
-      <form id="interest-form" class="form-grid mt-2">
+      <p class="mt-1" style="color:var(--muted)">Caiff lleoedd y garfan sefydlu, cyrsiau DPP a phartneriaethau salon i gyd eu dyrannu yn nhrefn cofrestru. Yn well gennych e-bost? Mae <a href="mailto:markp@charlotteeleanorgroup.uk">markp@charlotteeleanorgroup.uk</a> yn cyrraedd yr un person.</p>
+      <form id="interest-form" class="form-grid mt-2" method="post" action="/api/enquiry">
         <div class="field">
           <label for="f-name">Enw</label>
-          <input id="f-name" name="name" type="text" autocomplete="name" required>
+          <input id="f-name" name="name" type="text" autocomplete="name" required minlength="2" maxlength="120">
         </div>
         <div class="field">
           <label for="f-email">E-bost</label>
-          <input id="f-email" name="email" type="email" autocomplete="email" required>
+          <input id="f-email" name="email" type="email" autocomplete="email" required maxlength="200">
         </div>
         <div class="field">
           <label for="f-phone">Ff&ocirc;n <small>(dewisol)</small></label>
-          <input id="f-phone" name="phone" type="tel" autocomplete="tel">
+          <input id="f-phone" name="phone" type="tel" autocomplete="tel" maxlength="40">
         </div>
         <div class="field">
-          <label for="f-course">Mae gen i ddiddordeb mewn</label>
-          <select id="f-course" name="course" required>
+          <label for="f-org">Salon neu fusnes <small>(dewisol)</small></label>
+          <input id="f-org" name="org" type="text" autocomplete="organization" maxlength="120">
+        </div>
+        <div class="field">
+          <label for="f-enquiry">Am beth mae eich ymholiad?</label>
+          <select id="f-enquiry" name="enquiry" required>
             <option value="">Dewiswch un&hellip;</option>
-            <option>Trin Gwallt NVQ Lefel 2 (carlam)</option>
-            <option>Barbro NVQ Lefel 2 (gyda&rsquo;r hwyr, un noson yr wythnos)</option>
-            <option>Trin Gwallt NVQ Lefel 3 (carlam)</option>
-            <option>DPP — Estyniadau Gwallt (UHB206)</option>
-            <option>DPP — Permio a Gwead (UHB204)</option>
-            <option>DPP — Llacio a Llyfnhau (UHB205)</option>
-            <option>DPP — Ymgynghori a Manwerthu (UNHB385)</option>
-            <option>DPP — Busnes Salon (UNHB379)</option>
-            <option>DPP — Ymwybyddiaeth Canser y Croen</option>
-            <option>Hyfforddiant prentisiaid i&rsquo;m salon</option>
-            <option>Cwestiwn cyllid &mdash; ReAct+, prentisiaethau, rhandaliadau</option>
-            <option>Ymholiad partneriaeth neu gyllido</option>
+            <option value="course">Cwrs &mdash; NVQ Lefel 2 neu 3</option>
+            <option value="cpd">Dyddiadau DPP</option>
+            <option value="team">Hyfforddiant t&icirc;m i&rsquo;m salon</option>
+            <option value="apprentice">Cymryd prentis</option>
+            <option value="funding">Cyllid</option>
+            <option value="funder">Ymholiad cyllidwr neu bartner</option>
+            <option value="other">Rhywbeth arall</option>
           </select>
         </div>
         <div class="field">
-          <label for="f-wales">Ydych chi&rsquo;n byw yng Nghymru? <small>(yn ein helpu i wirio eich opsiynau cyllid)</small></label>
-          <select id="f-wales" name="wales">
-            <option>Ydw</option>
-            <option>Nac ydw</option>
-            <option>Gwell gen i beidio &acirc; dweud</option>
+          <label for="f-lang">Atebwch fi yn</label>
+          <select id="f-lang" name="lang">
+            <option value="en">English</option>
+            <option value="cy" selected>Cymraeg</option>
           </select>
         </div>
         <div class="field full">
-          <label for="f-message">Unrhyw beth yr hoffech i ni ei wybod? <small>(dewisol)</small></label>
-          <textarea id="f-message" name="message" rows="4"></textarea>
+          <label for="f-message">Eich neges</label>
+          <textarea id="f-message" name="message" rows="5" required minlength="2" maxlength="4000"></textarea>
         </div>
+        <div class="field" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+          <label for="f-website">Gwefan (gadewch hwn yn wag)</label>
+          <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <input type="hidden" name="ts" value="">
         <div class="field full">
-          <button class="btn btn-primary" type="submit">Anfon cofrestriad <span class="arr">&rarr;</span></button>
-          <p class="form-note mt-1">Mae anfon yn agor eich ap e-bost gyda phopeth wedi&rsquo;i lenwi ymlaen llaw — ni chaiff dim ei storio ar y wefan hon. Darllenwch ein <a href="/cy/preifatrwydd/">polisi preifatrwydd</a>.</p>
-          <p id="form-ok" class="form-note" hidden><strong>Bron yna —</strong> dylai eich ap e-bost fod ar agor nawr gyda&rsquo;ch cofrestriad yn barod i&rsquo;w anfon. Os na agorodd, e-bostiwch ni&rsquo;n uniongyrchol ar <a href="mailto:markp@charlotteeleanorgroup.uk">markp@charlotteeleanorgroup.uk</a>.</p>
+          <button class="btn btn-primary" type="submit">Anfon ymholiad <span class="arr">&rarr;</span></button>
+          <p class="form-note mt-1">Rydym yn defnyddio&rsquo;r hyn a anfonwch i ateb yr ymholiad hwn ac i ddim arall. Caiff ei e-bostio atom ni ac atoch chi drwy ein gwasanaeth e-bost, a gallwch ofyn i ni ei ddileu unrhyw bryd. Darllenwch ein <a href="/cy/preifatrwydd/">polisi preifatrwydd</a>.</p>
+          <p id="form-error" class="form-note" role="alert" hidden></p>
+          <p id="form-ok" class="form-note" role="status" hidden><strong>Diolch &mdash; mae eich ymholiad gennym.</strong> Mae cadarnhad ar ei ffordd i&rsquo;ch mewnflwch, a bydd person yn ateb o fewn dau ddiwrnod gwaith.</p>
+          <noscript><p class="form-note">Os cawsoch eich anfon yn &ocirc;l i&rsquo;r ffurflen hon ar &ocirc;l pwyso anfon, roedd angen ail olwg ar un o&rsquo;r meysydd &mdash; gwiriwch nhw a rhowch gynnig arall.</p></noscript>
         </div>
       </form>
     </div>

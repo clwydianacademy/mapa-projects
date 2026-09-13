@@ -239,6 +239,23 @@
     }
   },
   {
+    "key": "contact-thanks",
+    "nav": "/contact/",
+    "noindex": true,
+    "priority": null,
+    "legal": "plain",
+    "en": {
+      "path": "/contact/thanks/",
+      "title": "Thank you | Clwydian Academy",
+      "desc": "We have your enquiry. A person replies by email within two working days."
+    },
+    "cy": {
+      "path": "/cy/cysylltu/diolch/",
+      "title": "Diolch | Clwydian Academy",
+      "desc": "Mae eich ymholiad gennym. Bydd person yn ateb drwy e-bost o fewn dau ddiwrnod gwaith."
+    }
+  },
+  {
     "key": "privacy",
     "nav": null,
     "noindex": false,

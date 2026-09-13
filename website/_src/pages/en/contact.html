@@ -15,54 +15,59 @@
   <div class="wrap split" style="align-items:start">
     <div class="reveal">
       <h2 style="font-size:clamp(1.7rem,3vw,2.4rem)">Register your interest</h2>
-      <p class="mt-1" style="color:var(--muted)">Founding-cohort places, CPD courses and salon partnerships are all allocated in registration order.</p>
-      <form id="interest-form" class="form-grid mt-2">
+      <p class="mt-1" style="color:var(--muted)">Founding-cohort places, CPD seats and salon partnerships are all allocated in registration order. Prefer email? <a href="mailto:markp@charlotteeleanorgroup.uk">markp@charlotteeleanorgroup.uk</a> reaches the same person.</p>
+      <form id="interest-form" class="form-grid mt-2" method="post" action="/api/enquiry">
         <div class="field">
           <label for="f-name">Name</label>
-          <input id="f-name" name="name" type="text" autocomplete="name" required>
+          <input id="f-name" name="name" type="text" autocomplete="name" required minlength="2" maxlength="120">
         </div>
         <div class="field">
           <label for="f-email">Email</label>
-          <input id="f-email" name="email" type="email" autocomplete="email" required>
+          <input id="f-email" name="email" type="email" autocomplete="email" required maxlength="200">
         </div>
         <div class="field">
           <label for="f-phone">Phone <small>(optional)</small></label>
-          <input id="f-phone" name="phone" type="tel" autocomplete="tel">
+          <input id="f-phone" name="phone" type="tel" autocomplete="tel" maxlength="40">
         </div>
         <div class="field">
-          <label for="f-course">I&rsquo;m interested in</label>
-          <select id="f-course" name="course" required>
+          <label for="f-org">Salon or business <small>(optional)</small></label>
+          <input id="f-org" name="org" type="text" autocomplete="organization" maxlength="120">
+        </div>
+        <div class="field">
+          <label for="f-enquiry">What is your enquiry about?</label>
+          <select id="f-enquiry" name="enquiry" required>
             <option value="">Choose one&hellip;</option>
-            <option>NVQ Level 2 Hairdressing (fast-track)</option>
-            <option>NVQ Level 2 Barbering (twilight, one evening a week)</option>
-            <option>NVQ Level 3 Hairdressing (fast-track)</option>
-            <option>CPD — Hair Extensions (UHB206)</option>
-            <option>CPD — Perming &amp; Texture (UHB204)</option>
-            <option>CPD — Relaxing &amp; Smoothing (UHB205)</option>
-            <option>CPD — Consultation &amp; Retail (UNHB385)</option>
-            <option>CPD — Salon Business (UNHB379)</option>
-            <option>CPD — Skin Cancer Awareness</option>
-            <option>Apprentice training for my salon</option>
-            <option>Funding question &mdash; ReAct+, apprenticeships, instalments</option>
-            <option>Partnership or funding enquiry</option>
+            <option value="course">A course &mdash; NVQ Level 2 or 3</option>
+            <option value="cpd">CPD dates</option>
+            <option value="team">Team training for my salon</option>
+            <option value="apprentice">Taking on an apprentice</option>
+            <option value="funding">Funding</option>
+            <option value="funder">Funder or partner enquiry</option>
+            <option value="other">Something else</option>
           </select>
         </div>
         <div class="field">
-          <label for="f-wales">Do you live in Wales? <small>(helps us check your funding options)</small></label>
-          <select id="f-wales" name="wales">
-            <option>Yes</option>
-            <option>No</option>
-            <option>Prefer not to say</option>
+          <label for="f-lang">Reply to me in</label>
+          <select id="f-lang" name="lang">
+            <option value="en" selected>English</option>
+            <option value="cy">Cymraeg</option>
           </select>
         </div>
         <div class="field full">
-          <label for="f-message">Anything you&rsquo;d like us to know? <small>(optional)</small></label>
-          <textarea id="f-message" name="message" rows="4"></textarea>
+          <label for="f-message">Your message</label>
+          <textarea id="f-message" name="message" rows="5" required minlength="2" maxlength="4000"></textarea>
         </div>
+        <div class="field" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+          <label for="f-website">Website (leave this empty)</label>
+          <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <input type="hidden" name="ts" value="">
         <div class="field full">
-          <button class="btn btn-primary" type="submit">Send registration <span class="arr">&rarr;</span></button>
-          <p class="form-note mt-1">Sending opens your email app with everything pre-filled — nothing is stored on this website. Read our <a href="/privacy/">privacy policy</a>.</p>
-          <p id="form-ok" class="form-note" hidden><strong>Almost there —</strong> your email app should now be open with your registration ready to send. If it didn&rsquo;t open, email us directly at <a href="mailto:markp@charlotteeleanorgroup.uk">markp@charlotteeleanorgroup.uk</a>.</p>
+          <button class="btn btn-primary" type="submit">Send enquiry <span class="arr">&rarr;</span></button>
+          <p class="form-note mt-1">We use what you send to answer this enquiry and for nothing else. It is emailed to us and to you through our email service, and you can ask us to delete it at any time. Read our <a href="/privacy/">privacy policy</a>.</p>
+          <p id="form-error" class="form-note" role="alert" hidden></p>
+          <p id="form-ok" class="form-note" role="status" hidden><strong>Thank you &mdash; we have your enquiry.</strong> A confirmation is on its way to your inbox, and a person will reply within two working days.</p>
+          <noscript><p class="form-note">If you were sent back to this form after pressing send, one of the fields needed a second look &mdash; please check them and try again.</p></noscript>
         </div>
       </form>
     </div>
