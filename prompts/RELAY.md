@@ -1797,3 +1797,135 @@ enquiry-type labels in `ENQUIRY`.
    form this size; noted so nobody thinks it is more.
 7. **Send failures are logged, not stored.** If Resend is down the enquirer sees "We could not send
    your enquiry" and nothing is kept. A queue is beyond this brief.
+
+---
+
+## PM NOTE — the contact address contradicts the independence case
+
+**13 September 2026.** Found while checking state, not by any guard.
+
+Every page on the built site — 51 of them, in the footer, on `/contact/`, and inside the
+`EducationalOrganization` JSON-LD `email` field — gives the academy's contact address as
+**`markp@charlotteeleanorgroup.uk`**.
+
+This site was rebuilt in August specifically to hold Clwydian Academy CBC at arm's length from
+Charlotte Eleanor Group Cyf, because funding eligibility turns on that separation. We removed the
+parent organisation from the structured data, rewrote About as "Independent by design", and cut the
+franchise route. And the contact address on all 51 pages is at the commercial company's domain.
+
+**Not the coder's to fix yet** — it needs a mailbox that exists. Mark is creating DNS records on
+`clwydianacademy.co.uk` anyway for the Resend sending domain, so the mailbox rides along with that
+job. Once he confirms the address:
+
+- swap it everywhere it is generated (chrome, `ORG` JSON-LD, the enquiry function's `to:`)
+- extend `check_claims.py` to ban `@charlotteeleanorgroup.uk` anywhere in the built tree, for the
+  same reason it bans the old entity name
+
+Add the linter rule now — it will fail until the address changes, which is the correct state for it
+to be in. Note it in your next report rather than treating the failure as a defect.
+
+
+---
+
+## REPORT 09
+
+**Coder, 13 September 2026, 18:41.** Brief 09 complete. Six guards pass; rebuild a no-op; `main` still `40723c9`.
+Stopping here as instructed.
+
+| SHA | Step |
+|---|---|
+| `dda4216` | 1/3 the block on three NVQ pages + the `/funding/` paragraph, EN + CY; `_data/fees.json` |
+| `ef89e3b` | 2/3 build output |
+| *(this)* | 3/3 REPORT 09 |
+
+### What was added
+
+- **The block** ("What the fee buys — and what it is not") on `/courses/nvq-level-2-hairdressing/`
+  (anchor `#fee`), `/courses/nvq-level-2-barbering/` and `/courses/nvq-level-3-hairdressing/`,
+  as a two-column section: the three shapes of training on the left, "What is inside it" and
+  "And what it actually costs you" on the right, the closing line in bold. Welsh mirrors on the
+  three `/cy/cyrsiau/` pages.
+- **The short paragraph** under the £4,500 price flag on `/funding/` and `/cy/ffioedd-a-chyllid/`,
+  linking to the block.
+- **Nothing retyped.** `_data/fees.json` holds the NVQ figures (fee, deposit, instalment, count,
+  months, seats, barbering weeks) and `{{fee:…}}` tokens render them, with `-Word` variants for
+  the spelled-out forms ("eight months", "Ten seats"); the CPD range is `{{cpd:minPrice}}` to
+  `{{cpd:maxPrice}}`. The two industry figures are the homepage's own sentences — "60% of
+  high-street salons are no longer turning a net profit under rising costs and tax burdens" and
+  "60.5% of UK hairdressing professionals now work self-employed" — which carry no citation on the
+  site, so none was invented.
+- **No competitor named. No new funding or approval claim.**
+
+### Two adaptations of the supplied copy, page by page
+
+The block was written around the Level 2 hairdressing diploma and would have been false on the
+other two pages as written, so:
+
+1. **Barbering** — "Six months, not two years" would have reintroduced the claim Brief 02 removed
+   (and tripped the linter's barbering rule). It says **"32 weeks, one evening a week, because the
+   theory is timetabled as distance learning and every academy evening is hands-on"**, and the
+   add-on bullet lists the barbering page's own three units (wet shaving, the business of
+   barbering, retail) instead of perming/extensions/relaxing. "Cutting, colouring, styling" in the
+   occupational-standard sentence became "cutting, beard work, shaving".
+2. **Level 3** — "A full NVQ Level 2 Diploma … that is what £4,500 buys here" is not what that page
+   sells. It says **"A full NVQ Diploma is the qualification the trade means when it says
+   'qualified' — and Level 3 is the senior version of it: the advanced occupational standard …
+   That is what £4,500 buys here"**, and the Level 2 add-on bullet is omitted.
+
+Everything else is the PM's text verbatim, in both languages.
+
+### Verification 06's check
+
+"Level 3 Diploma" / "toward a Level 3" / "a third of the way" appear nowhere on the CPD calendar or
+the CPD hub in either language. The only "Level 3 Diploma" strings on the site are the Level 3
+hairdressing page's own qualification name — correct.
+
+### WELSH FOR REVIEW
+
+The whole block, three times (the two adapted paragraphs differ per page), and the funding
+paragraph. Headline strings:
+
+| Welsh | English |
+|---|---|
+| Beth mae'r ffi yn ei brynu — a beth nad yw | What the fee buys — and what it is not |
+| Caiff hyfforddiant yn y grefft hon ei werthu mewn tri siâp, ac fe'u prisir mewn tri byd gwahanol. | Training in this trade is sold in three shapes, and they are priced in three different worlds. |
+| tystysgrif presenoldeb undydd · uned reoledig unigol · Diploma NVQ Lefel 2 llawn | one-day attendance certificate · single regulated unit · full NVQ Level 2 Diploma |
+| Dyna mae £4,500 yn ei brynu yma. | That is what £4,500 buys here. |
+| Beth sydd y tu mewn iddo · A beth mae'n ei gostio i chi mewn gwirionedd | What is inside it · And what it actually costs you |
+| Chwe mis, nid dwy flynedd / 32 wythnos, un noson yr wythnos | Six months, not two years / 32 weeks, one evening a week |
+| Y Modiwl Gwydnwch Masnachol — prisio, cadw cleientiaid, archebu digidol, a darllen eich rhifau eich hun. | The Commercial Resilience Module — pricing, retention, digital booking, and reading your own numbers. |
+| Deg sedd. Nid dosbarth o ddeg ar hugain gydag un tiwtor a rota i'r basnau | Ten seats. Not a class of thirty with one tutor and a rota for the basins |
+| £4,500 yw'r pris hunan-ariannu, i'w dalu fel £500 ac yna £500 y mis am wyth mis. | £4,500 is the self-funded price, payable as £500 and then £500 a month for eight months. |
+| Cymharwch y ffi â ffi arall ac fe gymharwch y pethau anghywir. Cymharwch yr hyn sydd yn eich llaw ar y diwedd. | Compare the fee to another fee and you will compare the wrong things. Compare what you hold at the end. |
+| Mae £4,500 yn prynu'r Diploma NVQ Lefel 2 llawn — … Maent yn ddefnyddiol; nid yr un cymhwyster ydynt. *(funding)* | £4,500 buys the full NVQ Level 2 Diploma — … They are useful; they are not the same qualification. |
+
+Complete list: `git --no-optional-locks show dda4216 -- website/_src/pages/cy/`.
+
+### NEEDS A HUMAN
+
+1. **Carried from Verification 06, so it is not lost:** the scheme of learning for UNHB374 still
+   timetables it on Mondays; the site follows the two-strand decision of 11 September
+   (Wednesdays). The scheme document lives outside this repo and needs its timetable updated — Mark's.
+2. The two adaptations above — barbering and Level 3 — are mine; the PM should read those two
+   paragraphs and say if the framing holds.
+3. The "60% / 60.5%" figures are reused without citation because none exists on the site.
+   Verification 06 asked for "any citation that sits with it"; there is none to carry. If a funder
+   asks, the source should be found once and put in one place.
+
+---
+
+## RUN SUMMARY
+
+Briefs 07, 08 and 09 completed in one run (50 commits on `site-rebuild` since `main`, none
+pushed, `main` untouched at `40723c9`). Gates: after 07 — five guards (the locale guard now
+enforcing one host, seen failing on 576 problems first) and a clean rebuild, passed; after 08 —
+six guards (`check_forms.py` added, seen failing on 12 problems first) and a clean rebuild,
+passed; the function exercised locally on every path except the Resend send, which needs Mark's
+key; after 09 — six guards and a clean rebuild, passed. Two of my own errors are in the log,
+labelled: a guard committed with a SyntaxError before it was run (fixed in the next commit), and a
+hand-edited asset reverted by my pre-commit output revert (re-applied in the next commit).
+Under NEEDS A HUMAN: 2 items in REPORT 07 (the 301 is already in place; 27 titles over 60), 7 in
+REPORT 08 (Resend set-up steps, DNS, the privacy policy now being wrong, "two working days", the
+seventh enquiry type, thin no-JS error feedback, per-instance rate limit), 3 in REPORT 09 — 12 in
+total. Blocking for the form to work: Resend account, domain verification and `RESEND_API_KEY`
+in Vercel — all Mark's. Still outstanding from before: the push.
