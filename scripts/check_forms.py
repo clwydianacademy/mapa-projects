@@ -31,7 +31,8 @@ def check(root):
             for m in re.finditer(r"<a\b[^>]*>", html):
                 tag = m.group(0)
                 if 'href="mailto:' in tag and re.search(r'class="[^"]*\bbtn\b', tag):
-                    problems.append(f"{url}: mailto in a CTA — {re.sub(r'\\s+', ' ', tag)[:90]}")
+                    snippet = re.sub(r"\s+", " ", tag)[:90]
+                    problems.append(f"{url}: mailto in a CTA — {snippet}")
             for fm in re.finditer(r"<form\b[^>]*>(.*?)</form>", html, re.S):
                 forms += 1
                 head, body = fm.group(0).split(">", 1)[0], fm.group(1)
