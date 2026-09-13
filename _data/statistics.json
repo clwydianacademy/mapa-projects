@@ -1,0 +1,46 @@
+{
+  "_source": "The industry statistics the site quotes, each with the citation it carries. One place, so the same figure cannot drift between the homepage, a course page and a guide. Sourced by the PM, 13 Sep 2026 (statistics-copy.md). Change here and rebuild.",
+  "profit": {
+    "headline": "40%",
+    "source": { "en": "NHBF State of the Industry survey, April 2025", "cy": "Arolwg Cyflwr y Diwydiant yr NHBF, Ebrill 2025", "url": null },
+    "en": {
+      "card": "of hair and beauty businesses were making a profit in the NHBF's April 2025 survey — 39% were breaking even and 21% trading at a loss.",
+      "sentence": "In the NHBF's April 2025 State of the Industry survey, 40% of hair and beauty businesses were making a profit. Thirty-nine per cent were breaking even and 21% were trading at a loss.",
+      "clause": "in the NHBF's April 2025 survey only 40% of hair and beauty businesses were making a profit, with 39% breaking even and 21% trading at a loss"
+    },
+    "cy": {
+      "card": "o fusnesau gwallt a harddwch oedd yn gwneud elw yn arolwg yr NHBF ym mis Ebrill 2025 — roedd 39% yn torri'n wastad a 21% yn masnachu ar golled.",
+      "sentence": "Yn arolwg Cyflwr y Diwydiant yr NHBF ym mis Ebrill 2025, roedd 40% o fusnesau gwallt a harddwch yn gwneud elw. Roedd tri deg naw y cant yn torri'n wastad a 21% yn masnachu ar golled.",
+      "clause": "yn arolwg yr NHBF ym mis Ebrill 2025 dim ond 40% o fusnesau gwallt a harddwch oedd yn gwneud elw, gyda 39% yn torri'n wastad a 21% yn masnachu ar golled"
+    }
+  },
+  "self_employed": {
+    "headline": "62%",
+    "source": { "en": "NHBF written evidence to the House of Commons, 26 September 2024", "cy": "Tystiolaeth ysgrifenedig yr NHBF i Dŷ'r Cyffredin, 26 Medi 2024", "url": null },
+    "en": {
+      "card": "of workers in hairdressing and barbering are self-employed — the NHBF's evidence to Parliament, September 2024. We train people for the industry as it really is.",
+      "sentence": "Some 62% of workers in hairdressing and barbering are self-employed — the NHBF's evidence to Parliament, September 2024.",
+      "clause": "some 62% of workers in hairdressing and barbering are self-employed, by the NHBF's evidence to Parliament in September 2024"
+    },
+    "cy": {
+      "card": "o weithwyr trin gwallt a barbro sy'n hunangyflogedig — tystiolaeth yr NHBF i'r Senedd yn San Steffan, Medi 2024. Rydym yn hyfforddi pobl ar gyfer y diwydiant fel y mae go iawn.",
+      "sentence": "Mae tua 62% o weithwyr trin gwallt a barbro yn hunangyflogedig — tystiolaeth yr NHBF i'r Senedd yn San Steffan, Medi 2024.",
+      "clause": "mae tua 62% o weithwyr trin gwallt a barbro yn hunangyflogedig, yn ôl tystiolaeth yr NHBF i'r Senedd yn San Steffan ym Medi 2024"
+    }
+  },
+  "apprentice_starts": {
+    "headline": "−4,500",
+    "status": "RESTATEMENT — the original '18,170 to 7,350, UK, since 2015' pair is unverified (statistics-copy.md §3, option b). If Mark supplies the source, replace this entry and rebuild.",
+    "source": { "en": "NHBF skills crisis report, 2022", "cy": "Adroddiad argyfwng sgiliau'r NHBF, 2022", "url": null },
+    "en": {
+      "card": "apprentice starts in hair and beauty between 2017-18 and 2019-20 — down to around 7,000 a year in England; the NHBF projected fewer than 3,400 UK starts by 2025.",
+      "sentence": "Apprentice intake in hair and beauty fell by 4,500 between 2017-18 and 2019-20, to around 7,000 starts a year in England, and the NHBF projected fewer than 3,400 UK starts by 2025.",
+      "clause": "apprentice intake in hair and beauty fell by 4,500 in two years to around 7,000 starts a year in England, and the NHBF projected fewer than 3,400 UK starts by 2025"
+    },
+    "cy": {
+      "card": "o ddechreuadau prentisiaid gwallt a harddwch rhwng 2017-18 a 2019-20 — i lawr i tua 7,000 y flwyddyn yn Lloegr; rhagwelodd yr NHBF lai na 3,400 o ddechreuadau yn y DU erbyn 2025.",
+      "sentence": "Cwympodd nifer y prentisiaid gwallt a harddwch 4,500 rhwng 2017-18 a 2019-20, i tua 7,000 o ddechreuadau y flwyddyn yn Lloegr, a rhagwelodd yr NHBF lai na 3,400 o ddechreuadau yn y DU erbyn 2025.",
+      "clause": "cwympodd nifer y prentisiaid gwallt a harddwch 4,500 mewn dwy flynedd i tua 7,000 o ddechreuadau y flwyddyn yn Lloegr, a rhagwelodd yr NHBF lai na 3,400 o ddechreuadau yn y DU erbyn 2025"
+    }
+  }
+}

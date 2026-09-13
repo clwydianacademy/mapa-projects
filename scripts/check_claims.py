@@ -30,6 +30,12 @@ BANNED = [
     (r"Charlotte\s+Eleanor\s+Academy",      "old entity name — renamed to Clwydian Academy CBC for funding separation"),
     (r"parentOrganization",                 "no parent organisation: the CIC is independent by design"),
     (r"Charlotte\s+Eleanor\s+Group",        "no related-party framing: the academy is independent of Charlotte Eleanor Group Cyf"),
+    # Industry statistics: the unsourced originals are banned; the sourced versions live only in
+    # _data/statistics.json and reach pages as {{stat:...}} tokens (Brief 12, 13 Sep 2026).
+    (r"60\.5\s*%",                         "unsourced statistic — the sourced figure is 62% (NHBF evidence to Parliament, Sep 2024) via {{stat:self_employed:...}}"),
+    (r"18,170|7,350",                       "unverified apprenticeship-starts pair — use {{stat:apprentice_starts:...}} (NHBF 2022 restatement) until Mark supplies a source"),
+    (r"(nearly|around|bron|tua)\s+70\s*%",  "derived from the unverified 18,170/7,350 pair — use {{stat:apprentice_starts:...}}"),
+    (r"no longer turning a net profit|ddim bellach yn gwneud elw net|bellach yn gwneud elw net", "imprecise restatement of the NHBF April 2025 survey — use {{stat:profit:...}} (40% profit / 39% break even / 21% loss)"),
     (r"@charlotteeleanorgroup\.uk",         "the academy's contact address must be its own — the independence case is why this site was rebuilt (red until the academy mailbox exists; PM NOTE 13 Sep 2026)"),
     (r"Charlotte\s+Parker",                 "wrong name — Charlotte Roberts, Director of the Academy"),
     (r"franchise\s+network",                "no graduate route into a CEG franchise network"),

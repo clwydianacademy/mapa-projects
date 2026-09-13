@@ -436,7 +436,28 @@ def fee_token(name, loc):
         out = str(v)
     return (out[:1].upper() + out[1:]) if cap else out
 
+STAT_RE = re.compile(r"\{\{stat:([a-z_]+):([A-Za-z]+)\}\}")
+STATS_PATH = os.path.join(REPO, "_data", "statistics.json")
+
+def stat_token(key, field, loc):
+    """{{stat:<key>:<field>}} — an industry statistic and its citation from _data/statistics.json.
+    Fields: headline, card, sentence, clause, source; a capital initial capitalises the first letter."""
+    with open(STATS_PATH, encoding="utf-8") as f:
+        stats = json.load(f)
+    if key not in stats:
+        raise KeyError(f"stat token {key!r} is not in _data/statistics.json")
+    cap = field[:1].isupper(); f = field[0].lower() + field[1:]
+    st = stats[key]
+    if f == "headline": v = st["headline"]
+    elif f == "source": v = st["source"][loc]
+    elif f in ("card", "sentence", "clause"): v = st[loc][f]
+    else: raise KeyError(f"stat token field {field!r} is not defined")
+    v = v.replace("&", "&amp;").replace("'", "&rsquo;").replace("—", "&mdash;").replace("−", "&minus;")
+    return (v[:1].upper() + v[1:]) if cap else v
+
 def render(text, loc):
+    if "{{stat:" in text:
+        text = STAT_RE.sub(lambda m: stat_token(m.group(1), m.group(2), loc), text)
     if "{{cpd:" in text:
         data = load()
         text = TOKEN_RE.sub(lambda m: token(m.group(1), loc, data), text)
