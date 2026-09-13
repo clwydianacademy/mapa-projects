@@ -2259,3 +2259,91 @@ new sentences in both languages, not translations of the PM's prose.
    pages are edited later, `dateModified` is not emitted; adding it from git is a small change if
    wanted.
 5. **The address guard stays red** (59 pages now). Unchanged position: Mark's mailbox.
+
+---
+
+## COWORK VERIFICATION 11 — and a ruling on your challenge
+
+**PM, 13 September 2026.** Guards re-run by me: `check_claims` red on the address rule and nothing
+else · dates 40 instances 0 problems · links **2,449** references 0 broken · locale **59 pages**,
+mirrors and navs and sitemap intact, one host · forms clean · rebuild a no-op · 59 commits, `main`
+untouched, tree clean. The guides hub and all three guides exist in both languages. Verified.
+
+### The challenge: upheld, and the rule was wrong rather than the brief
+
+You were right to stop and challenge. `CLAUDE.md` said PLA may appear in exactly two places; my
+brief put it in a third. Under the protocol that is a conflict and you raised it instead of
+quietly following me. That is the behaviour I want, and I would rather have this argument than not
+have it.
+
+**Ruling: the three-place version stands, and the rule itself gets rewritten.**
+
+The two-place rule was never really about locations. It existed to stop the academy *promising* PLA
+as a funding route it cannot deliver. The retraining guide does the exact opposite — it tells an
+adult, in the first section, that PLA will not pay for this and why. Banning that passage would
+enforce the letter of the rule against its entire purpose, and would leave the honest explanation
+only on pages someone reaches *after* they already trust us.
+
+So amend `CLAUDE.md` to state the intent rather than a page count:
+
+> **PLA may be explained honestly anywhere on the site. It may never be offered, implied or
+> advertised as a funding route for our courses — no CTAs, no eligibility prompts, no PLA in a meta
+> description or in structured data.** The linter's allowed-page list implements this; adding a page
+> to that list requires a line in `prompts/RELAY.md` saying which passage explains PLA and why it
+> does not promise it.
+
+Keep the allowed-list mechanism — a list is checkable and a principle is not — but the list now has
+a stated reason to be measured against, and the guide's entry has one: *"states that PLA does not
+cover hairdressing, with the six Medr priority sectors named; makes no offer."*
+
+Your instinct to publish-and-challenge rather than block was also the right way round here. Had it
+been a claim about funding we *could* deliver, blocking would have been correct.
+
+### Your three other flags
+
+**Four FAQ questions, not five** — my error in the brief, the copy has four. Nothing to fix.
+
+**The practical FAQ and Article schema** — good judgement not forcing schema onto prose that is not
+a Q&A.
+
+**The statistics have no citation.** This is the serious one and it is mine. See below.
+
+---
+
+## BRIEF 12 — source the three statistics, or stop using them
+
+**Why.** They sit on the homepage, three course pages, the funders page and two guides, in both
+languages. They are the numbers a Medr or Lottery assessor reads first, and until today not one of
+them carried a source. I went looking. **One is supportable but imprecisely stated, one should be
+replaced with a better figure, and one I could not verify at all.**
+
+**Supplied:** `../website rebuild handoff/statistics-copy.md`, with exact replacement wording.
+
+1. **"60% no longer turning a net profit"** → restate as the NHBF's actual April 2025 finding: 40%
+   making a profit, 39% breaking even, 21% at a loss. The current wording says "high-street salons"
+   when the survey covered personal care businesses UK-wide, and reads as though 60% are losing
+   money when 39 of those points are break-even. The precise version is the stronger version.
+2. **"60.5% self-employed"** → replace with **62%**, from the NHBF's written evidence to a House of
+   Commons committee, 26 September 2024, and say "hairdressing and barbering". I cannot find any
+   source for 60.5%.
+3. **"18,170 to 7,350 apprenticeship starts"** → **I could not verify this at all.** It is the
+   headline stat on the funders page. NHBF's published figures are different in shape and the 7,350
+   looks like it may be an England number labelled UK. **Do not keep the unsourced version.** Either
+   Mark supplies the source — it may be in the business plan — or use the citable restatement in the
+   copy file. Put it under `NEEDS A HUMAN` and use the restatement if no answer has come by the time
+   you build.
+
+**Build it into the data layer, not the pages.** Put each figure and its source in a data file the
+way the calendar works, so the same statistic cannot drift between the homepage, a course page and
+a guide — and so the next one that needs re-sourcing is one edit, not eleven.
+
+**A guard.** Extend `check_claims.py`: any percentage or four-digit figure presented as an industry
+statistic must come from that data file. If that proves too broad to do cleanly, a narrower rule —
+the specific strings `60.5%`, `18,170` and `7,350` are banned once replaced — is acceptable; say
+which you implemented and why.
+
+**Acceptance.** The address rule still red and nothing else new · other five guards clean · rebuild
+a no-op · every changed Welsh string flagged · `main` untouched.
+
+**Then stop, and this time I mean the whole queue.** Nothing further until the push lands and the
+Welsh has been read by a person.
