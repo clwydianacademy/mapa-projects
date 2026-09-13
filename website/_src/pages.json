@@ -7,7 +7,7 @@
     "legal": "plain",
     "en": {
       "path": "/",
-      "title": "Clwydian Academy | Hairdressing Training in St Asaph, North Wales",
+      "title": "Hairdressing Training in St Asaph | Clwydian Academy",
       "desc": "Qualified in six months, not two years. Fast-track NVQ hairdressing, barbering and apprenticeships in St Asaph — with fully funded routes for eligible learners."
     },
     "cy": {
@@ -41,7 +41,7 @@
     "legal": "plain",
     "en": {
       "path": "/courses/nvq-level-2-hairdressing/",
-      "title": "Fast-Track NVQ Level 2 Hairdressing Course | Clwydian Academy",
+      "title": "Fast-Track NVQ Level 2 Hairdressing | Clwydian Academy",
       "desc": "Beginner to qualified hairdresser in six months. VTCT-standard NVQ Level 2 diploma in St Asaph — £4,500, with fully funded routes including apprenticeships."
     },
     "cy": {
@@ -58,12 +58,12 @@
     "legal": "plain",
     "en": {
       "path": "/courses/nvq-level-3-hairdressing/",
-      "title": "NVQ Level 3 Hairdressing Course, North Wales | Clwydian Academy",
+      "title": "NVQ Level 3 Hairdressing, St Asaph | Clwydian Academy",
       "desc": "Step up to senior stylist: fast-track NVQ Level 3 hairdressing in St Asaph — advanced colour, cutting and client leadership. £4,500, with fully funded routes available."
     },
     "cy": {
       "path": "/cy/cyrsiau/trin-gwallt-nvq-lefel-3/",
-      "title": "Cwrs Trin Gwallt NVQ Lefel 3, Gogledd Cymru | Clwydian Academy",
+      "title": "Trin Gwallt NVQ Lefel 3, Llanelwy | Clwydian Academy",
       "desc": "Camwch ymlaen yn uwch-steilydd: NVQ Lefel 3 carlam yn Llanelwy — lliwio uwch, torri creadigol ac arwain cleientiaid. £4,500, gyda llwybrau wedi'u hariannu'n llawn ar gael."
     }
   },
@@ -75,12 +75,12 @@
     "legal": "plain",
     "en": {
       "path": "/courses/cpd-courses/",
-      "title": "CPD Courses — Barbering, Colour & Extensions | Clwydian Academy",
+      "title": "CPD Courses for Hairdressers | Clwydian Academy",
       "desc": "Short CPD courses for qualified hairdressers in North Wales: barbering, advanced colouring and hair extensions. One-to-five-day intensives at St Asaph."
     },
     "cy": {
       "path": "/cy/cyrsiau/cyrsiau-dpp/",
-      "title": "Cyrsiau DPP — Barbro, Lliwio ac Estyniadau | Clwydian Academy",
+      "title": "Cyrsiau DPP i Drinwyr Gwallt | Clwydian Academy",
       "desc": "Cyrsiau datblygiad proffesiynol byr i drinwyr gwallt cymwysedig yng Ngogledd Cymru: barbro, lliwio uwch ac estyniadau gwallt. Cyrsiau dwys un-i-bum-diwrnod yn Llanelwy."
     }
   },
@@ -127,12 +127,12 @@
     "legal": "plain",
     "en": {
       "path": "/for-salons/",
-      "title": "For Salons — Train Your Team Without Closing the Floor | Clwydian Academy",
+      "title": "Salon Staff Training, North Wales | Clwydian Academy",
       "desc": "Two strands, {{cpd:strandDays}}, {{cpd:seatsWord}} seats a cohort. One member of your team, one day a week, back with regulated VTCT credit — {{cpd:unitsWord}} units, {{cpd:minPrice}} to {{cpd:maxPrice}}, dates published to {{cpd:termEnd}}."
     },
     "cy": {
       "path": "/cy/i-salonau/",
-      "title": "I Salonau — Hyfforddwch eich Tîm heb Gau'r Llawr | Clwydian Academy",
+      "title": "Hyfforddi Staff Salon, Gogledd Cymru | Clwydian Academy",
       "desc": "Dau linyn, {{cpd:strandDays}}, {{cpd:seatsWord}} sedd y garfan. Un aelod o'ch tîm, un diwrnod yr wythnos, yn ôl gyda chredyd VTCT rheoledig — {{cpd:unitsWord}} uned, {{cpd:minPrice}} i {{cpd:maxPrice}}, dyddiadau wedi'u cyhoeddi hyd at {{cpd:termEnd}}."
     }
   },
@@ -144,12 +144,12 @@
     "legal": "plain",
     "en": {
       "path": "/for-salons/train-your-team/",
-      "title": "CPD for Your Salon Team — {{cpd:UnitsWord}} VTCT Units, One Price List | Clwydian Academy",
+      "title": "Salon Team CPD Training | Clwydian Academy",
       "desc": "{{cpd:UnitsWord}} regulated VTCT units, {{cpd:ndates}} dates to {{cpd:termEnd}}, {{cpd:minPrice}} to {{cpd:maxPrice}}. Skin Cancer Awareness in a day, Relaxing & Smoothing, Colour & Lightening at Level 3 — one person, one day a week, at St Asaph."
     },
     "cy": {
       "path": "/cy/i-salonau/hyfforddi-eich-tim/",
-      "title": "DPP i Dîm eich Salon — {{cpd:UnitsWord}} Uned VTCT, Un Rhestr Brisiau | Clwydian Academy",
+      "title": "Hyfforddiant DPP i D&icirc;m eich Salon | Clwydian Academy",
       "desc": "{{cpd:UnitsWord}} uned VTCT reoledig, {{cpd:ndates}} o ddyddiadau hyd at {{cpd:termEnd}}, {{cpd:minPrice}} i {{cpd:maxPrice}}. Ymwybyddiaeth Canser y Croen mewn diwrnod, Llacio a Llyfnhau, Lliwio a Goleuo ar Lefel 3 — un person, un diwrnod yr wythnos, yn Llanelwy."
     }
   },
@@ -161,12 +161,12 @@
     "legal": "plain",
     "en": {
       "path": "/for-salons/take-an-apprentice/",
-      "title": "Take On an Apprentice — We Train Them, You Keep the Chair Full | Clwydian Academy",
+      "title": "Take On a Hairdressing Apprentice | Clwydian Academy",
       "desc": "An apprentice on your floor earning from the start, trained to the Welsh framework at St Asaph with the paperwork handled here. Training fully funded for eligible apprentices — you pay the wage, never the course."
     },
     "cy": {
       "path": "/cy/i-salonau/cymryd-prentis/",
-      "title": "Cymryd Prentis — Ni Sy'n eu Hyfforddi, Chi Sy'n Cadw'r Gadair yn Llawn | Clwydian Academy",
+      "title": "Cymryd Prentis Trin Gwallt | Clwydian Academy",
       "desc": "Prentis ar eich llawr yn ennill o'r dechrau, wedi'i hyfforddi i fframwaith Cymru yn Llanelwy gyda'r gwaith papur yn cael ei drin yma. Hyfforddiant wedi'i ariannu'n llawn i brentisiaid cymwys — chi sy'n talu'r cyflog, byth y cwrs."
     }
   },
@@ -178,12 +178,12 @@
     "legal": "plain",
     "en": {
       "path": "/for-salons/what-it-costs/",
-      "title": "What It Costs — One Published Tariff for Salons | Clwydian Academy",
+      "title": "Salon Training Prices | Clwydian Academy",
       "desc": "Every seat price is {{cpd:fixed}} + {{cpd:perGlh}} × guided learning hours, rounded to the nearest {{cpd:roundTo}}. Team rates from {{cpd:tierFrom:1}} people. Check the arithmetic before you book."
     },
     "cy": {
       "path": "/cy/i-salonau/y-gost/",
-      "title": "Beth yw'r Gost — Un Tariff Cyhoeddedig i Salonau | Clwydian Academy",
+      "title": "Prisiau Hyfforddiant i Salonau | Clwydian Academy",
       "desc": "{{cpd:fixed}} + {{cpd:perGlh}} × oriau dysgu dan arweiniad yw pob pris sedd, wedi'i dalgrynnu i'r {{cpd:roundTo}} agosaf. Cyfraddau tîm o {{cpd:tierFrom:1}} o bobl. Gwiriwch y rhifyddeg cyn archebu."
     }
   },
@@ -280,12 +280,12 @@
     "legal": "plain",
     "en": {
       "path": "/courses/nvq-level-2-barbering/",
-      "title": "NVQ Level 2 Barbering Course, One Evening a Week | Clwydian Academy",
+      "title": "NVQ Level 2 Barbering, St Asaph | Clwydian Academy",
       "desc": "Qualified barber in 32 weeks, one Tuesday evening a week. VTCT-standard Level 2 barbering diploma in St Asaph — fades, beard design and luxury shaving. £4,500, with fully funded routes including apprenticeships."
     },
     "cy": {
       "path": "/cy/cyrsiau/barbro-nvq-lefel-2/",
-      "title": "Cwrs Barbro NVQ Lefel 2, Un Noson yr Wythnos | Clwydian Academy",
+      "title": "Barbro NVQ Lefel 2, Llanelwy | Clwydian Academy",
       "desc": "Barbwr cymwysedig mewn 32 wythnos, un nos Fawrth yr wythnos. Diploma barbro Lefel 2 safon VTCT yn Llanelwy — ffeidiau, cynllunio barfau ac eillio moethus. £4,500, gyda llwybrau wedi'u hariannu'n llawn gan gynnwys prentisiaethau."
     }
   },
@@ -315,7 +315,7 @@
     "legal": "plain",
     "en": {
       "path": "/courses/perming-course/",
-      "title": "Modern Perming & Texture Course — VTCT UHB204 | Clwydian Academy",
+      "title": "Perming &amp; Texture — VTCT UHB204 | Clwydian Academy",
       "desc": "The perm is back: four-Monday modern perming and texture masterclass in St Asaph leading to the regulated VTCT Level 2 unit UHB204. For stylists and barbers."
     },
     "cy": {
@@ -333,12 +333,12 @@
     "legal": "plain",
     "en": {
       "path": "/courses/hair-relaxing-course/",
-      "title": "Hair Relaxing & Smoothing Course — VTCT UHB205 | Clwydian Academy",
+      "title": "Relaxing &amp; Smoothing — VTCT UHB205 | Clwydian Academy",
       "desc": "Become a textured-hair specialist: six-Monday chemical relaxing, straightening and smoothing masterclass in St Asaph — regulated VTCT Level 2 unit UHB205, £695."
     },
     "cy": {
       "path": "/cy/cyrsiau/cwrs-llacio-gwallt/",
-      "title": "Cwrs Llacio a Llyfnhau Gwallt — VTCT UHB205 | Clwydian Academy",
+      "title": "Llacio a Llyfnhau — VTCT UHB205 | Clwydian Academy",
       "desc": "Dewch yn arbenigwr gwallt gweadog: dosbarth meistr llacio, sythu a llyfnhau cemegol dros chwe dydd Llun yn Llanelwy — uned VTCT Lefel 2 UHB205 reoledig, £695."
     },
     "cpd_unit": "UHB205"
@@ -351,12 +351,12 @@
     "legal": "plain",
     "en": {
       "path": "/courses/consultation-retail-cpd/",
-      "title": "Consultation & Retail Masterclass — VTCT UNHB385 | Clwydian Academy",
+      "title": "Consultation &amp; Retail — VTCT UNHB385 | Clwydian Academy",
       "desc": "Four-Monday advanced consultation masterclass in St Asaph: hair and scalp analysis, lifestyle profiling and confident retail — regulated VTCT Level 3 unit UNHB385."
     },
     "cy": {
       "path": "/cy/cyrsiau/dpp-ymgynghori-a-manwerthu/",
-      "title": "Dosbarth Meistr Ymgynghori a Manwerthu — VTCT UNHB385 | Clwydian Academy",
+      "title": "Ymgynghori a Manwerthu — VTCT UNHB385 | Clwydian Academy",
       "desc": "Dosbarth meistr ymgynghori uwch dros bedwar dydd Llun yn Llanelwy: dadansoddi gwallt a chroen pen, proffilio ffordd o fyw a manwerthu hyderus — uned VTCT Lefel 3 UNHB385."
     },
     "cpd_unit": "UNHB385"
@@ -374,7 +374,7 @@
     },
     "cy": {
       "path": "/cy/cyrsiau/cwrs-busnes-salon/",
-      "title": "Dosbarth Meistr Busnes Salon — VTCT UNHB379 | Clwydian Academy",
+      "title": "Busnes Salon — VTCT UNHB379 | Clwydian Academy",
       "desc": "Rhedwch eich colofn fel Prif Weithredwr: dosbarth meistr busnes pedair wythnos yn Llanelwy i steilyddion, barbwyr a pherchnogion salonau — uned VTCT Lefel 3 UNHB379."
     },
     "cpd_unit": "UNHB379"
@@ -387,12 +387,12 @@
     "legal": "plain",
     "en": {
       "path": "/courses/skin-cancer-awareness/",
-      "title": "Skin Cancer Awareness Course — VTCT Level 2 Award | Clwydian Academy",
+      "title": "Skin Cancer Awareness Course | Clwydian Academy",
       "desc": "One-day VTCT Level 2 Award in Skin Cancer Awareness at St Asaph for hairdressers, barbers, therapists and fitness professionals. £195, no prerequisites, team discounts."
     },
     "cy": {
       "path": "/cy/cyrsiau/ymwybyddiaeth-canser-y-croen/",
-      "title": "Cwrs Ymwybyddiaeth Canser y Croen — VTCT Lefel 2 | Clwydian Academy",
+      "title": "Cwrs Ymwybyddiaeth Canser y Croen | Clwydian Academy",
       "desc": "Dyfarniad VTCT Lefel 2 undydd mewn Ymwybyddiaeth Canser y Croen yn Llanelwy i drinwyr gwallt, barbwyr a therapyddion. £195, dim rhagofynion, gostyngiadau tîm."
     },
     "cpd_unit": "UV21577"
@@ -406,12 +406,12 @@
     "cpd_unit": "UNHB374",
     "en": {
       "path": "/courses/colour-and-lightening/",
-      "title": "Colour & Lightening Course — VTCT Level {{cpd:level:UNHB374}} Unit UNHB374 | Clwydian Academy",
+      "title": "Colour &amp; Lightening — VTCT UNHB374 | Clwydian Academy",
       "desc": "{{cpd:DaysWord:UNHB374}} of colour and lightening on live clients in St Asaph, leading to the regulated Level {{cpd:level:UNHB374}} VTCT unit UNHB374 — {{cpd:glh:UNHB374}} guided learning hours, {{cpd:price:UNHB374}} on the published tariff, from {{cpd:start:UNHB374}}."
     },
     "cy": {
       "path": "/cy/cyrsiau/cwrs-lliwio-a-goleuo/",
-      "title": "Cwrs Lliwio a Goleuo — Uned VTCT Lefel {{cpd:level:UNHB374}} UNHB374 | Clwydian Academy",
+      "title": "Lliwio a Goleuo — VTCT UNHB374 | Clwydian Academy",
       "desc": "{{cpd:DaysWord:UNHB374}} o liwio a goleuo ar gleientiaid byw yn Llanelwy, yn arwain at uned VTCT Lefel {{cpd:level:UNHB374}} UNHB374 reoledig — {{cpd:glh:UNHB374}} awr ddysgu dan arweiniad, {{cpd:price:UNHB374}} ar y tariff cyhoeddedig, o {{cpd:start:UNHB374}}."
     }
   },
@@ -423,7 +423,7 @@
     "legal": "plain",
     "en": {
       "path": "/apprenticeships/",
-      "title": "Hairdressing Apprenticeships in North Wales | Clwydian Academy",
+      "title": "Hairdressing Apprenticeships, Wales | Clwydian Academy",
       "desc": "Fully funded hairdressing and barbering apprenticeships in St Asaph — Welsh-framework compliant, delivered at the fastest pace allowed, not two years."
     },
     "cy": {
