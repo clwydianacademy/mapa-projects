@@ -2347,3 +2347,105 @@ a no-op · every changed Welsh string flagged · `main` untouched.
 
 **Then stop, and this time I mean the whole queue.** Nothing further until the push lands and the
 Welsh has been read by a person.
+
+
+---
+
+## REPORT 12
+
+**Coder, 13 September 2026, 19:17.** Brief 12 complete. `check_claims` red on the address rule and nothing else; the
+other five guards clean; rebuild a no-op; `main` still `40723c9`. Stopping, and the queue with it.
+
+| SHA | Step |
+|---|---|
+| `d119a45` | RELAY: VERIFICATION 11 (the ruling) + BRIEF 12 as the PM wrote them (committed first) |
+| `4ac4fe1` | 0/3 `CLAUDE.md` PLA rule rewritten to the ruling's text; a reason line on every `PLA_ALLOWED` entry |
+| `e81896b` | 1/3 `_data/statistics.json`, `{{stat:…}}` tokens, every page re-pointed, the old figures banned |
+| `864088b` | 2/3 build output |
+| *(this)* | 3/3 REPORT 12 |
+
+### Gates
+
+```
+check_claims.py   -> 60 pages scanned — 59 findings, all [BANNED] '@charlotteeleanorgroup.uk'; 0 other findings
+                     (the new statistics rules, run on the previous build's output before the rebuild: 30 findings —
+                      every 60.5%, 18,170, 7,350, '~70%' and 'no longer turning a net profit' on 12 pages — then 0)
+check_dates.py    -> 10 cohorts, 54 dates, 5 closures; 40 CourseInstances — 0 problems.
+check_links.py    -> 2449 internal references — 0 broken.
+check_locale.py   -> 59 pages — mirrors, navs, sitemap, one host.
+check_forms.py    -> 59 pages, 2 forms — clean.
+rebuild           -> git status --porcelain empty
+```
+
+### The ruling, applied
+
+`CLAUDE.md`'s PLA rule now reads as the ruling has it — explained honestly anywhere, never offered,
+implied or advertised; the linter's allowed-page list implements it; adding a page needs a line in
+RELAY. Every entry in `PLA_ALLOWED` carries its reason in the file: `/funding/` (the honest
+explanation), `/funders/` (the advocacy card), and the retraining guide — *"states that PLA does not
+cover hairdressing, with the six Medr priority sectors named; makes no offer."*
+
+### The statistics — one data file, seven pages, two languages
+
+**`_data/statistics.json`** holds three entries — `profit`, `self_employed`, `apprentice_starts` —
+each with a headline figure, a stat-card text, a full sentence, a mid-sentence clause, and the
+source, in both languages. Pages carry `{{stat:profit:card}}`, `{{stat:self_employed:Clause}}`
+and so on; `cpd.py` renders them. The next re-sourcing is one edit.
+
+| figure | now says | source carried |
+|---|---|---|
+| Profitability | **40%** making a profit, 39% breaking even, 21% at a loss — "hair and beauty businesses", not "high-street salons" | NHBF State of the Industry survey, April 2025 |
+| Self-employment | **62%** of workers in hairdressing and barbering | NHBF written evidence to the House of Commons, 26 September 2024 |
+| Apprentice starts | **the restatement, option (b)**: down 4,500 between 2017-18 and 2019-20 to around 7,000 a year in England; NHBF projected fewer than 3,400 UK starts by 2025 | NHBF skills crisis report, 2022 |
+
+Where they appear now, both languages: the homepage mission lede (two clauses) and its three stat
+cards (headline `−4,500` / `40%` / `62%`, each with a source line beneath), the funders page's
+opening paragraph, the fee-defence bullet on the three NVQ pages, the salon guide's "question
+underneath all four", and the retraining guide's "Is it too late". Citations are a short attributed
+clause or a single line under a card, as the copy file asked — no references section.
+
+**The guard.** The **narrow** rule: `60.5%`, `18,170`, `7,350`, `nearly/around/bron/tua 70%` and
+the "no longer turning a net profit" wording (EN and CY) are banned, each with a reason naming the
+token to use instead. Watched failing on the previous build (30 hits, 12 pages), then clean. I did
+not implement "any percentage or four-digit figure must come from the data file": on this site it
+would trip the tariff tiers (10%, 15%, 20%), VTCT pass marks (70%), the funders page's own
+stress-test figures (25%, 44%), the `92%` below, and every year and price. A rule that needs a long
+exception list stops being a guard. The narrow rule catches exactly the regressions we know about;
+a new unsourced figure would need a new line, which is the same discipline as the entity rules.
+
+### WELSH FOR REVIEW
+
+Twelve new Welsh strings in `_data/statistics.json` (every page renders from these — review here
+once, not per page):
+
+| Welsh | English |
+|---|---|
+| o fusnesau gwallt a harddwch oedd yn gwneud elw yn arolwg yr NHBF ym mis Ebrill 2025 — roedd 39% yn torri'n wastad a 21% yn masnachu ar golled. | of hair and beauty businesses were making a profit in the NHBF's April 2025 survey — 39% were breaking even and 21% trading at a loss. |
+| Yn arolwg Cyflwr y Diwydiant yr NHBF ym mis Ebrill 2025, roedd 40% o fusnesau gwallt a harddwch yn gwneud elw. Roedd tri deg naw y cant yn torri'n wastad a 21% yn masnachu ar golled. | In the NHBF's April 2025 State of the Industry survey, 40% of hair and beauty businesses were making a profit. Thirty-nine per cent were breaking even and 21% were trading at a loss. |
+| yn arolwg yr NHBF ym mis Ebrill 2025 dim ond 40% o fusnesau gwallt a harddwch oedd yn gwneud elw, gyda 39% yn torri'n wastad a 21% yn masnachu ar golled | in the NHBF's April 2025 survey only 40% of hair and beauty businesses were making a profit, with 39% breaking even and 21% trading at a loss |
+| Arolwg Cyflwr y Diwydiant yr NHBF, Ebrill 2025 | NHBF State of the Industry survey, April 2025 |
+| o weithwyr trin gwallt a barbro sy'n hunangyflogedig — tystiolaeth yr NHBF i'r Senedd yn San Steffan, Medi 2024. Rydym yn hyfforddi pobl ar gyfer y diwydiant fel y mae go iawn. | of workers in hairdressing and barbering are self-employed — the NHBF's evidence to Parliament, September 2024. We train people for the industry as it really is. |
+| Mae tua 62% o weithwyr trin gwallt a barbro yn hunangyflogedig — tystiolaeth yr NHBF i'r Senedd yn San Steffan, Medi 2024. | Some 62% of workers in hairdressing and barbering are self-employed — the NHBF's evidence to Parliament, September 2024. |
+| mae tua 62% o weithwyr trin gwallt a barbro yn hunangyflogedig, yn ôl tystiolaeth yr NHBF i'r Senedd yn San Steffan ym Medi 2024 | some 62% of workers in hairdressing and barbering are self-employed, by the NHBF's evidence to Parliament in September 2024 |
+| Tystiolaeth ysgrifenedig yr NHBF i Dŷ'r Cyffredin, 26 Medi 2024 | NHBF written evidence to the House of Commons, 26 September 2024 |
+| o ddechreuadau prentisiaid gwallt a harddwch rhwng 2017-18 a 2019-20 — i lawr i tua 7,000 y flwyddyn yn Lloegr; rhagwelodd yr NHBF lai na 3,400 o ddechreuadau yn y DU erbyn 2025. | apprentice starts in hair and beauty between 2017-18 and 2019-20 — down to around 7,000 a year in England; the NHBF projected fewer than 3,400 UK starts by 2025. |
+| Cwympodd nifer y prentisiaid gwallt a harddwch 4,500 rhwng 2017-18 a 2019-20, i tua 7,000 o ddechreuadau y flwyddyn yn Lloegr, a rhagwelodd yr NHBF lai na 3,400 o ddechreuadau yn y DU erbyn 2025. | Apprentice intake in hair and beauty fell by 4,500 between 2017-18 and 2019-20, to around 7,000 starts a year in England, and the NHBF projected fewer than 3,400 UK starts by 2025. |
+| cwympodd nifer y prentisiaid gwallt a harddwch 4,500 mewn dwy flynedd i tua 7,000 o ddechreuadau y flwyddyn yn Lloegr, a rhagwelodd yr NHBF lai na 3,400 o ddechreuadau yn y DU erbyn 2025 | apprentice intake in hair and beauty fell by 4,500 in two years to around 7,000 starts a year in England, and the NHBF projected fewer than 3,400 UK starts by 2025 |
+| Adroddiad argyfwng sgiliau'r NHBF, 2022 | NHBF skills crisis report, 2022 |
+
+Least sure: "torri'n wastad" for *breaking even*; "masnachu ar golled" for *trading at a loss*;
+"y Senedd yn San Steffan" to make clear it is the Westminster Parliament, not the Senedd in Cardiff;
+"dechreuadau prentisiaid" for *apprentice starts*. The homepage lede and funders sentence in Welsh
+now read as clause tokens joined to the existing sentences — worth a native ear for flow.
+
+### NEEDS A HUMAN
+
+1. **[MARK] The apprenticeship figure.** The `18,170 → 7,350, UK, since 2015` pair is gone from
+   the site and replaced by the NHBF 2022 restatement. If the original has a source — the business
+   plan, an NHBF skills report, DfE statistics — supply it with its geography and the entry in
+   `_data/statistics.json` changes once. Until then the site says what can be cited.
+2. **`92% of salons unable to take on an apprentice`** on `/funders/` (both languages) is a fourth
+   unsourced industry statistic in the same sentence, not in the brief. Left as it stands and not
+   added to the data file, because I have no source for it. PM to source or cut; the narrow guard
+   does not catch it.
+3. **The address guard stays red** — 59 pages, until the academy mailbox exists.
