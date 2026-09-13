@@ -1929,3 +1929,55 @@ REPORT 08 (Resend set-up steps, DNS, the privacy policy now being wrong, "two wo
 seventh enquiry type, thin no-JS error feedback, per-instance rate limit), 3 in REPORT 09 — 12 in
 total. Blocking for the form to work: Resend account, domain verification and `RESEND_API_KEY`
 in Vercel — all Mark's. Still outstanding from before: the push.
+
+---
+
+## COWORK VERIFICATION 07–09
+
+**PM, 13 September 2026.** Re-run by me: `check_claims` clean over 52 files · `check_dates` 40
+CourseInstances, 0 problems · `check_links` **2,043** references, 0 broken · `check_locale` 51 pages,
+one host `https://www.clwydianacademy.co.uk` · `check_forms` 51 pages, 2 forms, no mailto CTAs ·
+rebuild a no-op · `main` untouched at `40723c9`, 50 commits on the branch. Verified.
+
+**The 576 host problems before the switch, then clean, is the right way round** — the guard was seen
+failing on real output before it was trusted. Third time you have done that unprompted; it is now
+simply how this repo works.
+
+**Both copy changes you made to stay true were correct and I would have made them too.** Barbering
+is a 32-week twilight course and the fee block cannot call it six months. The Level 3 page does buy
+a Level 3 Diploma, so the Level 2 wording had to change there. Flagging rather than silently
+adapting is exactly right.
+
+**The Vercel 301 already existing** is good news I did not have — that removes an item from Mark's
+list rather than adding one.
+
+---
+
+## BRIEF 10 — the privacy notice, fifteen titles, and the address guard
+
+**Supplied:** `../website rebuild handoff/privacy-and-titles-copy.md`.
+
+1. **`/privacy/` is now factually wrong** and that is the urgent half of this brief. It says the form
+   "works through your own email app", which stopped being true when you built the function. Replace
+   the "When you contact us" section with the supplied copy, which describes what the code actually
+   does — a POST to our own function, two emails via Resend, named processors, retention, and the
+   honeypot. Two square-bracketed decisions in that copy are Mark's; leave them visible in the report
+   rather than choosing for him, and do not publish a retention period he has not confirmed —
+   if he has not answered by the time you build, use the bracketed default and say so plainly in
+   `NEEDS A HUMAN`.
+2. **Fifteen English titles**, all now under 60 characters, in the supplied table. The twelve long
+   Welsh ones: trim on the same principle — keep the brand where it fits, lead with the searched
+   words — and put every changed Welsh title under `WELSH FOR REVIEW`. **Do not machine-translate the
+   English titles**; the Welsh pages have their own and they need shortening, not replacing.
+3. **The address guard, now.** Add `@charlotteeleanorgroup\.uk` to `check_claims.py` as a banned
+   string, with the reason: the academy's contact address must be its own, because the independence
+   case is the whole reason this site was rebuilt. **It will fail — 57 occurrences across 51 pages —
+   and that is the correct state.** Do not fix the address; there is no academy mailbox yet. Report
+   the failing count, leave the rule in, and note in `NEEDS A HUMAN` that this guard stays red until
+   Mark's DNS work creates the mailbox. A guard that is red for a known reason is a to-do list; a
+   rule we did not write is an omission nobody sees.
+
+**Acceptance.** `check_claims` fails on the address rule **and nothing else** · the other five guards
+clean · rebuild a no-op · titles match the table exactly · Welsh flagged · `main` untouched.
+
+**Then stop.** Brief 11 is the three cornerstone pages and I am writing them now.
