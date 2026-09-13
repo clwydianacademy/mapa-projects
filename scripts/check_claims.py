@@ -15,10 +15,15 @@ import os, re, sys
 
 # Pages where PLA may honestly be discussed. Everywhere else it is a banned promise.
 # The Welsh mirrors are /cy/ffioedd-a-chyllid/ and /cy/cyllidwyr/ (the real slugs, 11 Sep 2026).
-# The retraining guide (Brief 11, 13 Sep 2026) carries the honest "the PLA will not pay for this"
-# passage — an explanation, never a promise or a CTA. CLAUDE.md amended in the same commit.
-PLA_ALLOWED = ("/funding/", "/funders/", "/cy/ffioedd-a-chyllid/", "/cy/cyllidwyr/",
-               "/guides/retraining-as-a-hairdresser-in-wales/", "/cy/canllawiau/ailhyfforddi-fel-triniwr-gwallt-yng-nghymru/")
+# Pages where PLA is EXPLAINED, never offered (CLAUDE.md "Funding language"). Each entry needs a
+# reason here and a line in prompts/RELAY.md.
+PLA_ALLOWED = (
+    "/funding/", "/cy/ffioedd-a-chyllid/",      # the honest explanation: PLA does not cover hairdressing
+    "/funders/", "/cy/cyllidwyr/",              # the advocacy card: "fair funding for this trade"
+    # the retraining guide: states that PLA does not cover hairdressing, with the six Medr priority
+    # sectors named; makes no offer (Brief 11 / VERIFICATION 11 ruling, 13 Sep 2026)
+    "/guides/retraining-as-a-hairdresser-in-wales/", "/cy/canllawiau/ailhyfforddi-fel-triniwr-gwallt-yng-nghymru/",
+)
 
 # (regex, why it fails)
 BANNED = [

@@ -30,13 +30,13 @@ under `### NEEDS A HUMAN` rather than following the brief.
 - Quality assurance is **independent external IQA**. Never "run in-house".
 
 ## Funding language
-- The **Personal Learning Account (PLA) is not a promise the academy can make.** PLA may appear
-  in exactly three places and nowhere else: the honest explanation on `/funding/`, the
-  advocacy card on `/funders/` ("fair funding for this trade"), and the "it will not pay for
-  this" passage on `/guides/retraining-as-a-hairdresser-in-wales/` (Brief 11, 13 Sep 2026 —
-  the coder added this third place on the PM's brief; Mark has not yet confirmed it). All three
-  say the PLA does not cover hairdressing. No PLA CTAs, no "Check PLA funding" buttons, no PLA
-  in any meta description or JSON-LD.
+- The **Personal Learning Account (PLA) is not a promise the academy can make.** **PLA may be
+  explained honestly anywhere on the site. It may never be offered, implied or advertised as a
+  funding route for our courses — no CTAs, no eligibility prompts, no PLA in a meta description
+  or in structured data.** The linter's allowed-page list (`PLA_ALLOWED` in
+  `scripts/check_claims.py`) implements this; adding a page to that list requires a line in
+  `prompts/RELAY.md` saying which passage explains PLA and why it does not promise it.
+  (Ruling, COWORK VERIFICATION 11, 13 Sep 2026.)
 - Permitted funding language: fully funded apprenticeship route (Welsh framework), ReAct+
   support up to £1,500, instalments (£500 + £500 × 8), self-funded £4,500.
 
