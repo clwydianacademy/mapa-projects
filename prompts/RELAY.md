@@ -2899,3 +2899,439 @@ a push to build a fresh preview that picks the new key up. No site file changes.
 
 Mark: `RESEND_API_KEY` is now set by Resend's official Vercel integration, for all environments.
 This commit gives Vercel a push to build a fresh preview that picks it up. No site file changes.
+
+---
+
+## REPORT — SALON RELEASE 1 (training salon at /salon/)
+
+**Coder, 17 November 2026.** Brief from the PM, relayed by Mark: a training salon run by Clwydian
+Academy CBC, with a booking engine copied ONCE from the Group's mobile-hairdressing system and held
+at arm's length from it. Branch `feat/salon` off `main` (`6f5dbd8`); draft PR into `main`;
+**not merged by the coder.** The source repository was read only — nothing was committed to it.
+
+| Commit | Step |
+|---|---|
+| `d353c75` | Step 1 — `docs/salon/engine-inventory.md` |
+| `f073464` | `_data/salon/policy.json` |
+| `1f1822c` | engine: `site/api/salon/*.js` over `site/api/_lib/salon/` |
+| `3e8d4fd` | `scripts/test_salon_rules.js` |
+| `b018af4` | `check_claims.py` — name, domains, colour |
+| `1377ac1` | pages source: `salon.py`, registry, `build.py`, assets |
+| `8886418` | fix + page tests |
+| `d0bcc78` | build output |
+| *(this)* | this report |
+
+### The live site
+Merging this would add a "Salon" nav item to every page and publish ten salon pages that say
+**"Opening soon"**, are `noindex`, and are absent from the sitemap. No price, date or opening time
+is printed, and the engine refuses to take a booking in production — because 45 values in the
+policy are placeholders. That is by design; see "Nothing unconfirmed goes live" below.
+
+### What was built
+- **Policy** — `_data/salon/policy.json`: level duration factors (L1 2.0, L2 1.6, L3 1.3, graduate
+  1.0), chairs, basins, supervisors and ratio, deposit 20% capped, cancel window 48 h, patch-test
+  window, age rules, term dates and sessions, 13 services with timings and a price per tier.
+- **Engine** — CommonJS, no dependencies, no package.json. ONE `feasible()`
+  (`site/api/_lib/salon/feasible.js`), called by the offer path and again inside the write lock by
+  book, staff move, staff resize and the late-payment path. Endpoints: `quote`, `availability`,
+  `book`, `stripe-webhook`, `models`, `staff` — six functions, seven with `enquiry`.
+- **Store** — Upstash over REST, keys prefixed `salon:`, one key per day with a version, a version
+  on every booking, a lock that only its owner can release and a commit that writes nothing if the
+  lock was lost. No file fallback.
+- **Consultation answers** — AES-256-GCM under `SALON_DATA_KEY`, bound to the booking reference,
+  stored only with a recorded consent. Patch-test records are filed under a keyed hash of the
+  email address, not the address.
+- **Money** — Stripe by raw REST. A booking with a deposit is HELD for 30 minutes; only a verified
+  webhook confirms it. A payment arriving after the hold lapsed is confirmed if the slot is still
+  free, otherwise flagged for refund and listed for a human.
+- **Pages** — `/salon/`, `/salon/prices/`, `/salon/book/`, `/salon/models/`, `/salon/terms/` and
+  `/cy/salon/`, `/cy/salon/prisiau/`, `/cy/salon/archebu/`, `/cy/salon/modelau/`,
+  `/cy/salon/telerau/`, from `website/_src/salon.py`. HairSalon JSON-LD on the two front pages.
+- **Staff** — `/staff/`: password sign-in (HttpOnly cookie, 12 h), day list grouped by learner,
+  status / move / resize through dialogs, learner list, patch-test record, model register.
+
+### Nothing unconfirmed goes live
+A placeholder is written `{"todo_pm": true, "value": X}` (the brief said "marked TODO_PM"; this is
+that marker, in a form a program can find). While any remain: `build.py` builds every salon page
+noindex and out of the sitemap; pages print "to be confirmed" in place of the value; `GET
+/api/salon/quote` sends no service or price to a browser; and booking answers 503 with `hello@`.
+Placeholders can be exercised on a **preview** with `SALON_ALLOW_PLACEHOLDERS=1`; that switch is
+ignored when `VERCEL_ENV` is `production`.
+
+### Gates, on the output of the build commit
+- `build.py` clean; second build a no-op.
+- `check_claims` 101 files clean · `check_dates` 0 · `check_links` 2842 references, 0 broken ·
+  `check_locale` 68 pages clean · `check_forms` clean · `test_enquiry.js` 23/23 ·
+  `test_salon_rules.js` 83/83.
+- Sitemap: 54 URLs, byte-identical to `main`.
+
+### Guards watched failing (CLAUDE.md "Build discipline")
+- **`test_salon_rules.js`** — 30 deliberate breaks of the engine, one at a time: each rule in
+  `feasible()` removed, the write lock removed, the save path skipping the rule, the offer path
+  ignoring existing bookings, the webhook signature unchecked, consultation stored in clear,
+  placeholders allowed in production, staff auth removed, the deposit cap removed. All 30
+  turned the suite red.
+- **`check_claims.py`** — ten planted files (the name in a page, a domain in a link, the repository
+  name in a `.js`, `#4E1622` in `.css`, `#4e1622` in `.svg`, `rgb(78, 22, 34)`, an email address in
+  `.json`, a folder and an image named after the business): nine findings; the tenth,
+  `#4e16220` and a bare `4e1622`, correctly passed.
+- **Page tests** — written against a real defect before it was fixed: two entries in `salon.py`
+  shared the key `terms`, so the "Booking terms" label printed a Python list on all ten pages and
+  no existing check saw it. The new test failed on it; the key was renamed; `t()` now stops the
+  build if a label is not a string (also watched failing).
+
+### Evidence in a browser (Chromium, against a local stand-in for Upstash, Stripe and Resend)
+48 checks, 0 failed. 13 pages × 4 widths (1440, 1280, 768, 375): 0 console errors, 0 horizontal
+overflow; the header holds eight nav items on one row at 1280 in Welsh. Journey at 375px: focus
+on each step's heading; Continue never disabled and names what is missing; targets 59px (choice),
+57px (button), 56px (input), ≥54px (day, slot); 14-day strip with Lots / A few / Full / Closed;
+next available; morning / afternoon; review states "1 h 55 min. A qualified stylist would take
+about 1 h". Returning from payment with a **forged** webhook (answered 400) shows "waiting", not
+"booked"; the verified one (200) shows "booked" and sends one email. Under-16 + permanent colour
+blocked; a claimed patch test with no record leads to booking one; Welsh journey renders in
+Welsh. With no keys at all: journey, model form and day sheet each say so and give `hello@`.
+
+### Not verified
+- **Nothing has run on Vercel, Upstash, Stripe or Resend.** The store was exercised against an
+  emulator of the REST commands written for this work, so the two `EVAL` scripts have not met a
+  real Upstash.
+- **The webhook's raw-body read on Vercel.** The site's functions are CommonJS, so the webhook
+  reads the request stream rather than a Web `Request`. If Vercel has consumed the stream the
+  signature fails and nothing is marked paid — it fails closed — but it must be proven with a
+  Stripe test event on a preview.
+- Screen readers and real phones.
+
+### Decisions taken where the brief and this repository disagreed
+1. **"call/email hello@"** — email only. This site carries no telephone number (17 Nov ruling) and
+   `check_claims` fails on one.
+2. **"who (any student or level)"** — a level or "any learner". No learner is named on the public
+   site (same ruling); names live in the database and on the day sheet.
+3. **JSON-LD link** — the salon is tied to the academy with `department` on the Organization. The
+   property pointing the other way is banned site-wide by `check_claims` and that rule was left
+   alone.
+4. **`/staff/` has no Welsh mirror** — `check_locale.py` now exempts it beside `/404.html`.
+5. **Branch** — `feat/salon`, as the brief says, not the session's default branch.
+
+### TODO_PM — the 45 placeholders in `_data/salon/policy.json`
+- `levels.l1.duration_factor`
+- `levels.l2.duration_factor`
+- `levels.l3.duration_factor`
+- `levels.graduate.duration_factor`
+- `resources.chairs`
+- `resources.basins`
+- `resources.supervisors_on_floor`
+- `resources.supervisor_ratio`
+- `deposit.percent`
+- `deposit.cap_pounds`
+- `terms_approved`
+- `booking.min_notice_hours`
+- `booking.horizon_days`
+- `patch_test.products.colour.name`
+- `patch_test.products.lightener.name`
+- `patch_test.products.relaxer.name`
+- `opening.terms`
+- `opening.closures`
+- `opening.sessions`
+- `services.patch-test.timings`
+- `services.patch-test.prices`
+- `services.blow-dry.timings`
+- `services.blow-dry.prices`
+- `services.cut-finish.timings`
+- `services.cut-finish.prices`
+- `services.restyle.timings`
+- `services.restyle.prices`
+- `services.barber-cut.timings`
+- `services.barber-cut.prices`
+- `services.hair-up.timings`
+- `services.hair-up.prices`
+- `services.semi-colour.timings`
+- `services.semi-colour.prices`
+- `services.root-colour.timings`
+- `services.root-colour.prices`
+- `services.full-colour.timings`
+- `services.full-colour.prices`
+- `services.foils.timings`
+- `services.foils.prices`
+- `services.perm.timings`
+- `services.perm.prices`
+- `services.relaxer.timings`
+- `services.relaxer.prices`
+- `services.conditioning.timings`
+- `services.conditioning.prices`
+
+### WELSH FOR REVIEW — all new, all machine-written
+- `salon.py T.tbc` — I’w gadarnhau
+- `salon.py T.home` — Hafan
+- `salon.py T.salon` — Salon hyfforddi
+- `salon.py T.prices` — Prisiau
+- `salon.py T.book` — Archebu
+- `salon.py T.models` — Bod yn fodel
+- `salon.py T.terms` — Telerau archebu
+- `salon.py T.eyebrow` — Salon hyfforddi Clwydian Academy
+- `salon.py T.soon_h` — Yn agor yn fuan
+- `salon.py T.soon_p` — Rydym yn dal i gadarnhau dyddiadau agor, oriau agor a phrisiau’r salon, felly nid yw archebu ar-lein ar agor eto. E-bostiwch {email} ac fe rown wybod i chi pan fydd.
+- `salon.py T.home_h1` — Gwallt gan ein dysgwyr, wedi’i wirio gan oruchwyliwr.
+- `salon.py T.home_lede` — Y salon hyfforddi yw lle mae dysgwyr Clwydian Academy yn gweithio ar gleientiaid go iawn yn Llanelwy. Rydych yn talu pris dysgwr, yn dewis pa mor brofiadol yw eich dysgwr, ac mae goruchwyliwr yn gwirio’r gwaith cyn i chi adael.
+- `salon.py T.how_h` — Sut mae’n gweithio
+- `salon.py T.how` — Dewiswch wasanaeth a lefel — Cynigir pob gwasanaeth gan ddysgwyr ar wahanol gamau o’u hyfforddiant. Po gynharaf y cam, yr isaf yw’r pris.
+- `salon.py T.how` — Caniatewch yr amser — Mae dysgwr yn cymryd mwy o amser na steilydd cymwysedig — dyna bwrpas salon hyfforddi. Rydym yn dweud wrthych wir hyd eich apwyntiad cyn i chi archebu, nid yr hyd y byddai salon yn ei ddyfynnu.
+- `salon.py T.how` — Mae goruchwyliwr yn gwirio’r gwaith — Mae dysgwyr yn gweithio dan oruchwyliaeth, ac mae goruchwyliwr yn gwirio’r gwaith ar adegau penodol a chyn i chi adael.
+- `salon.py T.how` — Mae angen prawf patsh cyn lliwio — Ar gyfer lliwio, goleuo ac ymlacio mae angen prawf patsh gyda ni o leiaf {patch_hours} awr cyn eich apwyntiad. Mae’n ddilys am {patch_months} mis, ar gyfer yr un cynnyrch.
+- `salon.py T.open_h` — Pryd mae’r salon ar agor
+- `salon.py T.open_p` — Mae’r salon ar agor yn ystod y tymor yn unig.
+- `salon.py T.open_days` — Diwrnodau salon
+- `salon.py T.open_terms` — Tymhorau
+- `salon.py T.cta_prices` — Gweld prisiau ac amseroedd
+- `salon.py T.cta_book` — Archebu apwyntiad
+- `salon.py T.cta_models` — Ymuno â’r gofrestr modelau
+- `salon.py T.where_h` — Ble
+- `salon.py T.where_p` — Llanelwy, Sir Ddinbych. Cyhoeddir y cyfeiriad yma cyn i’r salon agor.
+- `salon.py T.prices_h1` — Prisiau a faint o amser i’w ganiatáu
+- `salon.py T.prices_lede` — Un pris ar gyfer pob cam o’r hyfforddiant. Yr amseroedd yw gwir hyd yr apwyntiad gyda’r dysgwr hwnnw, gan gynnwys gwiriadau’r goruchwyliwr.
+- `salon.py T.service` — Gwasanaeth
+- `salon.py T.not_offered` — Heb ei gynnig ar y lefel hon
+- `salon.py T.free` — Am ddim
+- `salon.py T.patch_note` — Angen prawf patsh
+- `salon.py T.u16_note` — Ddim ar gael o dan 16 oed
+- `salon.py T.deposit_h` — Blaendal
+- `salon.py T.deposit_p` — Telir blaendal o {percent}% o’r pris, hyd at {cap}, â cherdyn wrth archebu, ac mae’n dod oddi ar eich bil ar y diwrnod.
+- `salon.py T.deposit_tbc` — Telir blaendal â cherdyn wrth archebu, ac mae’n dod oddi ar eich bil ar y diwrnod. Mae’r swm i’w gadarnhau.
+- `salon.py T.book_h1` — Archebu apwyntiad
+- `salon.py T.book_lede` — Un cwestiwn ar y tro. Fe welwch y pris a gwir hyd yr apwyntiad cyn i chi dalu dim.
+- `salon.py T.nojs` — Mae angen JavaScript ar gyfer archebu ar-lein. I archebu hebddo, e-bostiwch {email}.
+- `salon.py T.models_h1` — Byddwch yn fodel i’n dysgwyr
+- `salon.py T.models_lede` — Mae angen pobl ar ddysgwyr i ymarfer arnynt ac i gael eu hasesu arnynt. Ymunwch â’r gofrestr ac fe anfonwn e-bost atoch pan fydd angen model ar ddysgwr ar gyfer rhywbeth sydd o ddiddordeb i chi.
+- `salon.py T.models_what` — Cyhoeddir yma beth mae sesiwn fodel yn ei gostio, a beth a ofynnir gennych, cyn i’r gofrestr gael ei defnyddio. Nid yw ymuno yn eich ymrwymo i ddim.
+- `salon.py T.terms_h1` — Telerau archebu
+- `salon.py T.terms_draft` — Drafft. Nid yw’r telerau hyn wedi’u cymeradwyo eto ac ni ellir gwneud archeb oddi tanynt.
+- `salon.py T.terms_sections` — Gyda phwy rydych yn archebu — Mae’r salon hyfforddi yn cael ei redeg gan Clwydian Academy CBC. Cyflawnir gwasanaethau gan ddysgwyr dan oruchwyliaeth.
+- `salon.py T.terms_sections` — Amser — Mae dysgwyr yn cymryd mwy o amser na steilydd cymwysedig. Yr hyd a ddangosir wrth archebu yw’r amser i’w ganiatáu.
+- `salon.py T.terms_sections` — Blaendal — {deposit}
+- `salon.py T.terms_sections` — Newid neu ganslo — E-bostiwch {email} o leiaf {cancel} awr cyn eich apwyntiad ac fe symudwn ef neu ad-dalu eich blaendal. Gyda llai o rybudd, neu os na fyddwch yn cyrraedd, cedwir y blaendal.
+- `salon.py T.terms_sections` — Os oes rhaid i ni ganslo — Os oes rhaid i’r salon ganslo, byddwn yn cynnig amser arall neu’n ad-dalu eich blaendal yn llawn.
+- `salon.py T.terms_sections` — Profion patsh — Mae angen prawf patsh gyda ni ar gyfer gwasanaethau lliwio, goleuo ac ymlacio, o leiaf {patch_hours} awr cyn yr apwyntiad a dim mwy na {patch_months} mis cyn hynny, ar gyfer yr un cynnyrch. Hebddo, ni all y gwasanaeth fynd rhagddo.
+- `salon.py T.terms_sections` — O dan 16 oed — Nid ydym yn rhoi lliw parhaol na chwasi-barhaol, cannydd nac ymlaciwr ar unrhyw un o dan 16 oed. Mae angen caniatâd rhiant neu warcheidwad ar gyfer unrhyw wasanaeth arall i rywun o dan 16 oed.
+- `salon.py T.terms_sections` — Eich gwybodaeth — Rydym yn cadw eich enw a’ch manylion cyswllt i reoli eich archeb. Gwybodaeth iechyd yw atebion ymgynghori ac alergedd: dim ond gyda’ch caniatâd y cadwn hwy, wedi’u hamgryptio, a dim ond staff goruchwylio all eu darllen. Gweler ein hysbysiad preifatrwydd.
+- `journey loading` — Yn llwytho…
+- `journey step` — Cam {n} o {of}
+- `journey back` — Yn ôl
+- `journey next` — Parhau
+- `journey change` — Newid
+- `journey closed_h` — Nid yw archebu ar-lein ar gael ar hyn o bryd
+- `journey closed_p` — E-bostiwch {email} ac fe wnawn ni eich archebu.
+- `journey closed_reason.not-confirmed` — Mae dyddiadau agor a phrisiau'r salon yn dal i gael eu cadarnhau.
+- `journey closed_reason.not-open` — Nid yw'r salon yn derbyn archebion eto.
+- `journey closed_reason.no-store` — Nid oes modd cyrraedd ein system archebu ar hyn o bryd.
+- `journey closed_reason.error` — Aeth rhywbeth o'i le ar ein hochr ni.
+- `journey service_h` — Beth hoffech chi ei gael?
+- `journey service_missing` — Dewiswch wasanaeth.
+- `journey age_h` — A yw'r person sy'n cael y gwasanaeth hwn o dan 16 oed?
+- `journey yes` — Ydy
+- `journey no` — Nac ydy
+- `journey age_missing` — Atebwch ydy neu nac ydy.
+- `journey age_blocked_h` — Ni allwn gynnig y gwasanaeth hwn i unrhyw un o dan 16 oed
+- `journey age_blocked_p` — Ni roddir lliw parhaol na chwasi-barhaol, cannydd nac ymlaciwr ar unrhyw un o dan 16 oed. Dewiswch wasanaeth gwahanol.
+- `journey choose_other` — Dewis gwasanaeth gwahanol
+- `journey patch_h` — Ydych chi wedi cael prawf patsh gyda ni ar gyfer hyn yn ystod y {months} mis diwethaf?
+- `journey patch_p` — Mae'r gwasanaeth hwn yn defnyddio: {product}. Mae angen prawf patsh gyda ni o leiaf {hours} awr cyn eich apwyntiad. Nid yw prawf ar gyfer cynnyrch gwahanol yn cyfrif.
+- `journey patch_yes` — Ydw
+- `journey patch_no` — Nac ydw, ddim eto
+- `journey patch_missing` — Dewiswch un.
+- `journey patch_email_h` — Pa gyfeiriad e-bost a ddefnyddioch i archebu'r prawf patsh?
+- `journey patch_email_missing` — Rhowch y cyfeiriad e-bost a ddefnyddioch.
+- `journey patch_none_h` — Mae angen prawf patsh arnoch yn gyntaf
+- `journey patch_none_p` — Mae'n cymryd tua deng munud ac mae am ddim. Archebwch ef nawr; ar ôl ei wneud gallwch archebu'r gwasanaeth hwn ar gyfer {hours} awr neu fwy wedyn.
+- `journey patch_book` — Archebu prawf patsh
+- `journey reaction_h` — Ydych chi erioed wedi adweithio i liw gwallt, prawf patsh, neu gynnyrch gwallt neu groen?
+- `journey reaction_p` — Er enghraifft cosi, brech, chwyddo neu losgi. Gwybodaeth iechyd yw eich ateb. Dim ond os cytunwch, ar y cam olaf, y byddwn yn ei gadw.
+- `journey reaction_missing` — Atebwch ydw neu nac ydw.
+- `journey reaction_blocked_h` — Mae angen i ni siarad â chi cyn archebu hyn
+- `journey reaction_blocked_p` — Gan eich bod wedi cael adwaith o'r blaen, mae angen i oruchwyliwr siarad â chi cyn archebu'r gwasanaeth hwn. E-bostiwch {email}.
+- `journey who_h` — Pwy hoffech chi?
+- `journey who_p` — Mae dysgwyr ar gam cynharach yn costio llai ac yn cymryd mwy o amser. Mae pob dysgwr yn gweithio dan oruchwyliaeth.
+- `journey who_any` — Unrhyw ddysgwr — y cyntaf sydd ar gael
+- `journey who_any_detail` — O {from}. Mae'r amser a'r pris yn dibynnu ar y dysgwr; fe welwch y ddau ar gyfer pob amser.
+- `journey who_detail` — Tua {time} — {price}
+- `journey who_qualified` — Byddai steilydd cymwysedig yn cymryd tua {time}.
+- `journey who_missing` — Dewiswch pwy hoffech chi.
+- `journey when_h` — Pryd hoffech chi ddod?
+- `journey when_p` — Dewiswch ddiwrnod, yna amser.
+- `journey full` — Llawn
+- `journey few` — Ychydig
+- `journey lots` — Digon
+- `journey closed` — Ar gau
+- `journey next_available` — Y nesaf sydd ar gael: {when}
+- `journey none_available` — Nid oes dim ar gael yn yr wythnosau nesaf. E-bostiwch {email}.
+- `journey earlier` — Diwrnodau cynharach
+- `journey later` — Diwrnodau diweddarach
+- `journey morning` — Bore
+- `journey afternoon` — Prynhawn
+- `journey no_morning` — Dim byd yn y bore.
+- `journey no_afternoon` — Dim byd yn y prynhawn.
+- `journey day_full` — Dim ar ôl ar y diwrnod hwn. Dewiswch ddiwrnod arall.
+- `journey slot_detail` — {start} i {end} — {level} — {price}
+- `journey when_missing` — Dewiswch ddiwrnod ac amser.
+- `journey details_h` — Eich manylion
+- `journey name` — Eich enw
+- `journey email` — Cyfeiriad e-bost
+- `journey email_hint` — Anfonwn eich cadarnhad yma.
+- `journey phone` — Rhif ffôn symudol (dewisol)
+- `journey phone_hint` — Dim ond os bydd angen i ni gysylltu â chi am yr apwyntiad hwn y caiff ei ddefnyddio.
+- `journey guardian_h` — Rhiant neu warcheidwad
+- `journey guardian_name` — Enw'r rhiant neu'r gwarcheidwad
+- `journey guardian_confirm` — Fi yw rhiant neu warcheidwad y person sy'n cael y gwasanaeth hwn, ac rwy'n cydsynio iddo.
+- `journey notes` — Alergeddau, cyflyrau croen neu groen y pen y dylem wybod amdanynt (dewisol)
+- `journey notes_hint` — Gwybodaeth iechyd. Fe'i cedwir wedi'i hamgryptio, a dim ond staff goruchwylio sy'n ei darllen.
+- `journey consent_health` — Rwy'n cytuno i Clwydian Academy gadw fy atebion am adweithiau, alergeddau a chyflyrau croen er mwyn gallu cyflawni'r gwasanaeth hwn yn ddiogel.
+- `journey consent_terms` — Rwyf wedi darllen y telerau archebu ac yn cytuno iddynt.
+- `journey terms_link` — Darllen y telerau archebu
+- `journey missing_name` — Rhowch eich enw.
+- `journey missing_email` — Rhowch gyfeiriad e-bost dilys.
+- `journey missing_guardian` — Rhowch enw'r rhiant neu'r gwarcheidwad a thiciwch y blwch cydsynio.
+- `journey missing_health` — Ticiwch y blwch i adael i ni gadw eich atebion iechyd, neu e-bostiwch ni yn lle hynny.
+- `journey missing_terms` — Ticiwch y blwch i gytuno i'r telerau archebu.
+- `journey review_h` — Gwirio a thalu eich blaendal
+- `journey review_h_free` — Gwirio a chadarnhau
+- `journey sum_service` — Gwasanaeth
+- `journey sum_who` — Gyda
+- `journey sum_when` — Pryd
+- `journey sum_length` — Caniatewch
+- `journey sum_price` — Pris
+- `journey sum_deposit` — Blaendal i'w dalu nawr
+- `journey sum_balance` — I'w dalu ar y diwrnod
+- `journey supervised` — {level}, dan oruchwyliaeth
+- `journey length_honest` — {time}. Byddai steilydd cymwysedig yn cymryd tua {qualified}; mae dysgwr yn cymryd mwy o amser, ac mae goruchwyliwr yn gwirio'r gwaith.
+- `journey length_same` — {time}, gan gynnwys gwiriadau'r goruchwyliwr.
+- `journey pay` — Talu blaendal o {amount}
+- `journey confirm` — Cadarnhau'r archeb
+- `journey paying` — Un eiliad…
+- `journey pay_note` — Byddwch yn mynd i'n tudalen talu â cherdyn. Cedwir eich amser am {minutes} munud tra byddwch yn talu.
+- `journey placeholder_banner` — DATA PRAWF — mae'r prisiau, yr amseroedd a'r dyddiadau hyn yn rhai dros dro sydd heb eu cadarnhau.
+- `journey done_h` — Rydych wedi'ch archebu
+- `journey done_p` — Eich cyfeirnod yw {ref}. Rydym wedi anfon eich cadarnhad drwy e-bost.
+- `journey held_h` — Rydym yn aros i'ch taliad gael ei gadarnhau
+- `journey held_p` — Fel arfer mae hyn yn cymryd ychydig eiliadau. Eich cyfeirnod yw {ref}. Bydd y dudalen hon yn diweddaru; nid oes angen i chi dalu eto.
+- `journey expired_h` — Ni chwblhawyd yr archeb honno
+- `journey expired_p` — Ni chadarnhawyd unrhyw daliad ac mae'r amser wedi'i ryddhau. Gallwch ddechrau eto.
+- `journey cancelled_h` — Ni chwblhawyd y taliad
+- `journey cancelled_p` — Nid ydych wedi cael eich codi. Cedwir eich amser am ychydig funudau eto — neu dechreuwch eto.
+- `journey start_again` — Dechrau eto
+- `journey unknown_ref` — Ni allem ddod o hyd i'r archeb honno. E-bostiwch {email}.
+- `journey hours` — {h} awr
+- `journey minutes` — {m} mun
+- `journey hours_minutes` — {h} awr {m} mun
+- `journey error` — Aeth rhywbeth o'i le ar ein hochr ni. Rhowch gynnig arall arni, neu e-bostiwch {email}.
+- `model form name` — Eich enw
+- `model form email` — Cyfeiriad e-bost
+- `model form interests` — Beth sydd o ddiddordeb i chi? (dewisol)
+- `model form days` — Diwrnodau neu amseroedd sy'n gyfleus i chi (dewisol)
+- `model form consent` — Rwy'n cytuno i Clwydian Academy gadw'r manylion hyn i gysylltu â mi ynglŷn â bod yn fodel. Gallaf ofyn iddynt gael eu dileu unrhyw bryd.
+- `model form send` — Ymuno â'r gofrestr
+- `model form sending` — Un eiliad…
+- `model form missing_name` — Rhowch eich enw.
+- `model form missing_email` — Rhowch gyfeiriad e-bost dilys.
+- `model form missing_consent` — Ticiwch y blwch er mwyn i ni gael cadw eich manylion.
+- `model form done_h` — Diolch — rydych ar y gofrestr
+- `model form done_p` — Anfonwn e-bost atoch pan fydd angen model ar ddysgwr.
+- `model form error` — Ni anfonwyd hynny. E-bostiwch {email} yn lle hynny.
+- `policy level l1` — Dysgwr Lefel 1
+- `policy level l2` — Dysgwr Lefel 2
+- `policy level l3` — Dysgwr Lefel 3
+- `policy level graduate` — Steilydd graddedig
+- `policy service patch-test` — Prawf patsh
+- `policy service blow-dry` — Golchi a chwythsychu
+- `policy service cut-finish` — Torri a chwythsychu
+- `policy service restyle` — Ailsteilio, torri a chwythsychu
+- `policy service barber-cut` — Toriad barbwr
+- `policy service hair-up` — Gwallt i fyny neu steilio achlysur
+- `policy service semi-colour` — Lliw lled-barhaol
+- `policy service root-colour` — Lliwio'r gwreiddiau (parhaol)
+- `policy service full-colour` — Lliwio'r pen cyfan (parhaol neu gwasi-barhaol)
+- `policy service foils` — Goleuadau neu isoleuadau (ffoiliau)
+- `policy service perm` — Pyrm
+- `policy service relaxer` — Triniaeth ymlacio
+- `policy service conditioning` — Triniaeth gyflyru
+- `policy group test` — Cyn eich lliw cyntaf
+- `policy group cutting` — Torri a steilio
+- `policy group barbering` — Barbro
+- `policy group colour` — Lliw
+- `policy group texture` — Pyrmio ac ymlacio
+- `policy group treatment` — Triniaethau
+- `policy product colour` — Lliw parhaol a chwasi-barhaol (ystod cynnyrch i'w henwi)
+- `policy product lightener` — Goleuwr / cannydd (ystod cynnyrch i'w henwi)
+- `policy product relaxer` — Ymlaciwr (ystod cynnyrch i'w henwi)
+- `pages.json salon title` — Salon Hyfforddi, Llanelwy | Clwydian Academy
+- `pages.json salon description` — Gwasanaethau gwallt gan ddysgwyr Clwydian Academy yn Llanelwy, dan oruchwyliaeth, am brisiau dysgwyr. Yn ystod y tymor yn unig.
+- `pages.json salon-prices title` — Prisiau'r Salon Hyfforddi | Clwydian Academy
+- `pages.json salon-prices description` — Prisiau'r salon hyfforddi yn ôl lefel y dysgwr, gyda gwir hyd pob apwyntiad.
+- `pages.json salon-book title` — Archebu'r Salon Hyfforddi | Clwydian Academy
+- `pages.json salon-book description` — Archebwch apwyntiad gyda dysgwr Clwydian Academy yn Llanelwy: dewiswch wasanaeth, lefel dysgwr ac amser.
+- `pages.json salon-models title` — Bod yn Fodel Gwallt | Clwydian Academy
+- `pages.json salon-models description` — Ymunwch â chofrestr modelau Clwydian Academy yn Llanelwy a chael gwybod pan fydd angen model ar ddysgwr.
+- `pages.json salon-terms title` — Telerau Archebu'r Salon Hyfforddi | Clwydian Academy
+- `pages.json salon-terms description` — Telerau archebu salon hyfforddi Clwydian Academy: blaendaliadau, canslo, profion patsh a rhai o dan 16 oed.
+- `engine message bad-request` — Roedd rhywbeth o'i le yn y cais hwnnw. Dechreuwch eto, os gwelwch yn dda.
+- `engine message unknown-service` — Nid ydym yn adnabod y gwasanaeth hwnnw.
+- `engine message unknown-level` — Nid ydym yn adnabod y lefel dysgwr honno.
+- `engine message out-of-term` — Mae'r salon ar agor yn ystod y tymor yn unig, ac mae'r dyddiad hwnnw y tu allan i'r tymor.
+- `engine message closed-date` — Mae'r salon ar gau ar y dyddiad hwnnw.
+- `engine message closed-day` — Nid yw'r salon yn agor ar y diwrnod hwnnw o'r wythnos.
+- `engine message outside-hours` — Ni fyddai'r apwyntiad hwnnw'n ffitio o fewn sesiwn y salon. Dewiswch amser cynharach.
+- `engine message too-soon` — Mae hynny'n rhy fuan — mae angen o leiaf {hours} awr o rybudd arnom.
+- `engine message too-far` — Dim ond hyd at {days} diwrnod ymlaen llaw yr ydym yn archebu.
+- `engine message age-missing` — Dywedwch wrthym a yw'r person sy'n cael y gwasanaeth o dan 16 oed.
+- `engine message under16-chemical` — Ni allwn gynnig lliw parhaol na chwasi-barhaol, cannydd nac ymlaciwr i unrhyw un o dan 16 oed.
+- `engine message guardian-consent` — Mae angen caniatâd rhiant neu warcheidwad ar rywun o dan 16 oed ar gyfer y gwasanaeth hwn.
+- `engine message patch-none` — Mae angen prawf patsh gyda ni yn gyntaf ar gyfer y gwasanaeth hwn, o leiaf {hours} awr cyn eich apwyntiad. Ni allem ddod o hyd i un ar gyfer y cyfeiriad e-bost hwnnw.
+- `engine message patch-too-recent` — Rhaid i'ch prawf patsh fod o leiaf {hours} awr cyn yr apwyntiad. Dewiswch amser diweddarach.
+- `engine message patch-expired` — Mae eich prawf patsh ar gyfer y cynnyrch hwn dros {months} mis oed, felly mae angen un newydd arnoch yn gyntaf.
+- `engine message skill-level` — Nid yw'r gwasanaeth hwnnw'n cael ei gynnig ar y lefel dysgwr honno.
+- `engine message skill-not-signed-off` — Nid yw'r dysgwr hwnnw wedi'i gymeradwyo ar gyfer y gwasanaeth hwn eto.
+- `engine message student-unknown` — Nid yw'r amser hwnnw ar gael mwyach. Dewiswch un arall.
+- `engine message student-level-changed` — Nid yw'r amser hwnnw ar gael mwyach. Dewiswch un arall.
+- `engine message student-not-in` — Nid yw'r dysgwr hwnnw yn y salon y diwrnod hwnnw.
+- `engine message student-busy` — Mae rhywun newydd gymryd yr amser hwnnw. Dewiswch un arall.
+- `engine message no-chair` — Mae pob cadair wedi'i chymryd bryd hynny. Dewiswch amser arall.
+- `engine message no-basin` — Mae'r basnau wedi'u cymryd bryd hynny. Dewiswch amser arall.
+- `engine message no-supervisor` — Mae'r goruchwyliwr yn gwirio gwaith dysgwr arall bryd hynny. Dewiswch amser arall.
+- `engine message supervisor-ratio` — Mae'r salon ar ei derfyn goruchwylio bryd hynny. Dewiswch amser arall.
+- `engine message stale` — Newidiwyd yr archeb honno gan rywun arall. Ail-lwythwch a rhowch gynnig arall arni.
+- `engine message not-found` — Ni allem ddod o hyd i'r archeb honno.
+- `engine message bad-transition` — Ni ellir newid yr archeb honno i'r statws hwnnw.
+- `engine message details` — Gwiriwch eich manylion — mae rhywbeth ar goll.
+- `engine message consent-terms` — Cytunwch i'r telerau archebu i barhau.
+- `engine message consent-health` — Dim ond gyda'ch caniatâd y gallwn gadw eich atebion ymgynghori. Ticiwch y blwch, neu e-bostiwch ni yn lle hynny.
+- `engine message consultation-needed` — Oherwydd yr hyn rydych wedi'i ddweud wrthym, mae angen i ni siarad â chi cyn archebu'r gwasanaeth hwn. E-bostiwch hello@clwydianacademy.co.uk.
+- `engine message rate` — Gormod o geisiadau. Arhoswch ychydig funudau a rhowch gynnig arall arni.
+- `engine message unavailable` — Nid yw archebu ar-lein ar gael ar hyn o bryd. E-bostiwch hello@clwydianacademy.co.uk ac fe wnawn ni eich archebu.
+- `engine message signin` — Mewngofnodwch, os gwelwch yn dda.
+- `engine message EMAIL` — Helo [enw], / Mae eich apwyntiad yn salon hyfforddi Clwydian Academy wedi'i gadarnhau. / Cyfeirnod: CAS-XXXXXXXX / Gwasanaeth: [gwasanaeth] / Gyda: [lefel], dan oruchwyliaeth / Pryd: Dydd Llun 18 Ionawr 2027, 630–745 / Pris: £8 (blaendal o £2 wedi'i dalu; £6 i'w dalu ar y diwrnod) / Mae dysgwyr yn cymryd mwy o amser na steilydd cymwysedig, ac mae goruchwyliwr yn gwirio'r gwaith. Caniatewch yr amser llawn a ddangosir uchod. / I newid neu ganslo, e-bostiwch hello@clwydianacademy.co.uk o leiaf 48 awr ymlaen llaw. / Clwydian Academy CBC
+- `build.py nav` — Salon
+- `JSON-LD name` — Salon Hyfforddi Clwydian Academy
+- `JSON-LD description` — Salon hyfforddi yn Llanelwy, Gogledd Cymru: gwasanaethau gwallt gan ddysgwyr Clwydian Academy, dan oruchwyliaeth, yn ystod y tymor.
+- `Stripe line item` — Blaendal — [gwasanaeth] / Yn dod oddi ar eich bil ar y diwrnod. £[x] i'w dalu yn y salon.
+
+### NEEDS A HUMAN
+1. **Confirm or correct the 45 values above.** Booking cannot open until every one is plain.
+2. **Vercel environment variables** (Preview first): `KV_REST_API_URL` and `KV_REST_API_TOKEN`
+   for a NEW academy Upstash database; `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` (test
+   mode; webhook endpoint `/api/salon/stripe-webhook`, events `checkout.session.completed`,
+   `checkout.session.async_payment_succeeded`, `checkout.session.expired`, `charge.refunded`);
+   `SALON_DATA_KEY` (32 random bytes, base64 — if it is ever lost, stored consultation answers
+   and patch-test lookups are unreadable); `STAFF_PASSWORD` (10 characters or more);
+   `SALON_BOOKING_OPEN=1`; and on Preview only `SALON_ALLOW_PLACEHOLDERS=1`. `RESEND_API_KEY` is
+   already set. Coder has not touched Vercel.
+3. **Vercel plan.** Seven functions; the Hobby plan allows twelve.
+4. **Patch-test flow.** Colour cannot be booked until a patch test with the salon is on record,
+   so a new colour client makes two visits. Is that the intended rule, or should a colour booking
+   be allowed alongside a patch-test booking 48 hours earlier?
+5. **16- and 17-year-olds.** The brief's rule is under 16. Nothing extra is asked of 16–17s.
+6. **Perms and semi-permanent colour under 16** are allowed with guardian consent, because the
+   brief restricts only permanent, quasi-permanent, bleach and relaxer. Confirm.
+7. **Privacy notice.** `/privacy/` does not yet describe salon bookings, health answers, Stripe
+   or Upstash, or say how long they are kept. No retention or erasure job exists yet.
+8. **Refunds are manual.** Cancelling on the day sheet does not refund a deposit; a late payment
+   flagged "refund needed" is refunded in Stripe by hand.
+9. **Premises.** The pages say "St Asaph" and that the address will follow.
+10. **Provenance.** The engine's design came from software belonging to the Group. Whether a
+    one-off transfer needs a written licence or assignment is a related-party question for the PM.
