@@ -2,8 +2,9 @@
 """
 check_claims.py — content guard for the Clwydian Academy site.
 
-Fails the build on any claim the academy cannot stand behind (scans .html, .md, .txt and .json in the tree), or any regression to
-pre-August 2026 copy. Run against the built output before every commit:
+Fails the build on any claim the academy cannot stand behind, any regression to pre-August 2026
+copy, and any personal contact detail or personal name (scans .html, .md, .txt, .json and .js in
+the tree — .js so that the enquiry function's own addresses are covered). Run against the built output before every commit:
 
     python3 scripts/check_claims.py "clwydian-academy 2"
 
@@ -36,8 +37,18 @@ BANNED = [
     (r"18,170|7,350",                       "unverified apprenticeship-starts pair — use {{stat:apprentice_starts:...}} (NHBF 2022 restatement) until Mark supplies a source"),
     (r"(nearly|around|bron|tua)\s+70\s*%",  "derived from the unverified 18,170/7,350 pair — use {{stat:apprentice_starts:...}}"),
     (r"no longer turning a net profit|ddim bellach yn gwneud elw net|bellach yn gwneud elw net", "imprecise restatement of the NHBF April 2025 survey — use {{stat:profit:...}} (40% profit / 39% break even / 21% loss)"),
-    (r"@charlotteeleanorgroup\.uk",         "the academy's contact address must be its own — the independence case is why this site was rebuilt (red until the academy mailbox exists; PM NOTE 13 Sep 2026)"),
-    (r"Charlotte\s+Parker",                 "wrong name — Charlotte Roberts, Director of the Academy"),
+    # Privacy (PM decision, 17 Nov 2026 — the published contact details were being abused). The site
+    # names the organisation only: one address, hello@clwydianacademy.co.uk; no telephone number; no
+    # personal names. These rules replace the old "red until the academy mailbox exists" rule, and
+    # they fail the build if any of it comes back. The values live in _data/site.json.
+    (r"@charlotteeleanorgroup\.uk",         "privacy — the old Group address; the only address on the site is hello@clwydianacademy.co.uk ({{site:email}})"),
+    (r"(?:\+?44|0)[\s().-]*7714[\s().-]*198[\s.-]*743", "privacy — the personal mobile number; there is no telephone number on the site"),
+    (r"href=\"tel:|\"telephone\"",          "privacy — no telephone number on the site, in a link or in structured data"),
+    (r"Mark\s+Parker|Charlotte\s+Roberts|Charlotte\s+Parker", "privacy — no personal names on the site; name the role (Chief Executive Officer, Director of the Academy) or the organisation"),
+    (r"Charlotte\s*(?:&amp;|&|and|a|ac)\s*Mark|Mark\s*(?:&amp;|&|and|a|ac)\s*Charlotte", "privacy — no personal names on the site"),
+    (r"\b(?:Mark|Charlotte)\s+(?:directs|sy(?:&rsquo;|'|’)n\s+cyfarwyddo)", "privacy — no personal names on the site; write the sentence without the first name"),
+    (r"\"@type\"\s*:\s*\"Person\"|\"founder\"", "privacy — no Person or founder in structured data; the Organization only"),
+    (r"linkedin\.com/in/",                  "privacy — a personal profile link; link the organisation or nothing"),
     (r"franchise\s+network",                "no graduate route into a CEG franchise network"),
     (r"sister\s+compan(y|ies)",             "related-party framing removed in August"),
     (r"in-?house\s+(internal\s+)?quality",  "quality assurance is independent and external, not in-house"),
@@ -81,7 +92,7 @@ def check(root):
     pages = 0
     for dirpath, _dirs, files in os.walk(root):
         for fn in files:
-            if not fn.endswith((".html", ".md", ".txt", ".json")):
+            if not fn.endswith((".html", ".md", ".txt", ".json", ".js")):
                 continue
             path = os.path.join(dirpath, fn)
             rel = "/" + os.path.relpath(path, root).replace(os.sep, "/")
