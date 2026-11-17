@@ -3335,3 +3335,276 @@ Welsh. With no keys at all: journey, model form and day sheet each say so and gi
 9. **Premises.** The pages say "St Asaph" and that the address will follow.
 10. **Provenance.** The engine's design came from software belonging to the Group. Whether a
     one-off transfer needs a written licence or assignment is a related-party question for the PM.
+
+---
+
+## REPORT — SALON RELEASE 1, ADDENDUM: PM PRICING INPUT
+
+**Coder, 17 November 2026.** The PM's pricing input (central scenario), relayed by Mark, applied to
+`_data/salon/policy.json`, the engine and the pages. Same branch, same draft PR, still not merged.
+
+| Commit | Step |
+|---|---|
+| `a42e450` | policy, engine, pages source, tests |
+| `788c223` | build output |
+| *(this)* | this addendum |
+
+### What changed
+- **Tiers.** Level 2, Level 3, Graduate. The graduate tier is built and switched on behind
+  `levels.graduate.enabled` (a placeholder, as instructed). Level 1 stays in the file, switched
+  off, with no prices.
+- **Prices.** The PM's list, including barbering — 24 priced services plus the free allergy alert
+  test and the free colour consultation. Colour correction is listed "from" and is **never
+  bookable online**: the journey offers the free consultation instead.
+- **Adders.** Colour: length +3 / +7 / +12, thickness +2 / +5, history +2 / +3 / +6 at Level 3,
+  lift +5 (up to two shades) and +11 (three or more). Box dye, bleach, or three shades of lift
+  are **not offered at Level 2** — in `quote()` and again in `feasible()`. Cuts and blow-dries:
+  long-hair supplement +2 / +3. Additive, never multiplied.
+- **Extras.** Gents wash, outlines, designs (Level 3+), add a cut to a colour (+5 / +7).
+- **Durations.** base minutes × factor by level and category (L2 2.0 / 1.6, L3 1.5 / 1.3,
+  graduate 1.0), rounded up to five minutes, + 15 educator minutes on every booking. Level 2 cut
+  and blow-dry: 55 × 2.0 + 15 = 2 h 5 min.
+- **Deposits.** Flat £5 cutting and styling, £10 colour and technical; the 20% rule is gone. Never
+  more than the price (a £4 clipper cut carries a £4 deposit). Kept inside 48 h or on a no-show.
+- **Concession.** 20% off cutting and styling, never colour, Tuesday to Thursday, only when the
+  client claims it; rounded to the nearest 50p.
+- **Under 16.** Three age bands. Under 12: children's cut only. 12–15: the listed gents and
+  children's cuts. Guardian must consent and be present. Chemical ban unchanged.
+- **Balayage** needs a free consultation on record (created when staff complete the consultation
+  appointment), as well as the allergy alert test.
+- **Pages.** Prices page: "from" prices by level with honest durations, extras, what hair adds,
+  concession, deposit. Terms: appointments may move for learner availability or assessment;
+  prices include VAT where it applies. Models page: the assessment-model terms.
+- **Journey.** One screen each for age band, each hair question, extras, concession.
+
+### "PM draft — central scenario", and what that means on the site
+The PM's figures are written `{"pm_draft": "central scenario", "value": X}` — 78 of them.
+A draft is **printed**, under a visible "Draft prices" notice. A draft is **not a confirmation**:
+it keeps the salon pages noindex and out of the sitemap, and keeps booking closed in production,
+exactly as a placeholder does. A placeholder (`todo_pm`) is still never printed.
+Nothing on the site names the other business, its prices, or a percentage of them
+(`check_claims` clean; a page test fails on any "% of").
+
+### Gates
+`build.py` clean, second build a no-op · `check_claims` 101 files clean · `check_dates` 0 ·
+`check_links` 2842, 0 broken · `check_locale` 68 pages · `check_forms` clean · `test_enquiry.js`
+23/23 · `test_salon_rules.js` **95/95** · sitemap identical to `main`.
+
+### Guards watched failing
+44 deliberate breaks of the engine and quote, one at a time. 43 turned the suite red. The 44th —
+"PM drafts treated as confirmed" — passed, which showed there was no test that a drafts-only
+policy stays closed in production. That test was added and then seen to catch the break.
+
+### Evidence in a browser
+48 checks, 0 failed, against the same local stand-ins. Level 2 cut and blow-dry on long hair with
+the concession on a Wednesday: £9.50, £5 deposit, £4.50 on the day, "2 h 5 min; a qualified
+stylist would take about 1 h 10 min" — on the slot, the review, the payment page and the email.
+Designs rule out Level 2 and the page says why. Bleached, waist-length, thick hair with a cut
+added, at Level 3: £51, 2 h 55 min. Colour correction leads to the consultation. Forged webhook
+400 and "waiting"; verified webhook 200 and "booked".
+
+### Not verified
+As before: nothing has run on Vercel, Upstash, Stripe or Resend.
+
+### Readings of the input that the PM should check
+1. **Under 16.** "Gents/children's rate" was read as: a 12–15 year old may book the gents and
+   children's cuts (and the two barbering cuts). Nothing else is offered to them.
+2. **The educator's 15 minutes** are split 10 at the start and 5 at the end. With ONE supervisor
+   on the floor that means **no two appointments can start within ten minutes of each other** —
+   the single biggest limit on how many clients a session can take. The number of supervisors is
+   a placeholder.
+3. **Long or thick hair adds money but no time.** The input gave price adders only.
+4. **Deposit above the price.** Clipper cut £4 at Level 2: the deposit is capped at £4, i.e. paid
+   in full when booking.
+5. **Concession rounding** to the nearest 50p (£8 less 20% = £6.50, not £6.40).
+6. **Treatments** (conditioning, bond reconstructor) take the £5 deposit and get **no**
+   concession: they are neither cutting nor styling.
+7. **Perm** asks for no allergy alert test and is allowed at 12–15? No — it is not on the 12–15
+   list, so it is not offered under 16. It asks length and thickness only.
+8. **Base minutes not in the input**: curly blow-dry 50, toner 30, perm 150, colour correction
+   180, conditioning 30, bond reconstructor 30 were taken from the engine's defaults and marked
+   draft. All six barbering services and every extra have guessed minutes, marked placeholder, so
+   their times print "to be confirmed".
+
+### TODO_PM — the 48 placeholders now in the file
+- `levels.l1.enabled`
+- `levels.l1.factors`
+- `levels.graduate.enabled`
+- `resources.chairs`
+- `resources.basins`
+- `resources.supervisors_on_floor`
+- `resources.supervisor_ratio`
+- `resources.basin_timings_confirmed`
+- `concession.round_to`
+- `vat.status`
+- `terms_approved`
+- `booking.min_notice_hours`
+- `booking.horizon_days`
+- `patch_test.products.colour.name`
+- `patch_test.products.lightener.name`
+- `age.under16_services`
+- `age.under16_insurance_confirmed`
+- `opening.terms`
+- `opening.closures`
+- `opening.sessions`
+- `questions.length.options.shoulder.add.graduate`
+- `questions.length.options.mid-back.add.graduate`
+- `questions.length.options.waist.add.graduate`
+- `questions.thickness.options.medium.add.graduate`
+- `questions.thickness.options.thick.add.graduate`
+- `questions.history.options.tinted.add.graduate`
+- `questions.history.options.highlights.add.l2`
+- `questions.history.options.highlights.add.graduate`
+- `questions.history.options.bleached.add.graduate`
+- `questions.lift.options.lighter.add.graduate`
+- `questions.lift.options.much-lighter.add.graduate`
+- `questions.long_hair.options.yes.add.graduate`
+- `addons.gents-wash.base_minutes`
+- `addons.outlines.prices.l3`
+- `addons.outlines.prices.graduate`
+- `addons.outlines.base_minutes`
+- `addons.designs.base_minutes`
+- `addons.add-cut.prices.graduate`
+- `addons.add-cut.base_minutes`
+- `services.patch-test.base_minutes`
+- `services.consultation.base_minutes`
+- `services.faded-gents-cut.l2_allowed`
+- `services.clipper-cut.base_minutes`
+- `services.scissor-over-comb.base_minutes`
+- `services.beard-trim.base_minutes`
+- `services.hot-towel-shave.base_minutes`
+- `services.flat-top.base_minutes`
+- `services.cut-beard-combo.base_minutes`
+
+### WELSH FOR REVIEW — new or changed since the Release 1 list (122)
+- `salon.py T.how` — Mae addysgwr yn gwirio’r gwaith — Mae pob apwyntiad yn dechrau gydag ymgynghoriad gyda’r addysgwr ac yn gorffen gyda’r addysgwr yn gwirio’r gwaith.
+- `salon.py T.how` — Mae angen prawf rhybudd alergedd cyn lliwio — Ar gyfer lliwio a goleuo mae angen prawf rhybudd alergedd (prawf patsh) am ddim gyda ni o leiaf {patch_hours} awr cyn eich apwyntiad. Mae’n ddilys am {patch_months} mis, ar gyfer yr un cynnyrch.
+- `salon.py T.prices_lede` — Prisiau “o” ar gyfer pob cam o’r hyfforddiant. Yr amseroedd yw gwir hyd yr apwyntiad gyda’r dysgwr hwnnw, gan gynnwys pymtheg munud gyda’r addysgwr.
+- `salon.py T.draft_h` — Prisiau drafft
+- `salon.py T.draft_p` — Drafft yw’r prisiau a’r amseroedd hyn ac nid ydynt wedi’u cadarnhau. Gallant newid cyn i’r salon agor.
+- `salon.py T.time_tbc` — amser i’w gadarnhau
+- `salon.py T.consult_note` — Ymgynghoriad am ddim yn gyntaf
+- `salon.py T.finish_note` — Yn cynnwys gorffeniad chwythsychu sylfaenol
+- `salon.py T.extras_h` — Ychwanegion
+- `salon.py T.extra` — Ychwanegiad
+- `salon.py T.hair_h` — Beth mae eich gwallt yn ei ychwanegu
+- `salon.py T.hair_colour_p` — Mae prisiau lliwio’n dechrau o wallt byr, main, naturiol. Mae gwallt hirach, mwy trwchus neu wallt sydd wedi’i liwio o’r blaen yn ychwanegu at y pris, a dywedwn y ffigur union wrthych cyn i chi archebu.
+- `salon.py T.hair_l3_p` — Gwaith Lefel 3 yw gwallt â lliw o focs neu gannydd arno, a mynd dri arlliw neu fwy yn oleuach, ac ni chaiff ei gynnig gyda dysgwr Lefel 2.
+- `salon.py T.answer` — Eich gwallt
+- `salon.py T.not_at` — Ddim ar y lefel hon
+- `salon.py T.conc_h` — Consesiwn
+- `salon.py T.conc_p` — {percent}% oddi ar dorri a steilio — nid lliwio — ar {days}, ar gyfer: {who}. Dywedwch wrthym wrth archebu, a dewch â phrawf ar y diwrnod.
+- `salon.py T.u16_p` — Plant o dan 12 oed: y toriad plant. 12 i 15 oed: toriadau dynion a phlant, am y prisiau hynny. Rhaid i riant neu warcheidwad fod yn bresennol. Dim lliw parhaol na chwasi-barhaol, cannydd nac ymlaciwr o dan 16 oed.
+- `salon.py T.test_h` — Cyn lliwio
+- `salon.py T.test_p` — Prawf rhybudd alergedd am ddim o leiaf {patch_hours} awr cyn unrhyw liwio. Ymgynghoriad am ddim cyn balayage a chywiro lliw.
+- `salon.py T.patch_note` — Angen prawf rhybudd alergedd
+- `salon.py T.deposit_p` — Telir blaendal â cherdyn wrth archebu: {cutting} ar gyfer torri a steilio, {colour} ar gyfer lliwio a gwasanaethau technegol (byth yn fwy na’r pris). Mae’n dod oddi ar eich bil ar y diwrnod. Fe’i cedwir os byddwch yn canslo gyda llai na {cancel} awr o rybudd neu os na fyddwch yn cyrraedd.
+- `salon.py T.models_what` — Ar gyfer asesiad, mae toriad neu chwythsychu am ddim. Ar gyfer lliwio rydych yn talu cost y cynnyrch yn unig, {lo} i {hi}. Mae blaendal o {deposit} yn cadw eich lle ac yn cael ei ad-dalu pan fyddwch yn mynychu. Nid yw ymuno â’r gofrestr yn eich ymrwymo i ddim.
+- `salon.py T.models_tbc` — Cyhoeddir yma beth mae sesiwn fodel yn ei gostio cyn i’r gofrestr gael ei defnyddio. Nid yw ymuno yn eich ymrwymo i ddim.
+- `salon.py T.terms_sections` — Prisiau — Y pris a ddangosir i chi wrth archebu yw’r pris a dalwch. Mae’r prisiau’n cynnwys TAW lle mae’n berthnasol.
+- `salon.py T.terms_sections` — Os oes rhaid i ni symud neu ganslo — Salon hyfforddi yw hwn: gall argaeledd dysgwr, neu’r hyn sydd ei angen ar ddysgwr ar gyfer asesiad, olygu bod rhaid i ni symud eich apwyntiad. Os gwnawn, byddwn yn cynnig amser arall neu’n ad-dalu eich blaendal yn llawn.
+- `salon.py T.terms_sections` — Profion rhybudd alergedd ac ymgynghoriadau — Mae angen prawf rhybudd alergedd (prawf patsh) gyda ni ar gyfer gwasanaethau lliwio a goleuo, o leiaf {patch_hours} awr cyn yr apwyntiad a dim mwy na {patch_months} mis cyn hynny, ar gyfer yr un cynnyrch. Hebddo, ni all y gwasanaeth fynd rhagddo. Mae angen ymgynghoriad yn gyntaf ar gyfer balayage a chywiro lliw. Mae’r ddau am ddim.
+- `salon.py T.terms_sections` — O dan 16 oed — Nid ydym yn rhoi lliw parhaol na chwasi-barhaol, cannydd nac ymlaciwr ar unrhyw un o dan 16 oed. Mae gwasanaethau eraill i rywun o dan 16 oed wedi’u cyfyngu i’r rhai ar ein rhestr brisiau, a rhaid i riant neu warcheidwad gydsynio a bod yn bresennol.
+- `journey age_h` — Faint yw oed y person sy'n cael y gwasanaeth hwn?
+- `journey age_adult` — 16 oed neu hŷn
+- `journey age_u16` — 12 i 15 oed
+- `journey age_u12` — O dan 12 oed
+- `journey age_guardian` — Rhaid i riant neu warcheidwad fod yn bresennol.
+- `journey age_service_h` — Nid ydym yn cynnig y gwasanaeth hwn ar yr oedran hwnnw
+- `journey age_service_u16` — Ar gyfer 12 i 15 oed rydym yn cynnig toriadau dynion a phlant. Dewiswch un o'r rheini.
+- `journey age_service_u12` — Ar gyfer plant o dan 12 oed rydym yn cynnig y toriad plant. Dewiswch hwnnw.
+- `journey children_only` — Mae'r toriad plant ar gyfer plant o dan 12 oed. Dewiswch wasanaeth gwahanol.
+- `journey q_l3` — Lefel 3 neu uwch
+- `journey extras_h` — Hoffech chi ychwanegu unrhyw beth?
+- `journey extras_p` — Dewiswch unrhyw rai yr hoffech, neu ddim un. Mae pris ychwanegiad yn dibynnu ar lefel eich dysgwr.
+- `journey extra_price` — +{price}
+- `journey extra_range` — +{lo} i +{hi}
+- `journey extra_from_l3` — Lefel 3 neu uwch
+- `journey conc_h` — A oes unrhyw un o'r rhain yn berthnasol i chi?
+- `journey conc_p` — {percent}% oddi ar dorri a steilio ar {days}. Dewch â phrawf ar y diwrnod.
+- `journey conc_yes` — Oes, mae un o'r rhain yn berthnasol i mi
+- `journey conc_no` — Nac oes
+- `journey conc_missing` — Dewiswch oes neu nac oes.
+- `journey conc_applied` — consesiwn wedi'i gymhwyso
+- `journey conc_not_today` — Nid yw'r consesiwn yn berthnasol ar y diwrnod hwn.
+- `journey consult_h` — Mae angen ymgynghoriad am ddim yn gyntaf ar gyfer hyn
+- `journey consult_p` — Cyn y gwasanaeth hwn mae angen i addysgwr weld eich gwallt a chytuno ar gynllun a phris gyda chi. Mae'r ymgynghoriad am ddim ac yn cymryd tua hanner awr. Ar ôl ei wneud gallwch archebu'r gwasanaeth.
+- `journey consult_book` — Archebu ymgynghoriad am ddim
+- `journey who_higher` — O'r hyn rydych wedi'i ddweud wrthym am eich gwallt, mae angen dysgwr mwy profiadol ar gyfer hyn, felly ni chynigir Lefel 2.
+- `journey sum_extras` — Ychwanegion
+- `journey from_price` — o {price}
+- `journey patch_h` — Ydych chi wedi cael prawf rhybudd alergedd (prawf patsh) gyda ni ar gyfer hyn yn ystod y {months} mis diwethaf?
+- `journey patch_p` — Mae'r gwasanaeth hwn yn defnyddio: {product}. Mae angen prawf rhybudd alergedd am ddim gyda ni o leiaf {hours} awr cyn eich apwyntiad. Nid yw prawf ar gyfer cynnyrch gwahanol yn cyfrif.
+- `journey patch_email_h` — Pa gyfeiriad e-bost a ddefnyddioch i archebu'r prawf?
+- `journey patch_none_h` — Mae angen prawf rhybudd alergedd arnoch yn gyntaf
+- `journey patch_book` — Archebu prawf rhybudd alergedd am ddim
+- `journey guardian_confirm` — Fi yw rhiant neu warcheidwad y person sy'n cael y gwasanaeth hwn, rwy'n cydsynio iddo, a byddaf yn bresennol.
+- `journey length_honest` — {time}. Byddai steilydd cymwysedig yn cymryd tua {qualified}; mae dysgwr yn cymryd mwy o amser, ac mae addysgwr yn gwirio'r gwaith.
+- `journey length_same` — {time}, gan gynnwys amser gyda'r addysgwr.
+- `policy service patch-test` — Prawf rhybudd alergedd (prawf patsh)
+- `policy service consultation` — Ymgynghoriad lliw
+- `policy service blow-dry` — Chwythsychu
+- `policy service curly-blow-dry` — Chwythsychu cyrliog
+- `policy service gents-cut` — Toriad dynion (clipiwr neu siswrn)
+- `policy service faded-gents-cut` — Toriad dynion pylu / pylu at y croen
+- `policy service childrens-cut` — Toriad plant (o dan 12 oed)
+- `policy service occasion` — Gwallt achlysur a steilio i fyny
+- `policy service note occasion` — Lefel 2: gwallt i fyny sylfaenol
+- `policy service root-retouch` — Ail-liwio'r gwreiddiau
+- `policy service half-head-foils` — Ffoiliau hanner pen
+- `policy service full-head-foils` — Ffoiliau pen cyfan
+- `policy service balayage` — Balayage / ombré
+- `policy service toner-gloss` — Arlliwydd / sglein
+- `policy service colour-correction` — Cywiro lliw
+- `policy service note colour-correction` — Prisir mewn ymgynghoriad am ddim
+- `policy service perm` — Pyrm modern
+- `policy service bond-reconstructor` — Adluniwr bondiau
+- `policy service clipper-cut` — Toriad clipiwr, un radd
+- `policy service scissor-over-comb` — Siswrn dros grib
+- `policy service beard-trim` — Tocio a siapio barf
+- `policy service hot-towel-shave` — Eillio tywel poeth / rasel hen ffasiwn
+- `policy service flat-top` — Pen fflat / toriad creadigol
+- `policy service cut-beard-combo` — Toriad a barf
+- `policy group test` — Cyn lliwio
+- `policy group colour` — Lliwio a phyrmio
+- `policy question length` — Pa mor hir yw eich gwallt?
+- `policy answer length.above-shoulder` — Uwchben yr ysgwydd
+- `policy answer length.shoulder` — Hyd at yr ysgwydd
+- `policy answer length.mid-back` — Canol y cefn
+- `policy answer length.waist` — At y wasg neu'n hirach
+- `policy question thickness` — Pa mor drwchus yw eich gwallt?
+- `policy answer thickness.fine` — Main
+- `policy answer thickness.medium` — Canolig
+- `policy answer thickness.thick` — Trwchus
+- `policy question history` — Beth sydd ar eich gwallt ar hyn o bryd?
+- `policy answer history.natural` — Dim — fy lliw naturiol
+- `policy answer history.tinted` — Lliw o focs neu liw salon
+- `policy answer history.highlights` — Goleuadau neu ffoiliau
+- `policy answer history.bleached` — Cannydd
+- `policy question lift` — Faint yn oleuach hoffech chi fynd?
+- `policy answer lift.same` — Yr un fath, neu'n dywyllach
+- `policy answer lift.lighter` — Un neu ddau arlliw'n oleuach
+- `policy answer lift.much-lighter` — Tri arlliw neu fwy
+- `policy question long_hair` — A yw eich gwallt yn hirach na hyd yr ysgwydd?
+- `policy extra outlines` — Amlinellau a manylion
+- `policy extra designs` — Dyluniadau a phatrymau
+- `policy extra add-cut` — Ychwanegu toriad
+- `policy concession who` — Dros 65 oed, Myfyrwyr, Staff y GIG a gofal
+- `engine message under12-service` — Ar gyfer plant o dan 12 oed rydym yn cynnig y toriad plant yn unig.
+- `engine message under16-service` — Nid yw'r gwasanaeth hwnnw'n cael ei gynnig i unrhyw un o dan 16 oed.
+- `engine message children-only` — Mae'r toriad plant ar gyfer plant o dan 12 oed.
+- `engine message consultation-first` — Mae angen ymgynghoriad am ddim gyda ni yn gyntaf ar gyfer y gwasanaeth hwn. Archebwch ymgynghoriad.
+- `engine message quote-only` — Prisir y gwasanaeth hwn mewn ymgynghoriad am ddim ac ni ellir ei archebu ar-lein. Archebwch ymgynghoriad.
+- `engine message needs-higher-level` — O'r hyn rydych wedi'i ddweud wrthym am eich gwallt, mae angen dysgwr mwy profiadol ar gyfer hyn. Dewiswch lefel uwch.
+- `engine message answers-missing` — Atebwch y cwestiynau am eich gwallt.
+- `engine message unknown-addon` — Ni ellir ychwanegu'r ychwanegiad hwnnw at y gwasanaeth hwn.
+- `engine message guardian-consent` — Mae angen i riant neu warcheidwad gydsynio a bod yn bresennol ar gyfer rhywun o dan 16 oed.
+
+### NEEDS A HUMAN
+Everything in the Release 1 list still stands. In addition:
+1. Confirm the 78 draft values (replace each `pm_draft` object with the plain value) and
+   decide the 48 placeholders.
+2. VAT status, and whether the salon's insurance covers under-16s — both placeholders, both block
+   opening.
+3. Graduate adders, the Level 2 "highlights" adder, and Level 3 / graduate prices for outlines
+   were not in the input.
