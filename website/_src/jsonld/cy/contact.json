@@ -1,0 +1,26 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "Cysylltu â Clwydian Academy",
+    "url": "https://www.clwydianacademy.co.uk/cy/cysylltu/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Hafan",
+        "item": "https://www.clwydianacademy.co.uk/cy/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Cysylltu",
+        "item": "https://www.clwydianacademy.co.uk/cy/cysylltu/"
+      }
+    ]
+  }
+]

@@ -1,0 +1,68 @@
+<section class="page-hero">
+  <svg class="hero-ridge" viewBox="0 0 900 300" aria-hidden="true" fill="none" stroke-linecap="round">
+    <path d="M-20,190 C210,60 460,250 920,90" stroke="#574463" stroke-width="2.5"/>
+    <path d="M-20,235 C230,120 480,290 920,140" stroke="#c2a14d" stroke-width="2"/>
+  </svg>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/for-salons/">For Salons</a></li><li aria-current="page">What it costs</li></ol></nav>
+    <p class="eyebrow mt-2">For salons &middot; Tariff, tiers, how to book</p>
+    <h1>One tariff, published, for everyone.</h1>
+    <p class="lede">Every price we charge comes out of the same formula, anchored on two prices we had already published. You can check the arithmetic before you book.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="/contact/#register">Register your salon <span class="arr">&rarr;</span></a>
+      <a class="btn btn-outline" href="{{cpd:calendarUrl}}">Dates on the calendar</a>
+    </div>
+    <nav class="hero-actions mt-2" aria-label="For salons">
+      <a class="btn btn-outline btn-sm" href="/for-salons/">For salons</a>
+      <a class="btn btn-outline btn-sm" href="/for-salons/train-your-team/">Train your team</a>
+      <a class="btn btn-outline btn-sm" href="/for-salons/take-an-apprentice/">Take on an apprentice</a>
+      <a class="btn btn-outline btn-sm" href="/for-salons/what-it-costs/" aria-current="page">What it costs</a>
+    </nav>
+  </div>
+</section>
+
+<section class="section section--tight" style="padding-top:0">
+  <div class="wrap split" style="align-items:start">
+    <div class="reveal">
+      <p class="eyebrow">The formula</p>
+      <h2 style="font-size:clamp(1.6rem,2.6vw,2.1rem)">Seat price = {{cpd:fixed}} + {{cpd:perGlh}} &times; guided learning hours, rounded to the nearest {{cpd:roundTo}}.</h2>
+      <p>The fixed part covers enrolment, awarding-body registration, assessment and independent internal quality assurance — costs that fall on a one-day award as heavily as on a ten-week unit. The hourly part covers tutor time, the floor, products and models. It is anchored on {{cpd:anchors}}; Hair Extensions carries a {{cpd:kit}} supplement for brand-partner hair and kit.</p>
+      <p class="eyebrow mt-2">Team rates</p>
+      <ul class="feature-list">
+        <li>{{cpd:tierRange:1}} seats: {{cpd:tierPct:1}}% off</li>
+        <li>{{cpd:tierRange:2}} seats: {{cpd:tierPct:2}}% off</li>
+        <li>A whole cohort of {{cpd:tierFrom:3}}: {{cpd:tierPct:3}}% off</li>
+      </ul>
+      <p>Counted by people from your salon across the whole term, not bookings on one date. One invoice, payable in instalments across the course.</p>
+    </div>
+    <div class="reveal" style="--d:.12s">
+      <p class="eyebrow">Why we are not {{cpd:minPrice}} for everything</p>
+      <h2 style="font-size:clamp(1.6rem,2.6vw,2.1rem)">Compared on price alone, the comparison is wrong.</h2>
+      <p>Attendance courses locally run one day at around {{fee:marketDayMin}} to {{fee:marketDayMax}} and end in a certificate an insurer will accept. They have their place. They do not carry regulated credit. Every course here is a VTCT unit with independent quality assurance and, where the unit demands it, an external paper — and the credit banks toward a VTCT diploma.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">The price list</p>
+      <h2>Every unit, and the arithmetic behind it.</h2>
+    </div>
+    <div class="reveal">
+{{cpd:priceList}}
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap cta-banner on-navy reveal">
+    <img class="watermark" src="/assets/img/seal.svg" alt="" aria-hidden="true">
+    <h2>Tell us who is coming and to what.</h2>
+    <p class="lede">Register your salon with the units and the people. We confirm the seats and the tier, and send one invoice.</p>
+    <div class="hero-actions mt-2">
+      <a class="btn btn-gold" href="/contact/#register">Register your salon <span class="arr">&rarr;</span></a>
+      <a class="btn btn-ghost-light" href="/for-salons/train-your-team/">Train your team</a>
+    </div>
+  </div>
+</section>

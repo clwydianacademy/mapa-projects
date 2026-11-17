@@ -1,0 +1,12 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Clwydian Academy",
+    "url": "https://www.clwydianacademy.co.uk/",
+    "inLanguage": "en",
+    "publisher": {
+      "@id": "https://www.clwydianacademy.co.uk/#organization"
+    }
+  }
+]

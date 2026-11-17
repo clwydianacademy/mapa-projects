@@ -1,0 +1,54 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "@id": "https://www.clwydianacademy.co.uk/cy/cyrsiau/dpp-ymgynghori-a-manwerthu/#course",
+    "name": "Dosbarth Meistr Cyfarwyddo a Chynghori ar Gynhyrchion a Gwasanaethau (Uned VTCT UNHB385)",
+    "inLanguage": "cy",
+    "description": "Dosbarth meistr DPP cyfunol pum dydd Llun yn Llanelwy yn arwain at uned VTCT Lefel 2 UNHB385 reoledig: ymgynghori uwch, dadansoddi gwallt a chroen pen, proffilio ffordd o fyw a chyfathrebu manwerthu.",
+    "provider": {
+      "@id": "https://www.clwydianacademy.co.uk/#organization"
+    },
+    "url": "https://www.clwydianacademy.co.uk/cy/cyrsiau/dpp-ymgynghori-a-manwerthu/",
+    "coursePrerequisites": "Trin Gwallt neu Farbro Lefel 2.",
+    "hasCourseInstance": {
+      "@type": "CourseInstance",
+      "courseMode": "Blended",
+      "courseWorkload": "P5W",
+      "location": {
+        "@type": "Place",
+        "name": "Clwydian Academy, St Asaph",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "St Asaph",
+          "addressRegion": "Denbighshire",
+          "addressCountry": "GB"
+        }
+      }
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Hafan",
+        "item": "https://www.clwydianacademy.co.uk/cy/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Cyrsiau",
+        "item": "https://www.clwydianacademy.co.uk/cy/cyrsiau/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "DPP Ymgynghori a Manwerthu",
+        "item": "https://www.clwydianacademy.co.uk/cy/cyrsiau/dpp-ymgynghori-a-manwerthu/"
+      }
+    ]
+  }
+]

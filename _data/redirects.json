@@ -1,0 +1,15 @@
+{
+  "_source": "Retired URLs and where they now lead. website/_src/build.py turns this list into `site/vercel.json` (permanent 301 redirects, with and without the trailing slash) and deletes any built page still sitting at a retired URL. To retire another page: remove it from website/_src/pages.json, delete its fragments, add one line here, rebuild. `to` must be a page that exists; the build fails if it is not.",
+  "redirects": [
+    {
+      "from": "/funders/",
+      "to": "/about/",
+      "why": "PM decision, 17 Nov 2026: the business plan is not public"
+    },
+    {
+      "from": "/cy/cyllidwyr/",
+      "to": "/cy/amdanom/",
+      "why": "Welsh mirror of the above"
+    }
+  ]
+}

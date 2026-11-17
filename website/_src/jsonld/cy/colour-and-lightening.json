@@ -1,0 +1,39 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "@id": "https://www.clwydianacademy.co.uk/cy/cyrsiau/cwrs-lliwio-a-goleuo/#course",
+    "name": "Dosbarth Meistr Lliwio a Goleuo (Uned VTCT UNHB374)",
+    "inLanguage": "cy",
+    "description": "Dosbarth meistr DPP deg dydd Mercher yn Llanelwy yn arwain at uned VTCT Lefel 3 UNHB374 reoledig: lliwio a goleuo pen cyfan, aildyfiant a ffoil gweu ar gleientiaid byw, theori a chywiro lliw, gyda phapur uned a phapur trosfwaol.",
+    "provider": {
+      "@id": "https://www.clwydianacademy.co.uk/#organization"
+    },
+    "url": "https://www.clwydianacademy.co.uk/cy/cyrsiau/cwrs-lliwio-a-goleuo/",
+    "hasCourseInstance": []
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Hafan",
+        "item": "https://www.clwydianacademy.co.uk/cy/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Cyrsiau",
+        "item": "https://www.clwydianacademy.co.uk/cy/cyrsiau/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Lliwio a Goleuo",
+        "item": "https://www.clwydianacademy.co.uk/cy/cyrsiau/cwrs-lliwio-a-goleuo/"
+      }
+    ]
+  }
+]

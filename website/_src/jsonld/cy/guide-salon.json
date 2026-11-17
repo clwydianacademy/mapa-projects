@@ -1,0 +1,83 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": "https://www.clwydianacademy.co.uk/cy/canllawiau/hyfforddi-tim-eich-salon/#article",
+    "headline": "Hyfforddi tîm eich salon yng Ngogledd Cymru: y llwybrau, y costau, a'r cyfaddawdau",
+    "description": "Pedwar llwybr at dîm wedi'i hyfforddi — prentis, uned reoledig, cwrs presenoldeb, yn y salon — wedi'u gosod allan yn niwtral gyda'r costau a'r cyfaddawdau, gan gynnwys y llwybrau nad ydym yn eu gwerthu.",
+    "inLanguage": "cy",
+    "author": {
+      "@id": "https://www.clwydianacademy.co.uk/#organization"
+    },
+    "publisher": {
+      "@id": "https://www.clwydianacademy.co.uk/#organization"
+    },
+    "datePublished": "2026-09-13",
+    "mainEntityOfPage": "https://www.clwydianacademy.co.uk/cy/canllawiau/hyfforddi-tim-eich-salon/",
+    "isPartOf": {
+      "@id": "https://www.clwydianacademy.co.uk/cy/canllawiau/#guides"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Sut mae cyfro rhywun sy’n hyfforddi?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Un person, un diwrnod yr wythnos. Un diwrnod yw ein huned fyrraf; {{cpd:daysWord:UNHB374}} yw’r hiraf. Caiff pob dyddiad ar gyfer y tymor ei gyhoeddi ymlaen llaw fel y gallwch adeiladu’r rota unwaith."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "A allaf anfon dau berson heb golli’r ddau ar yr un diwrnod?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Gallwch. Rydym yn rhedeg yr un unedau ar {{cpd:strandDays}}. Mae’r rhan fwyaf o salonau ar gau ar ddydd Llun, ni all rhai fod, a gall salon sy’n anfon dau berson eu hanfon ar ddiwrnodau gwahanol yn hytrach na cholli’r ddau ar unwaith."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Sut mae cyfraddau tîm yn gweithio?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Mae cyfraddau tîm yn cyfrif pobl o’ch salon dros y tymor cyfan, nid archebion ar un dyddiad, felly mae un steilydd ar liwio a dau ar estyniadau eisoes yn cyrraedd yr haen gyntaf. Un anfoneb."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "I ble mae’r arian yn mynd?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Daw ein prisiau o fformiwla gyhoeddedig, yr un fformiwla i bawb. Nid oes cyfradd wedi’i thrafod y collech chi hi."
+        }
+      }
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Hafan",
+        "item": "https://www.clwydianacademy.co.uk/cy/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Canllawiau",
+        "item": "https://www.clwydianacademy.co.uk/cy/canllawiau/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Hyfforddi tîm eich salon",
+        "item": "https://www.clwydianacademy.co.uk/cy/canllawiau/hyfforddi-tim-eich-salon/"
+      }
+    ]
+  }
+]

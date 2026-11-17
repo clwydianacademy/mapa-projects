@@ -1,0 +1,10 @@
+{
+  "_source": "Site-wide contact and company details, in one place. Read by website/_src/build.py (footer, Organization JSON-LD) and as {{site:...}} tokens in page fragments. The enquiry function (site/api/enquiry.js) cannot read this file at run time, so it repeats the email address; scripts/test_enquiry.js fails if the two differ.",
+  "email": "hello@clwydianacademy.co.uk",
+  "company_number": "17330962",
+  "registered_office": {
+    "_note": "LEGAL QUESTION PENDING WITH THE PM — do not change without their instruction. This is the only place the address is written: change these two lines (English and Welsh forms of the same address) and rebuild. It appears in the footer of /funding/ and /cy/ffioedd-a-chyllid/ only.",
+    "en": "2 Bod Hyfryd, Rhes-y-Cae, Holywell CH8 8JG",
+    "cy": "2 Bod Hyfryd, Rhes-y-Cae, Treffynnon CH8 8JG"
+  }
+}

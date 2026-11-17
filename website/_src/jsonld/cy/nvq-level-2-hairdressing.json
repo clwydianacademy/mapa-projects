@@ -1,0 +1,76 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "@id": "https://www.clwydianacademy.co.uk/cy/cyrsiau/trin-gwallt-nvq-lefel-2/#course",
+    "name": "Diploma NVQ Lefel 2 mewn Trin Gwallt — Carlam",
+    "inLanguage": "cy",
+    "description": "Cwrs trin gwallt carlam {{fee:monthsWordN}} mis dwys i oedolion: dau ddiwrnod academi yn olynol bob pythefnos yn Llanelwy, a dysgu o bell dan arweiniad, yn arwain at gymhwyster VTCT NVQ Lefel 2.",
+    "provider": {
+      "@id": "https://www.clwydianacademy.co.uk/#organization"
+    },
+    "url": "https://www.clwydianacademy.co.uk/cy/cyrsiau/trin-gwallt-nvq-lefel-2/",
+    "educationalCredentialAwarded": "Diploma NVQ Lefel 2 mewn Trin Gwallt",
+    "coursePrerequisites": "Ar agor i oedolion 19+. Nid oes angen profiad trin gwallt blaenorol.",
+    "offers": [
+      {
+        "@type": "Offer",
+        "category": "Paid",
+        "price": "{{fee:nvqRaw}}",
+        "priceCurrency": "GBP",
+        "description": "Lle hunan-ariannu"
+      },
+      {
+        "@type": "Offer",
+        "category": "Free",
+        "price": "{{fee:fundedRaw}}",
+        "priceCurrency": "GBP",
+        "description": "Wedi'i ariannu'n llawn i ddysgwyr cymwys drwy lwybrau Llywodraeth Cymru, gan gynnwys prentisiaethau"
+      }
+    ],
+    "hasCourseInstance": {
+      "@type": "CourseInstance",
+      "courseMode": "Blended",
+      "courseWorkload": "P6M",
+      "courseSchedule": {
+        "@type": "Schedule",
+        "repeatFrequency": "P2W",
+        "repeatCount": 13
+      },
+      "location": {
+        "@type": "Place",
+        "name": "Clwydian Academy, St Asaph",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "St Asaph",
+          "addressRegion": "Denbighshire",
+          "addressCountry": "GB"
+        }
+      }
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Hafan",
+        "item": "https://www.clwydianacademy.co.uk/cy/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Cyrsiau",
+        "item": "https://www.clwydianacademy.co.uk/cy/cyrsiau/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Trin Gwallt NVQ Lefel 2",
+        "item": "https://www.clwydianacademy.co.uk/cy/cyrsiau/trin-gwallt-nvq-lefel-2/"
+      }
+    ]
+  }
+]
