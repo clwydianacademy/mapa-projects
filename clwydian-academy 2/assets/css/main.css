@@ -13,7 +13,7 @@
   --ink: #24292e;
   --muted: #5c636b;
   --gold: #c2a14d;
-  --gold-deep: #a2843a;
+  --gold-deep: #7a6124;   /* gold for TEXT on light backgrounds: 5.4:1 on paper, 5.9:1 on card (WCAG AA). Was #a2843a, 3.3:1. */
   --paper: #f7f5f2;
   --card: #fffefc;
   --error: #a3261c;       /* 7.3:1 on white */
@@ -140,6 +140,10 @@ strong { color: var(--slate); }
 .btn:hover .arr { transform: translateX(3px); }
 .btn-primary { background: var(--heather); color: #fff; box-shadow: 0 6px 20px rgba(87, 68, 99, 0.28); }
 .btn-primary:hover { background: var(--heather-deep); color: #fff; box-shadow: 0 10px 26px rgba(87, 68, 99, 0.34); }
+/* `.site-nav a` is more specific than `.btn-primary` and was painting the header button's label
+   slate on heather (1.4:1). Restate the button colours at nav specificity: white on heather, 8.7:1. */
+.site-nav a.btn-primary, .site-nav a.btn-primary:hover { color: #fff; }
+.site-nav a.btn::after { display: none; }
 .btn-outline { border-color: rgba(48, 54, 60, 0.35); color: var(--slate); background: transparent; }
 .btn-outline:hover { border-color: var(--slate); color: var(--slate); background: #fff; }
 .btn-gold { background: var(--gold); color: var(--navy-deep); }
@@ -288,6 +292,10 @@ a.card { text-decoration: none; color: inherit; display: flex; flex-direction: c
 .on-dark .card:hover { border-color: rgba(194, 161, 77, 0.6); box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35); }
 .on-dark .card h3 { color: var(--paper); }
 .on-dark .card p { color: rgba(247, 245, 242, 0.68); }
+/* text that kept its light-background colour on the navy panels (1.2:1 and 2.4:1) */
+.on-dark strong { color: var(--paper); }
+.on-dark .feature-list li { color: rgba(247, 245, 242, 0.86); }
+.on-dark .card-kicker, .on-dark .person .role { color: var(--gold); }
 .on-dark .stat b { color: var(--gold); }
 .on-dark .stat span { color: rgba(247, 245, 242, 0.55); }
 
@@ -445,7 +453,7 @@ a.card { text-decoration: none; color: inherit; display: flex; flex-direction: c
 .footer-col a { color: rgba(247, 245, 242, 0.75); text-decoration: none; font-size: 0.96rem; }
 .footer-col a:hover { color: var(--gold); }
 .footer-col address { font-style: normal; font-size: 0.96rem; line-height: 1.8; }
-.footer-legal { border-top: 1px solid rgba(247, 245, 242, 0.14); padding-block: 1.5rem 2rem; font-size: 0.84rem; color: rgba(247, 245, 242, 0.5); display: flex; flex-wrap: wrap; gap: 0.4rem 2rem; justify-content: space-between; }
+.footer-legal { border-top: 1px solid rgba(247, 245, 242, 0.14); padding-block: 1.5rem 2rem; font-size: 0.84rem; color: rgba(247, 245, 242, 0.62); display: flex; flex-wrap: wrap; gap: 0.4rem 2rem; justify-content: space-between; }
 .footer-legal a { color: rgba(247, 245, 242, 0.65); }
 
 /* ---------- reveal animations ---------- */
@@ -482,6 +490,8 @@ a.card { text-decoration: none; color: inherit; display: flex; flex-direction: c
 .hero--photo .wrap { position: relative; z-index: 2; width: 100%; }
 .hero--photo .hero-content { max-width: 680px; }
 .hero--photo .lede { max-width: 54ch; }
+/* the gold eyebrow sits on the photograph itself, where the scrim is thinnest */
+.hero--photo .eyebrow { text-shadow: 0 1px 2px rgba(24, 15, 32, 0.95), 0 0 14px rgba(24, 15, 32, 0.85); }
 @media (max-width: 700px) {
   .hero--photo { align-items: flex-end; min-height: min(90svh, 820px); }
   .hero--photo .hero-photo { object-position: 58% 16%; }
