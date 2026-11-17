@@ -2885,3 +2885,10 @@ said `Resend 400: API key is invalid`. The function behaved as designed (nothing
 told, input kept). Mark has replaced `RESEND_API_KEY` in Vercel for Production and Preview.
 Environment variables are read at build time of a deployment, so this commit gives Vercel a push
 to build a fresh preview with the new key. No site file changes.
+
+---
+
+## NOTE — Resend key rotated again, 17 November 2026, 19:39
+
+Mark rotated `RESEND_API_KEY` in Vercel again (Production and Preview). This commit gives Vercel
+a push to build a fresh preview that picks the new key up. No site file changes.
