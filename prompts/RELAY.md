@@ -3695,3 +3695,150 @@ payment path and staff diary. Four things to settle before it starts:
 ### State
 `feat/salon` is pushed; PR 3 is a draft and must not be merged as it stands (conflict 10).
 Waiting for the next brief.
+
+---
+
+## REPORT — SALON S1, PART F: PR 3 stripped to marketing pages behind a switch that is OFF
+
+**Coder, 17 November 2026, late.** Brief S1–S2, approved by Mark. This is part (F) only. Part (A)
+— the new repository — is blocked (see NEEDS A HUMAN), so parts (B) to (E) have not started.
+
+| Commit | Step |
+|---|---|
+| *(see `git log`: "Salon F 1/2")* | source: policy, generator, build switch, tests; engine removed |
+| *(see `git log`: "Salon F 2/2")* | build output |
+| *(this)* | this report |
+
+### What merging PR 3 would now change on the live site
+**Nothing visible.** `site/` differs from `main` by one file, `assets/css/salon.css`, which no page
+loads. No salon page, no nav item, no function, no change to `robots.txt`, `vercel.json` or the
+sitemap. A test fails if that stops being true.
+
+### The switch
+`"public": false` in `_data/salon/policy.json`. While false, `build.py` builds no salon page and
+no nav item, and removes any left over from an earlier build. **Only Mark turns it on** (VTCT
+approval and the signed lease). To look at the pages without publishing them:
+`python3 website/_src/build.py --salon-preview /some/folder/outside/the/repo`.
+Even switched on, the pages stay noindex and out of the sitemap while anything is unconfirmed.
+
+### What is left in this repository
+- Eight marketing pages (`/salon/`, `/salon/prices/`, `/salon/models/`, `/salon/terms/` and the
+  `/cy/salon/` mirrors), HairSalon JSON-LD, the nav item "Our Salon" / "Ein Salon".
+- Every "Book" control links to `https://book.clwydianacademy.co.uk/book/`.
+- `check_claims.py`'s guard on the other business's name, domains and colour — unchanged.
+- `scripts/test_salon_pages.js`, 15 tests.
+
+### What was removed
+`site/api/salon/`, `site/api/_lib/salon/`, `/staff/`, the journey, model-form and day-sheet scripts,
+`/salon/book/` and `scripts/test_salon_rules.js`. **They are in history at `788c223`** and are the
+specification for the new engine: 95 rule tests and the 44-break list.
+
+### Prices (PM decision 4)
+Level 3 = stylist price. Level 2 = 25% off cutting and styling, 20% off colour and technical, to
+the nearest whole pound (a half rounds up). The PM's examples all reproduce: cut and blow-dry
+35 / 26, gents 18 / 14, full head colour 55 / 44, root 38 / 30. Restyle, balayage, colour
+correction and occasion hair are Level 3 only. No graduate tier, no Level 1. No adders table: the
+page says longer, thicker or coloured hair can add to the price and that the exact price is shown
+before paying. Adults only (18+) on the home, prices, models and terms pages; every mention of
+under-16s and guardians is gone.
+
+### Gates
+`build.py` clean, second build a no-op · `check_claims` 67 files clean · `check_dates` 0 ·
+`check_links` 2340, 0 broken · `check_locale` 57 pages · `check_forms` clean · `test_enquiry.js`
+23/23 · `test_salon_pages.js` 15/15 · the four site checks also pass on the preview build.
+
+### Guards watched failing
+- The 15 page tests were written first and failed on the previous state of the branch.
+- Switch turned on and built into `site/`: the four "flag off" tests failed; restored.
+- Level 2 discount changed from 25 to 30: the price test failed; restored.
+- `check_claims` on the ten planted files: still nine findings.
+
+### Found and fixed
+The prices page scrolled sideways at 375px. The visually-hidden "not offered at this level" labels
+were positioned against the page instead of the scrolling table. One line of CSS; 0 overflow at
+1440, 1280 and 375 on all eight pages and both home pages; header holds nine links on one row.
+
+### Two sources of truth, by design — and a risk
+The prices now live in two places: this policy file (for these pages) and the booking engine's
+tenant catalogue (to be built). Nothing yet checks that they agree. Until one reads the other, a
+price change must be made in both.
+
+### TODO_PM — 16 placeholders
+- `vat.status`
+- `terms_approved`
+- `opening.terms`
+- `opening.sessions`
+- `services.clipper-cut.base_minutes`
+- `services.clipper-cut.stylist_price`
+- `services.scissor-over-comb.base_minutes`
+- `services.scissor-over-comb.stylist_price`
+- `services.beard-trim.base_minutes`
+- `services.beard-trim.stylist_price`
+- `services.hot-towel-shave.base_minutes`
+- `services.hot-towel-shave.stylist_price`
+- `services.flat-top.base_minutes`
+- `services.flat-top.stylist_price`
+- `services.cut-beard-combo.base_minutes`
+- `services.cut-beard-combo.stylist_price`
+
+### PM drafts still unconfirmed — 27
+- `levels.l2.factors`
+- `levels.l3.factors`
+- `educator.minutes`
+- `deposit.cutting`
+- `deposit.colour`
+- `concession.percent`
+- `concession.days`
+- `concession.who`
+- `models.colour_product_cost`
+- `models.refundable_deposit`
+- `services.cut-blow-dry.base_minutes`
+- `services.blow-dry.base_minutes`
+- `services.curly-blow-dry.base_minutes`
+- `services.restyle.base_minutes`
+- `services.gents-cut.base_minutes`
+- `services.faded-gents-cut.base_minutes`
+- `services.occasion.base_minutes`
+- `services.root-retouch.base_minutes`
+- `services.full-head-colour.base_minutes`
+- `services.half-head-foils.base_minutes`
+- `services.full-head-foils.base_minutes`
+- `services.balayage.base_minutes`
+- `services.toner-gloss.base_minutes`
+- `services.colour-correction.base_minutes`
+- `services.perm.base_minutes`
+- `services.conditioning.base_minutes`
+- `services.bond-reconstructor.base_minutes`
+
+### WELSH FOR REVIEW — new or changed in this step (18)
+- `salon.py T.salon` — Ein Salon
+- `salon.py T.book` — Archebu ar-lein
+- `salon.py T.home_h1` — Gwallt gan ein dysgwyr, wedi’i wirio gan addysgwr.
+- `salon.py T.home_lede` — Y salon hyfforddi yw lle mae dysgwyr Clwydian Academy yn gweithio ar gleientiaid go iawn yn Llanelwy. Rydych yn dewis dysgwr Lefel 2 neu Lefel 3, cewch wybod gwir hyd yr apwyntiad, ac mae addysgwr yn gwirio’r gwaith cyn i chi adael.
+- `salon.py T.how` — Dewiswch wasanaeth a lefel — Cynigir gwasanaethau craidd gan ddysgwyr Lefel 2 a Lefel 3. Lefel 3 yn unig yw torri creadigol, lliwio creadigol, cywiro lliw a gwallt achlysur.
+- `salon.py T.prices_lede` — Mae dysgwyr Lefel 3 yn codi ein pris steilydd; mae dysgwyr Lefel 2 yn codi llai. Yr amseroedd yw gwir hyd yr apwyntiad gyda’r dysgwr hwnnw, gan gynnwys amser gyda’r addysgwr.
+- `salon.py T.draft_p` — Drafft yw’r amseroedd, y blaendaliadau a’r consesiwn a ddangosir yma ac nid ydynt wedi’u cadarnhau. Gallant newid cyn i’r salon agor.
+- `salon.py T.test_p` — Prawf rhybudd alergedd am ddim yn y salon o leiaf {patch_hours} awr cyn unrhyw liwio. Ymgynghoriad am ddim cyn balayage, lliwio creadigol a chywiro lliw.
+- `salon.py T.models_lede` — Mae angen pobl ar ddysgwyr i ymarfer arnynt ac i gael eu hasesu arnynt. Ymunwch â’r gofrestr ac fe anfonwn e-bost atoch pan fydd angen model ar ddysgwr.
+- `salon.py T.terms_sections` — Oedolion yn unig — Rhaid i bob cleient fod yn {age} oed neu hŷn. Gallwn ofyn am brawf oedran. Nid ydym yn derbyn archebion ar gyfer unrhyw un o dan {age} oed.
+- `salon.py T.adults_h` — Oedolion yn unig
+- `salon.py T.adults_p` — Mae’r salon hyfforddi ar gyfer oedolion: rhaid i bob cleient fod yn {age} oed neu hŷn.
+- `salon.py T.hair_p` — Mae’r prisiau ar gyfer gwallt byr, main, naturiol. Gall gwallt hirach, mwy trwchus neu wallt sydd wedi’i liwio o’r blaen ychwanegu at y pris. Dangosir yr union bris a hyd yr apwyntiad i chi cyn i chi dalu dim.
+- `salon.py T.models_join` — I ymuno â’r gofrestr modelau, e-bostiwch {email} gyda’ch enw a’r hyn yr hoffech ei gael.
+- `policy service restyle` — Ailsteilio / toriad creadigol
+- `policy service balayage` — Balayage / lliwio creadigol
+- `pages.json salon-terms description` — Telerau archebu salon hyfforddi Clwydian Academy: blaendaliadau, canslo, profion rhybudd alergedd ac oedran.
+- `build.py nav` — Ein Salon
+
+The Welsh strings for the booking journey, engine messages and email (listed in the two earlier
+reports) are no longer used in this repository; they go to the new engine with the code.
+
+### NEEDS A HUMAN
+1. **Create the repository.** The coder's session cannot create one under the organisation, and
+   its local copy of the source is a shallow clone (121 commits), so it cannot supply the full
+   history either. Steps for Mark are in the coder's message of this date.
+2. **Level 2 price for treatments** (conditioning, bond reconstructor): the decision names
+   cutting/styling and colour/technical; a treatment is neither.
+3. **Barbering** beyond the gents cut and the fade is not on the stylist list: six services with
+   no price and no time.
+4. **Children's cut** was on the stylist list and is dropped, because the salon is adults only.
