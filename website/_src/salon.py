@@ -129,7 +129,7 @@ T = {
                        "cy": "Cyhoeddir yma beth mae sesiwn fodel yn ei gostio, a beth a ofynnir gennych, cyn i&rsquo;r gofrestr gael ei defnyddio. Nid yw ymuno yn eich ymrwymo i ddim."},
     "terms_h1":       {"en": "Booking terms", "cy": "Telerau archebu"},
     "terms_draft":    {"en": "Draft. These terms have not been approved yet and no booking can be made under them.", "cy": "Drafft. Nid yw&rsquo;r telerau hyn wedi&rsquo;u cymeradwyo eto ac ni ellir gwneud archeb oddi tanynt."},
-    "terms": {
+    "terms_sections": {
         "en": [
             ("Who you are booking with", "The training salon is run by Clwydian Academy CBC. Services are carried out by learners under supervision."),
             ("Time", "Learners take longer than a qualified stylist. The length shown when you book is the time to allow."),
@@ -292,6 +292,10 @@ MODELS = {
 # ------------------------------------------------------------------------------------------------
 def t(key, loc, **kw):
     s = T[key][loc]
+    if not isinstance(s, str):
+        # Two entries in T once shared the key "terms"; Python kept the second (a list) and the
+        # sub-navigation printed it. A label must be a string — stop the build if it is not.
+        raise SystemExit(f"build: salon.py: T[{key!r}][{loc!r}] is not a string — is the key defined twice?")
     for k, v in kw.items():
         s = s.replace("{" + k + "}", str(v))
     return s
@@ -483,7 +487,7 @@ def terms_body(loc, site):
     fill = {"deposit": deposit, "email": f'<a href="mailto:{site["email"]}">{site["email"]}</a>', "cancel": p["cancel_window_hours"],
             "patch_hours": p["patch_test"]["min_hours"], "patch_months": p["patch_test"]["max_months"], "privacy": PRIVACY[loc]}
     parts = []
-    for h, body in T["terms"][loc]:
+    for h, body in T["terms_sections"][loc]:
         for k, v in fill.items():
             body = body.replace("{" + k + "}", str(v))
         parts.append(f'<h2 class="salon-h2 mt-3">{h}</h2>\n    <p class="mt-1 measure">{body}</p>')

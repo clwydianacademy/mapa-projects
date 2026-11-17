@@ -80,7 +80,7 @@
 .salon-day[data-full="full"] em, .salon-day[data-full="closed"] em { color: var(--muted); }
 .salon-day[data-full="closed"] { background: var(--paper); border-style: dashed; }
 .salon-day[aria-pressed="true"] em::before { content: "\2713\00a0"; }
-.salon-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 0.5rem; padding: 0; list-style: none; }
+.salon-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0.5rem; padding: 0; list-style: none; }
 .salon-slot { padding: 0.6rem 0.8rem; text-align: center; }
 .salon-slot[aria-pressed="true"] b::before { content: "\2713\00a0"; }
 .salon-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.3rem; align-items: center; }

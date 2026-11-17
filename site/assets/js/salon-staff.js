@@ -103,7 +103,10 @@
     if (!quiet) { root.textContent = ""; root.appendChild(el("p", { text: "Loading…" })); }
     call({ action: "day", date: d || undefined }).then(function (r) {
       if (r.httpStatus === 401) return signIn("");
-      if (!r.ok) { root.textContent = ""; root.appendChild(el("p", { class: "salon-error", text: (r.message || "The day sheet is unavailable.") + (r.reason ? " (" + r.reason + ")" : "") })); return; }
+      if (!r.ok) {
+        var why = { "no-staff-password": "the staff password has not been set", "no-store": "the booking database is not connected", "store-error": "the booking database did not answer" }[r.reason] || r.reason || "unavailable";
+        root.textContent = ""; root.appendChild(el("p", { class: "salon-error", text: "The day sheet is not set up yet: " + why + "." })); return;
+      }
       day = r; date = r.date; draw();
     });
   }

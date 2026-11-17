@@ -932,3 +932,82 @@ test("models: a name is stored and the academy is emailed; with nowhere to put i
   assert.equal(none.status, 503); assert.equal(none.body.contact, "hello@clwydianacademy.co.uk");
   assert.equal((await H.models(dead.ctx(), entry, freshReq())).status, 200, "no database, but the email went: accepted");
 });
+
+// =================================================================================================
+// The built pages
+// =================================================================================================
+const SITE_DIR = path.join(__dirname, "..", "site");
+const SALON_PAGES = ["salon", "salon/prices", "salon/book", "salon/models", "salon/terms", "cy/salon", "cy/salon/prisiau", "cy/salon/archebu", "cy/salon/modelau", "cy/salon/telerau", "staff"];
+const pageHtml = (p) => fs.readFileSync(path.join(SITE_DIR, p, "index.html"), "utf8");
+/** What a reader sees: the body, without scripts (the journey's strings legitimately hold {tokens}). */
+const visible = (html) => html.slice(html.indexOf("<body")).replace(/<script[\s\S]*?<\/script>/g, " ").replace(/<[^>]+>/g, " ");
+
+test("pages: every salon page is built, and nothing the generator left unfinished is visible", () => {
+  for (const p of SALON_PAGES) {
+    const text = visible(pageHtml(p));
+    assert.ok(!/\{[a-z_]+\}/.test(text), p + ": an unfilled {token} is visible: " + (text.match(/\{[a-z_]+\}/) || [""])[0]);
+    assert.ok(!/\[\('|'\)\]|\bNone\b|\bundefined\b|<function/.test(text), p + ": generator debris is visible: " + (text.match(/\[\('.{0,40}|'\)\]|\bNone\b|\bundefined\b/) || [""])[0]);
+  }
+});
+
+test("pages: while any policy value is a placeholder, salon pages are noindex, absent from the sitemap, and print no price", () => {
+  const sitemap = fs.readFileSync(path.join(SITE_DIR, "sitemap.xml"), "utf8");
+  const placeholders = unconfirmed(RAW).length > 0;
+  for (const p of SALON_PAGES.filter((x) => x !== "staff")) {
+    const html = pageHtml(p), inMap = sitemap.includes("<loc>https://www.clwydianacademy.co.uk/" + p + "/</loc>");
+    assert.equal(/<meta name="robots" content="noindex/.test(html), placeholders, p + " robots");
+    assert.equal(inMap, !placeholders, p + " sitemap");
+    if (placeholders) assert.ok(!/£|&pound;/.test(visible(html)), p + ": a placeholder price is printed");
+  }
+  assert.match(pageHtml("staff"), /<meta name="robots" content="noindex, nofollow">/, "the day sheet is never indexed");
+  assert.ok(!sitemap.includes("/staff/"));
+});
+
+test("pages: robots.txt and vercel.json keep /staff/ and /api/ out of search", () => {
+  const robots = fs.readFileSync(path.join(SITE_DIR, "robots.txt"), "utf8");
+  assert.match(robots, /^Disallow: \/staff\/$/m); assert.match(robots, /^Disallow: \/api\/$/m);
+  const v = JSON.parse(fs.readFileSync(path.join(SITE_DIR, "vercel.json"), "utf8"));
+  for (const src of ["/staff/(.*)", "/api/(.*)"]) assert.ok(v.headers.some((h) => h.source === src && h.headers.some((x) => x.key === "X-Robots-Tag" && /noindex/.test(x.value))), src);
+});
+
+test("pages: HairSalon structured data is tied to the academy's own Organization, with no parent and no phone", () => {
+  for (const p of ["salon", "cy/salon"]) {
+    const blocks = [...pageHtml(p).matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
+    const org = blocks.find((b) => b["@id"] === "https://www.clwydianacademy.co.uk/#organization" && b.name);
+    const salon = blocks.find((b) => b["@type"] === "HairSalon");
+    const link = blocks.find((b) => b.department);
+    assert.ok(org && salon && link, p + ": Organization, HairSalon and the department link are all present");
+    assert.equal(link["@id"], org["@id"]); assert.equal(link.department["@id"], salon["@id"]);
+    assert.equal(salon.address.addressLocality, "St Asaph"); assert.equal(salon.address.streetAddress, undefined, "no street address until the premises are confirmed");
+    assert.equal(salon.email, "hello@clwydianacademy.co.uk");
+    const flat = JSON.stringify(blocks);
+    assert.ok(!/parentOrganization|"telephone"|"founder"|"Person"/.test(flat));
+    if (unconfirmed(RAW).some((x) => x.startsWith("opening"))) assert.equal(salon.openingHoursSpecification, undefined, "no opening hours until they are confirmed");
+  }
+});
+
+test("pages: the journey has no words of its own, and both languages carry the same strings", () => {
+  const keys = (p) => { const d = JSON.parse(pageHtml(p).match(/<script type="application\/json" id="salon-data">([\s\S]*?)<\/script>/)[1]); return [d, Object.keys(d.t).sort()]; };
+  const [en, enKeys] = keys("salon/book"), [cy, cyKeys] = keys("cy/salon/archebu");
+  assert.deepEqual(enKeys, cyKeys); assert.equal(en.lang, "en"); assert.equal(cy.lang, "cy");
+  const js = fs.readFileSync(path.join(SITE_DIR, "assets", "js", "salon-book.js"), "utf8");
+  for (const used of new Set([...js.matchAll(/\bS\.([a-z_0-9]+)/g)].map((m) => m[1]))) assert.ok(enKeys.includes(used), "salon-book.js uses S." + used + ", which the page does not supply");
+  const [men, menKeys] = keys("salon/models"), [, mcyKeys] = keys("cy/salon/modelau");
+  assert.deepEqual(menKeys, mcyKeys); assert.ok(men.groups.colour);
+});
+
+test("pages: the page arithmetic and the engine agree on the length of every service at every level", () => {
+  const { execFileSync } = require("node:child_process");
+  const out = execFileSync("python3", ["-c", [
+    "import json, sys", "sys.path.insert(0, sys.argv[1])", "import salon", "p = salon.raw()",
+    "print(json.dumps({s['id'] + '/' + l: salon.minutes_for(p, s, l) for s in p['services'] for l in salon.LEVELS if salon.offered(p, s, l)}))",
+  ].join("\n"), path.join(__dirname, "..", "website", "_src")], { encoding: "utf8" });
+  const py = JSON.parse(out);
+  let n = 0;
+  for (const s of P.services) for (const l of P.levelIds) {
+    const q = quote(P, { serviceId: s.id, level: l });
+    if (!q.ok) { assert.equal(py[s.id + "/" + l], undefined, s.id + "/" + l + " is offered on the page but not by the engine"); continue; }
+    assert.equal(py[s.id + "/" + l], q.minutes, s.id + "/" + l); n += 1;
+  }
+  assert.equal(n, Object.keys(py).length); assert.ok(n > 30);
+});
