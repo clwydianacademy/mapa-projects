@@ -2604,3 +2604,104 @@ form reuses the labels already on `/cy/cysylltu/`. No page copy and no navigatio
 5. Everything the instruction set aside: `check_claims` and the address rule, `CLAUDE.md`, the
    folder names, the hardcoded £4,500 and 32-week figures, personal details in the repo, the
    Welsh review.
+
+---
+
+## REPORT — AUDIT PHASE 1b (PM decisions, privacy first)
+
+**Coder, 17 November 2026.** PM decisions relayed by Mark, same branch (`fix/audit-phase-1`), same
+draft PR. `main` is still `40723c9`, untouched. Nothing merged.
+
+| SHA | Step |
+|---|---|
+| `8ecf6eb` | 1/7 every fee and course length from `_data/fees.json` |
+| `38de4be` | 2/7 `check_claims`: mailbox rule retired, privacy rules in |
+| `f907402` | 3/7 privacy: no phone, no names, one address; `_data/site.json`; registered office in one place |
+| `08ffb04` | 4/7 `api/enquiry.js` delivers to and sends from the new address |
+| `878fd40` | 5/7 hero `alt=""` |
+| `4f07b76` | 6/7 build output — all five guards green |
+| *(this)* | 7/7 this report |
+
+### The live site is unchanged
+This branch is not deployed. **The phone number, the names and the old address stay on
+`www.clwydianacademy.co.uk` until this reaches `main`** — which is Mark's call, not the coder's.
+
+### What changed
+1. **Phone:** gone from the footer of every page, the JSON-LD, `/contact/` and `/funders/`.
+2. **Names:** the `founder` array and personal profile link are out of the JSON-LD; `/about/`
+   cards are headed by role; the `/contact/` pull quote is deleted; `/funders/` signs off by role.
+3. **Email:** `hello@clwydianacademy.co.uk` everywhere — 194 uses in the built site, 0 of the old
+   one. One value, `_data/site.json`; the function repeats it and a test fails if they differ.
+4. **Registered office:** unchanged. One entry in `_data/site.json` (English and Welsh forms).
+5. **Hero:** `alt=""`.
+6. **Welsh:** not reviewed, not changed, except where a name had to come out (below).
+7. **Fees:** every figure is a `{{fee:…}}` token. The rebuilt pages are identical except one
+   correction (below) and `&pound;` for `£` in ten meta descriptions.
+8. **`check_claims`:** green for the first time. The mailbox rule is retired; the old address,
+   the number, the names, `Person`/`founder`, `tel:` and personal profile links now fail the build.
+
+### Guards watched failing
+The new `check_claims` rules, run against the phase 1 output before any fix: 16 distinct hits
+(address 60, each of nine patterns on all 59 pages, six one-off name phrases). After: clean.
+
+### Evidence, on the output of `4f07b76`
+- `build.py` clean, second build a no-op.
+- `check_claims` clean (62 files) · `check_dates` 0 · `check_links` 2534/0 · `check_locale` clean ·
+  `check_forms` clean · `test_enquiry.js` 20/20.
+- Independent `grep` of the built tree: 0 files with the old domain, the number, `tel:`,
+  `telephone`, either surname, either first name, `linkedin`, `"Person"`, `founder`, or an
+  unrendered `{{`. Image metadata checked: none.
+- Chromium, 59 pages × 1280px and 375px: 0 console errors, 0 failed requests, 0 contrast failures.
+- Overflow: 59 pages × 8 widths, 0. Form: same results as phase 1, both paths.
+
+### A correction made on the way
+`/courses/hair-relaxing-course/` and its Welsh mirror called UHB205 a "six-Monday" course in the
+meta description. The data and `CLAUDE.md` say eight. It now reads the data. `check_claims` only
+reads digits, so it never saw the word.
+
+### FEE VALUES FOR PM REVIEW (`_data/fees.json`)
+| Key | Value | Where it shows | Query |
+|---|---|---|---|
+| `nvq` | £4,500 | courses, three NVQ pages, funding, retraining guide; 63 uses | |
+| `deposit` | £500 | funding, NVQ pages, retraining guide | |
+| `instalment` × `instalments` | £500 × 8 | same | 500 + 8 × 500 = 4,500 ✓ |
+| `funded` | £0 | apprenticeships, funding, home, NVQ pages | |
+| `react_support` | £1,500 | funding, home, retraining guide | |
+| *derived* remainder | £3,000 | funding | 4,500 − 1,500 |
+| *derived* instalments | five | funding | (3,000 − 500) ÷ 500 |
+| `employer_sponsored` | £3,950 | funding, "Route three" | **£550 less than the NVQ fee — intended?** |
+| `bundle_l2_l3` | £7,900 | funding | **Level 2 + Level 3 for £1,100 less than two fees — intended?** |
+| `cpd_day_min`–`cpd_day_max` | £150–£295 a day | funding | **Does not come from the CPD tariff (units are £195–£835). Source?** |
+| `relaxing_per_week_under` | £90 | relaxing course | £695 ÷ 8 = £86.88 ✓ — but typed, not calculated |
+| `market_saving_min`–`max` | £5,000–£13,000 | funding (×5) | **Comparison with London academies. Source?** |
+| `market_day_min`–`max` | £175–£335 | what-it-costs | **Local attendance-course prices. Source?** |
+| `months` | 6 | home, courses, funding, funders, L2/L3 pages; 58 uses | |
+| `barbering_weeks` | 32 | home, courses, barbering, retraining guide | |
+| `seats` | 10 | NVQ pages | CPD seats come from `cpd-2027.json` (also 10) |
+
+CPD unit prices are not in this file: they come from the tariff in `_data/cpd-2027.json`.
+Not tokens, on purpose: "made redundant in the last six months" (a ReAct+ rule), "two years",
+"15–18 months per level", "24 months" retention, and the Welsh "a phum rhandaliad".
+
+### WELSH FOR REVIEW
+- `/cy/amdanom/`: "Charlotte sy'n cyfarwyddo'r cwricwlwm" → "Yn cyfarwyddo'r cwricwlwm";
+  "Mark sy'n cyfarwyddo llywodraethu" → "Yn cyfarwyddo llywodraethu". Card headings are the role
+  strings that were already there.
+- `/cy/cyrsiau/cwrs-llacio-gwallt/` meta description: "chwe dydd Llun" → "wyth dydd Llun".
+- Deletions only: the pull quote, the phone row, the Welsh hero alt text.
+- Pre-existing, seen while working, **not changed**: "mewn chwech mis" on `/cy/ffioedd-a-chyllid/`
+  and the retraining guide (the before-noun form is "chwe").
+
+### NEEDS A HUMAN
+1. **Does `hello@clwydianacademy.co.uk` receive mail?** If the mailbox does not exist, every
+   enquiry is lost and the visitor is still told it arrived.
+2. **Resend:** the sender is now `hello@` (was `enquiries@`). The domain must be verified there.
+3. **Vercel:** if `ENQUIRY_TO` or `ENQUIRY_FROM` is set in the project, it overrides the code and
+   may still point at the old address. Not visible from the repository; not the coder's to change.
+4. **The repository still holds the old details:** this file, `CLAUDE.md`, the stale
+   `clwydian-academy/` folder, `check_claims.py` (as patterns) and all of git history. If the
+   repository is public, that matters.
+5. **`CLAUDE.md` is now behind the decisions** ("People: Mark Parker…", the address). Left alone
+   as instructed; the guard, not the file, is what enforces the new rule.
+6. The fee queries in the table above.
+7. `/contact/` still says the enquiry "is emailed to us and to you", and "reaches the same person".
