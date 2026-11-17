@@ -1,0 +1,810 @@
+{
+ "_source": "Every rule and number the training salon runs on, in one place. Read by website/_src/salon.py (pages) and copied by build.py to site/api/_lib/salon/policy.json (the booking engine cannot read _data/ at run time). Change a value here, rebuild, and it changes on the pages and in the engine together.",
+ "_todo_pm": "A value written as {\"todo_pm\": true, \"value\": X} is a PLACEHOLDER the PM has not confirmed. While ANY remain: the salon pages are built noindex and left out of the sitemap, prices and opening times are shown as 'to be confirmed', and the booking engine refuses to take a booking in production. To confirm a value, replace the whole object with the plain value (2.0, not {\"todo_pm\": true, \"value\": 2.0}).",
+ "_units": "Money is whole pounds. Times are minutes, or HH:MM clock times in Europe/London. Service timings are the minutes a QUALIFIED stylist takes; a learner's level factor multiplies the 'work' and 'basin' parts only — developing time ('process') and the supervisor's check ('check') do not stretch.",
+ "levels": {
+  "l1": {
+   "rank": 1,
+   "name": {
+    "en": "Level 1 learner",
+    "cy": "Dysgwr Lefel 1"
+   },
+   "duration_factor": {
+    "todo_pm": true,
+    "value": 2.0
+   }
+  },
+  "l2": {
+   "rank": 2,
+   "name": {
+    "en": "Level 2 learner",
+    "cy": "Dysgwr Lefel 2"
+   },
+   "duration_factor": {
+    "todo_pm": true,
+    "value": 1.6
+   }
+  },
+  "l3": {
+   "rank": 3,
+   "name": {
+    "en": "Level 3 learner",
+    "cy": "Dysgwr Lefel 3"
+   },
+   "duration_factor": {
+    "todo_pm": true,
+    "value": 1.3
+   }
+  },
+  "graduate": {
+   "rank": 4,
+   "name": {
+    "en": "Graduate stylist",
+    "cy": "Steilydd graddedig"
+   },
+   "duration_factor": {
+    "todo_pm": true,
+    "value": 1.0
+   }
+  }
+ },
+ "resources": {
+  "chairs": {
+   "todo_pm": true,
+   "value": 6
+  },
+  "basins": {
+   "todo_pm": true,
+   "value": 2
+  },
+  "supervisors_on_floor": {
+   "todo_pm": true,
+   "value": 1
+  },
+  "_supervisor_ratio": "The most learners who may be working on clients at once for each supervisor on the floor.",
+  "supervisor_ratio": {
+   "todo_pm": true,
+   "value": 6
+  }
+ },
+ "deposit": {
+  "percent": {
+   "todo_pm": true,
+   "value": 20
+  },
+  "_cap_pounds": "The deposit never exceeds this, whatever the price.",
+  "cap_pounds": {
+   "todo_pm": true,
+   "value": 15
+  }
+ },
+ "_terms_approved": "The wording of /salon/terms/ (built from website/_src/salon.py). The page says DRAFT until this is true.",
+ "terms_approved": {
+  "todo_pm": true,
+  "value": false
+ },
+ "cancel_window_hours": 48,
+ "_hold_minutes": "How long a slot is held while the client pays. 30 is Stripe's minimum Checkout expiry, so it is not a placeholder.",
+ "hold_minutes": 30,
+ "booking": {
+  "_min_notice_hours": "The latest a client may book before the appointment starts.",
+  "min_notice_hours": {
+   "todo_pm": true,
+   "value": 24
+  },
+  "_horizon_days": "How far ahead 'next available' searches.",
+  "horizon_days": {
+   "todo_pm": true,
+   "value": 56
+  },
+  "slot_step_minutes": 15,
+  "strip_days": 14,
+  "afternoon_from": "12:00"
+ },
+ "patch_test": {
+  "min_hours": 48,
+  "max_months": 12,
+  "_products": "A patch test counts only for the SAME product. One entry per product the salon tests for; a service names the product it uses.",
+  "products": {
+   "colour": {
+    "name": {
+     "todo_pm": true,
+     "value": {
+      "en": "Permanent and quasi-permanent colour (product range to be named)",
+      "cy": "Lliw parhaol a chwasi-barhaol (ystod cynnyrch i'w henwi)"
+     }
+    }
+   },
+   "lightener": {
+    "name": {
+     "todo_pm": true,
+     "value": {
+      "en": "Lightener / bleach (product range to be named)",
+      "cy": "Goleuwr / cannydd (ystod cynnyrch i'w henwi)"
+     }
+    }
+   },
+   "relaxer": {
+    "name": {
+     "todo_pm": true,
+     "value": {
+      "en": "Relaxer (product range to be named)",
+      "cy": "Ymlaciwr (ystod cynnyrch i'w henwi)"
+     }
+    }
+   }
+  }
+ },
+ "age": {
+  "_rule": "Under 16: no permanent or quasi-permanent colour, bleach or relaxer, at all. Any other service for someone under 16 needs a parent or guardian's consent.",
+  "restricted_under": 16,
+  "restricted_chemicals": [
+   "permanent_colour",
+   "quasi_colour",
+   "bleach",
+   "relaxer"
+  ],
+  "guardian_consent_under": 16
+ },
+ "opening": {
+  "_terms": "The salon opens in term time only. Each term is first day to last day, inclusive.",
+  "terms": {
+   "todo_pm": true,
+   "value": [
+    {
+     "id": "spring-2027",
+     "from": "2027-01-11",
+     "to": "2027-03-26"
+    },
+    {
+     "id": "summer-2027",
+     "from": "2027-04-12",
+     "to": "2027-07-16"
+    }
+   ]
+  },
+  "_closures": "Single dates inside a term when the salon is shut (half-term days, bank holidays).",
+  "closures": {
+   "todo_pm": true,
+   "value": [
+    "2027-02-15",
+    "2027-02-17",
+    "2027-05-03",
+    "2027-05-31",
+    "2027-06-02"
+   ]
+  },
+  "_sessions": "Salon sessions by weekday. A booking must start and finish inside one session.",
+  "sessions": {
+   "todo_pm": true,
+   "value": {
+    "mon": [
+     {
+      "open": "09:30",
+      "close": "16:00"
+     }
+    ],
+    "wed": [
+     {
+      "open": "09:30",
+      "close": "16:00"
+     }
+    ]
+   }
+  }
+ },
+ "services": [
+  {
+   "id": "patch-test",
+   "group": "test",
+   "name": {
+    "en": "Patch test",
+    "cy": "Prawf patsh"
+   },
+   "min_level": "l1",
+   "chemical": null,
+   "patch_test_product": null,
+   "timings": {
+    "todo_pm": true,
+    "value": [
+     {
+      "kind": "work",
+      "minutes": 10
+     }
+    ]
+   },
+   "prices": {
+    "todo_pm": true,
+    "value": {
+     "l1": 0,
+     "l2": 0,
+     "l3": 0,
+     "graduate": 0
+    }
+   },
+   "is_patch_test": true
+  },
+  {
+   "id": "blow-dry",
+   "group": "cutting",
+   "name": {
+    "en": "Wash and blow-dry",
+    "cy": "Golchi a chwythsychu"
+   },
+   "min_level": "l1",
+   "chemical": null,
+   "patch_test_product": null,
+   "timings": {
+    "todo_pm": true,
+    "value": [
+     {
+      "kind": "basin",
+      "minutes": 10
+     },
+     {
+      "kind": "work",
+      "minutes": 30
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     }
+    ]
+   },
+   "prices": {
+    "todo_pm": true,
+    "value": {
+     "l1": 6,
+     "l2": 8,
+     "l3": 10,
+     "graduate": 14
+    }
+   }
+  },
+  {
+   "id": "cut-finish",
+   "group": "cutting",
+   "name": {
+    "en": "Cut and blow-dry",
+    "cy": "Torri a chwythsychu"
+   },
+   "min_level": "l1",
+   "chemical": null,
+   "patch_test_product": null,
+   "timings": {
+    "todo_pm": true,
+    "value": [
+     {
+      "kind": "work",
+      "minutes": 10
+     },
+     {
+      "kind": "basin",
+      "minutes": 10
+     },
+     {
+      "kind": "work",
+      "minutes": 35
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     }
+    ]
+   },
+   "prices": {
+    "todo_pm": true,
+    "value": {
+     "l1": 8,
+     "l2": 12,
+     "l3": 16,
+     "graduate": 22
+    }
+   }
+  },
+  {
+   "id": "restyle",
+   "group": "cutting",
+   "name": {
+    "en": "Restyle cut and blow-dry",
+    "cy": "Ailsteilio, torri a chwythsychu"
+   },
+   "min_level": "l2",
+   "chemical": null,
+   "patch_test_product": null,
+   "timings": {
+    "todo_pm": true,
+    "value": [
+     {
+      "kind": "work",
+      "minutes": 15
+     },
+     {
+      "kind": "basin",
+      "minutes": 10
+     },
+     {
+      "kind": "work",
+      "minutes": 45
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     }
+    ]
+   },
+   "prices": {
+    "todo_pm": true,
+    "value": {
+     "l1": 0,
+     "l2": 14,
+     "l3": 18,
+     "graduate": 25
+    }
+   }
+  },
+  {
+   "id": "barber-cut",
+   "group": "barbering",
+   "name": {
+    "en": "Barber cut",
+    "cy": "Toriad barbwr"
+   },
+   "min_level": "l2",
+   "chemical": null,
+   "patch_test_product": null,
+   "timings": {
+    "todo_pm": true,
+    "value": [
+     {
+      "kind": "work",
+      "minutes": 10
+     },
+     {
+      "kind": "work",
+      "minutes": 25
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     }
+    ]
+   },
+   "prices": {
+    "todo_pm": true,
+    "value": {
+     "l1": 0,
+     "l2": 6,
+     "l3": 8,
+     "graduate": 11
+    }
+   }
+  },
+  {
+   "id": "hair-up",
+   "group": "cutting",
+   "name": {
+    "en": "Hair up or occasion styling",
+    "cy": "Gwallt i fyny neu steilio achlysur"
+   },
+   "min_level": "l2",
+   "chemical": null,
+   "patch_test_product": null,
+   "timings": {
+    "todo_pm": true,
+    "value": [
+     {
+      "kind": "work",
+      "minutes": 10
+     },
+     {
+      "kind": "work",
+      "minutes": 50
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     }
+    ]
+   },
+   "prices": {
+    "todo_pm": true,
+    "value": {
+     "l1": 0,
+     "l2": 14,
+     "l3": 18,
+     "graduate": 25
+    }
+   }
+  },
+  {
+   "id": "semi-colour",
+   "group": "colour",
+   "name": {
+    "en": "Semi-permanent colour",
+    "cy": "Lliw lled-barhaol"
+   },
+   "min_level": "l2",
+   "chemical": "semi_colour",
+   "patch_test_product": "colour",
+   "timings": {
+    "todo_pm": true,
+    "value": [
+     {
+      "kind": "work",
+      "minutes": 15
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     },
+     {
+      "kind": "work",
+      "minutes": 20
+     },
+     {
+      "kind": "process",
+      "minutes": 25
+     },
+     {
+      "kind": "basin",
+      "minutes": 15
+     },
+     {
+      "kind": "work",
+      "minutes": 30
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     }
+    ]
+   },
+   "prices": {
+    "todo_pm": true,
+    "value": {
+     "l1": 0,
+     "l2": 16,
+     "l3": 20,
+     "graduate": 28
+    }
+   }
+  },
+  {
+   "id": "root-colour",
+   "group": "colour",
+   "name": {
+    "en": "Root colour (permanent)",
+    "cy": "Lliwio'r gwreiddiau (parhaol)"
+   },
+   "min_level": "l2",
+   "chemical": "permanent_colour",
+   "patch_test_product": "colour",
+   "timings": {
+    "todo_pm": true,
+    "value": [
+     {
+      "kind": "work",
+      "minutes": 15
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     },
+     {
+      "kind": "work",
+      "minutes": 25
+     },
+     {
+      "kind": "process",
+      "minutes": 35
+     },
+     {
+      "kind": "basin",
+      "minutes": 15
+     },
+     {
+      "kind": "work",
+      "minutes": 30
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     }
+    ]
+   },
+   "prices": {
+    "todo_pm": true,
+    "value": {
+     "l1": 0,
+     "l2": 18,
+     "l3": 24,
+     "graduate": 32
+    }
+   }
+  },
+  {
+   "id": "full-colour",
+   "group": "colour",
+   "name": {
+    "en": "Full-head colour (permanent or quasi-permanent)",
+    "cy": "Lliwio'r pen cyfan (parhaol neu gwasi-barhaol)"
+   },
+   "min_level": "l2",
+   "chemical": "permanent_colour",
+   "patch_test_product": "colour",
+   "timings": {
+    "todo_pm": true,
+    "value": [
+     {
+      "kind": "work",
+      "minutes": 15
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     },
+     {
+      "kind": "work",
+      "minutes": 40
+     },
+     {
+      "kind": "process",
+      "minutes": 35
+     },
+     {
+      "kind": "basin",
+      "minutes": 15
+     },
+     {
+      "kind": "work",
+      "minutes": 30
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     }
+    ]
+   },
+   "prices": {
+    "todo_pm": true,
+    "value": {
+     "l1": 0,
+     "l2": 24,
+     "l3": 30,
+     "graduate": 40
+    }
+   }
+  },
+  {
+   "id": "foils",
+   "group": "colour",
+   "name": {
+    "en": "Highlights or lowlights (foils)",
+    "cy": "Goleuadau neu isoleuadau (ffoiliau)"
+   },
+   "min_level": "l3",
+   "chemical": "bleach",
+   "patch_test_product": "lightener",
+   "timings": {
+    "todo_pm": true,
+    "value": [
+     {
+      "kind": "work",
+      "minutes": 15
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     },
+     {
+      "kind": "work",
+      "minutes": 70
+     },
+     {
+      "kind": "process",
+      "minutes": 35
+     },
+     {
+      "kind": "basin",
+      "minutes": 20
+     },
+     {
+      "kind": "work",
+      "minutes": 30
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     }
+    ]
+   },
+   "prices": {
+    "todo_pm": true,
+    "value": {
+     "l1": 0,
+     "l2": 0,
+     "l3": 36,
+     "graduate": 48
+    }
+   }
+  },
+  {
+   "id": "perm",
+   "group": "texture",
+   "name": {
+    "en": "Perm",
+    "cy": "Pyrm"
+   },
+   "min_level": "l2",
+   "chemical": "perm",
+   "patch_test_product": null,
+   "timings": {
+    "todo_pm": true,
+    "value": [
+     {
+      "kind": "work",
+      "minutes": 15
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     },
+     {
+      "kind": "work",
+      "minutes": 50
+     },
+     {
+      "kind": "process",
+      "minutes": 25
+     },
+     {
+      "kind": "basin",
+      "minutes": 20
+     },
+     {
+      "kind": "work",
+      "minutes": 30
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     }
+    ]
+   },
+   "prices": {
+    "todo_pm": true,
+    "value": {
+     "l1": 0,
+     "l2": 22,
+     "l3": 28,
+     "graduate": 36
+    }
+   }
+  },
+  {
+   "id": "relaxer",
+   "group": "texture",
+   "name": {
+    "en": "Relaxing treatment",
+    "cy": "Triniaeth ymlacio"
+   },
+   "min_level": "l2",
+   "chemical": "relaxer",
+   "patch_test_product": "relaxer",
+   "timings": {
+    "todo_pm": true,
+    "value": [
+     {
+      "kind": "work",
+      "minutes": 15
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     },
+     {
+      "kind": "work",
+      "minutes": 40
+     },
+     {
+      "kind": "process",
+      "minutes": 20
+     },
+     {
+      "kind": "basin",
+      "minutes": 20
+     },
+     {
+      "kind": "work",
+      "minutes": 35
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     }
+    ]
+   },
+   "prices": {
+    "todo_pm": true,
+    "value": {
+     "l1": 0,
+     "l2": 24,
+     "l3": 30,
+     "graduate": 40
+    }
+   }
+  },
+  {
+   "id": "conditioning",
+   "group": "treatment",
+   "name": {
+    "en": "Conditioning treatment",
+    "cy": "Triniaeth gyflyru"
+   },
+   "min_level": "l1",
+   "chemical": null,
+   "patch_test_product": null,
+   "timings": {
+    "todo_pm": true,
+    "value": [
+     {
+      "kind": "basin",
+      "minutes": 15
+     },
+     {
+      "kind": "process",
+      "minutes": 10
+     },
+     {
+      "kind": "basin",
+      "minutes": 5
+     },
+     {
+      "kind": "work",
+      "minutes": 25
+     },
+     {
+      "kind": "check",
+      "minutes": 5
+     }
+    ]
+   },
+   "prices": {
+    "todo_pm": true,
+    "value": {
+     "l1": 6,
+     "l2": 8,
+     "l3": 10,
+     "graduate": 14
+    }
+   }
+  }
+ ],
+ "groups": {
+  "test": {
+   "en": "Before your first colour",
+   "cy": "Cyn eich lliw cyntaf"
+  },
+  "cutting": {
+   "en": "Cutting and styling",
+   "cy": "Torri a steilio"
+  },
+  "barbering": {
+   "en": "Barbering",
+   "cy": "Barbro"
+  },
+  "colour": {
+   "en": "Colour",
+   "cy": "Lliw"
+  },
+  "texture": {
+   "en": "Perming and relaxing",
+   "cy": "Pyrmio ac ymlacio"
+  },
+  "treatment": {
+   "en": "Treatments",
+   "cy": "Triniaethau"
+  }
+ }
+}

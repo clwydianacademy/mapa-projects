@@ -20,5 +20,25 @@
       "destination": "/cy/amdanom/",
       "statusCode": 301
     }
+  ],
+  "headers": [
+    {
+      "source": "/staff/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    }
   ]
 }
