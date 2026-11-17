@@ -5,7 +5,7 @@
     "@id": "https://www.clwydianacademy.co.uk/cy/cyrsiau/barbro-nvq-lefel-2/#course",
     "name": "Diploma NVQ Lefel 2 mewn Barbro — Gyda'r Hwyr",
     "inLanguage": "cy",
-    "description": "Cwrs barbro gyda'r hwyr 32 wythnos yn Llanelwy: un noson yr wythnos (nos Fawrth 5pm–9pm) ynghyd â dysgu o bell wedi'i amserlennu, yn arwain at gymhwyster barbro VTCT NVQ Lefel 2.",
+    "description": "Cwrs barbro gyda'r hwyr {{fee:barberingWeeks}} wythnos yn Llanelwy: un noson yr wythnos (nos Fawrth 5pm–9pm) ynghyd â dysgu o bell wedi'i amserlennu, yn arwain at gymhwyster barbro VTCT NVQ Lefel 2.",
     "provider": {
       "@id": "https://www.clwydianacademy.co.uk/#organization"
     },
@@ -30,14 +30,14 @@
       {
         "@type": "Offer",
         "category": "Paid",
-        "price": "4500",
+        "price": "{{fee:nvqRaw}}",
         "priceCurrency": "GBP",
         "description": "Lle hunan-ariannu"
       },
       {
         "@type": "Offer",
         "category": "Free",
-        "price": "0",
+        "price": "{{fee:fundedRaw}}",
         "priceCurrency": "GBP",
         "description": "Wedi'i ariannu'n llawn i ddysgwyr cymwys drwy lwybrau Llywodraeth Cymru, gan gynnwys prentisiaethau"
       }

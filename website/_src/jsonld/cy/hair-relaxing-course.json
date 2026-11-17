@@ -30,7 +30,7 @@
       {
         "@type": "Offer",
         "category": "Paid",
-        "price": "695",
+        "price": "{{cpd:priceRaw:UHB205}}",
         "priceCurrency": "GBP",
         "description": "Rhaglen wyth wythnos gyflawn gan gynnwys ffioedd arholiad"
       }

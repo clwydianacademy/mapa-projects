@@ -30,7 +30,7 @@
       {
         "@type": "Offer",
         "category": "Paid",
-        "price": "195",
+        "price": "{{cpd:priceRaw:UV21577}}",
         "priceCurrency": "GBP",
         "description": "Per person; team discounts for three or more"
       }

@@ -1,10 +1,21 @@
 {
-  "_source": "NVQ fees as published on /funding/ since August 2026. One place for the figures the fee-defence block repeats.",
+  "_source": "Every fee and course length the site quotes, in one place. Pages, meta descriptions and structured data read these through {{fee:...}} tokens (website/_src/cpd.py, fee_token) — change a figure here, rebuild, and it changes everywhere. CPD unit prices are NOT here: they come from the tariff in _data/cpd-2027.json. Two figures are derived, not stored: reactRemainder = nvq - react_support, and reactInstalments = (reactRemainder - deposit) / instalment.",
   "nvq": 4500,
   "deposit": 500,
   "instalment": 500,
   "instalments": 8,
+  "funded": 0,
+  "bundle_l2_l3": 7900,
+  "employer_sponsored": 3950,
+  "react_support": 1500,
   "months": 6,
+  "barbering_weeks": 32,
   "seats": 10,
-  "barbering_weeks": 32
+  "cpd_day_min": 150,
+  "cpd_day_max": 295,
+  "relaxing_per_week_under": 90,
+  "market_saving_min": 5000,
+  "market_saving_max": 13000,
+  "market_day_min": 175,
+  "market_day_max": 335
 }
