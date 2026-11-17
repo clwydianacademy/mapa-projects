@@ -273,23 +273,6 @@
     }
   },
   {
-    "key": "funders",
-    "nav": "/funders/",
-    "noindex": false,
-    "priority": "0.6",
-    "legal": "plain",
-    "en": {
-      "path": "/funders/",
-      "title": "Funders & Partners — Business Plan | Clwydian Academy",
-      "desc": "For grant assessors, lenders and partners: the governance, investment case and social-impact model behind Clwydian Academy — full business plan available on request."
-    },
-    "cy": {
-      "path": "/cy/cyllidwyr/",
-      "title": "Cyllidwyr a Phartneriaid — Cynllun Busnes | Clwydian Academy",
-      "desc": "I aseswyr grantiau, benthycwyr a phartneriaid: llywodraethu, achos buddsoddi a model effaith gymdeithasol Clwydian Academy — y cynllun busnes llawn ar gael ar gais."
-    }
-  },
-  {
     "key": "contact",
     "nav": "/contact/",
     "noindex": false,

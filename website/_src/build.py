@@ -57,7 +57,6 @@ NAV = [
     {"en": ("/for-salons/", "For Salons"),         "cy": ("/cy/i-salonau/", "I Salonau")},
     {"en": ("/about/", "About"),                   "cy": ("/cy/amdanom/", "Amdanom")},
     {"en": ("/guides/", "Guides"),                 "cy": ("/cy/canllawiau/", "Canllawiau")},
-    {"en": ("/funders/", "Funders"),               "cy": ("/cy/cyllidwyr/", "Cyllidwyr")},
     {"en": ("/contact/", "Contact"),               "cy": ("/cy/cysylltu/", "Cysylltu")},
 ]
 
@@ -83,7 +82,6 @@ CHROME = {
         academy=[("/about/", "About &amp; Mission"),
                  ("/apprenticeships/", "Apprenticeships"),
                  ("/for-salons/", "For Salons"),
-                 ("/funders/", "Funders &amp; Partners"),
                  ("/guides/", "Guides"),
                  ("/contact/", "Contact")],
         visit_label="Visit &amp; Contact",
@@ -113,7 +111,6 @@ CHROME = {
         academy=[("/cy/amdanom/", "Amdanom a&rsquo;n Cenhadaeth"),
                  ("/cy/prentisiaethau/", "Prentisiaethau"),
                  ("/cy/i-salonau/", "I Salonau"),
-                 ("/cy/cyllidwyr/", "Cyllidwyr a Phartneriaid"),
                  ("/cy/canllawiau/", "Canllawiau"),
                  ("/cy/cysylltu/", "Cysylltu")],
         visit_label="Ymweld a Chysylltu",
@@ -299,6 +296,36 @@ def write(rel, text):
     with open(path, "w", encoding="utf-8", newline="\n") as f:   # LF on every OS
         f.write(text)
 
+def redirects(pages):
+    """_data/redirects.json -> vercel.json in the deployed folder: one permanent 301 per retired URL.
+
+    Each URL is listed with and without its trailing slash, so both forms redirect whatever
+    Vercel's trailing-slash setting is. A redirect whose target is not a built page, or whose
+    source is still a page in the registry, fails the build. A built page left behind at a
+    retired URL is deleted, so a retired page cannot linger in the deployed folder."""
+    with open(os.path.join(REPO, "_data", "redirects.json"), encoding="utf-8") as f:
+        wanted = json.load(f)["redirects"]
+    live = {p[loc]["path"] for p in pages for loc in LOCALES if p.get(loc)}
+    rules = []
+    for r in wanted:
+        src, dst = r["from"], r["to"]
+        if not (src.startswith("/") and src.endswith("/") and len(src) > 1):
+            sys.exit(f"build: redirects.json: 'from' must look like /old-page/ — got {src!r}")
+        if src in live:
+            sys.exit(f"build: redirects.json: {src} is still a page in pages.json — remove the page or the redirect")
+        if dst not in live:
+            sys.exit(f"build: redirects.json: {src} redirects to {dst}, which is not a built page")
+        for form in (src.rstrip("/"), src):
+            rules.append({"source": form, "destination": dst, "statusCode": 301})
+        stale = os.path.join(OUT, out_path(src))
+        if os.path.exists(stale):
+            os.remove(stale)
+            try: os.rmdir(os.path.dirname(stale))
+            except OSError: pass
+            print("removed retired page", out_path(src))
+    write("vercel.json", json.dumps({"redirects": rules}, indent=2) + "\n")
+    return len(wanted)
+
 def build():
     if not os.path.isdir(OUT):
         sys.exit(f"build: output directory missing: {OUT}")
@@ -345,7 +372,8 @@ def build():
     write("sitemap.xml", "\n".join(sm) + "\n")
     write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {DOMAIN}/sitemap.xml\n")
     n = sum(len(v) for v in urls.values())
-    print(f"built sitemap.xml ({n} urls), robots.txt")
+    r = redirects(pages)
+    print(f"built sitemap.xml ({n} urls), robots.txt, vercel.json ({r} redirected urls)")
 
 if __name__ == "__main__":
     build()
