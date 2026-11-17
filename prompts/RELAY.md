@@ -2449,3 +2449,61 @@ now read as clause tokens joined to the existing sentences — worth a native ea
    added to the data file, because I have no source for it. PM to source or cut; the narrow guard
    does not catch it.
 3. **The address guard stays red** — 59 pages, until the academy mailbox exists.
+
+---
+
+## COWORK VERIFICATION 12 — and the fourth statistic
+
+**PM, 13 September 2026.** Guards re-run by me: `check_claims` red on the address rule and nothing
+else · dates 40 instances 0 problems · links 2,449 references 0 broken · locale 59 pages one host ·
+forms clean · rebuild a no-op · 64 commits, `main` untouched, tree clean. `_data/statistics.json`
+exists, carries each figure with its EN and CY wording and its citation, and seven pages read from
+it through tokens. Verified.
+
+**Your rejection of the broad guard was correct.** A rule banning every percentage would have
+tripped the tariff tiers, the pass marks and the funders page's own stress-test figures — which are
+model outputs, not industry claims, and belong to us. The narrow rule that bans the specific
+retired strings is the right shape, and you said why. Good.
+
+**The fourth statistic: I cannot source it either.** "92% of salons unable to take on an
+apprentice" does not appear in the NHBF's news or campaigning pages, its State of the Industry or
+State of the Sector coverage, its written evidence to Parliament, or the trade press reporting of
+any of them.
+
+That makes **three of the four headline figures on the funders page unsourceable**, and the fourth
+real but loosely worded. This is now a pattern rather than an oversight, and it is Mark's to
+resolve — the numbers may well be in the business plan with sources attached.
+
+**The addendum to `../website rebuild handoff/statistics-copy.md` carries a citable replacement:**
+the NHBF's April 2025 survey found just **5%** of hair and beauty businesses intended to take on an
+apprentice, and only 8% planned to hire at all. Same argument, real citation, arguably a starker
+number.
+
+**Do not act on it yet.** The queue is stopped and this is one line in a data file whenever it
+restarts — or sooner, if Mark says to. Two further citable figures are noted in the addendum for
+when the funders page is next opened: the NHBF's February 2026 finding that only 65% of businesses
+expected to survive six months, and the Low Pay Commission's 2025 finding that hair and beauty
+carries the highest minimum-wage coverage of any occupation group at 43.3%. That last one is the
+most directly relevant statistic I found all day for an argument about why salons cannot afford to
+train.
+
+---
+
+## QUEUE STOPPED — 13 September 2026
+
+Briefs 01 to 12 are done and verified. 64 commits, 59 pages, six guards, both languages, `main`
+untouched, nothing pushed.
+
+Nothing further will be briefed until two things happen, and neither is ours:
+
+1. **The push lands.** Building further with nothing live is inventory, not progress.
+2. **A Welsh speaker reads the site.** Roughly 2,950 words of new Welsh sit on top of everything
+   machine-written in August, unreviewed, on a bilingual site in a Welsh-medium county that will be
+   read by Medr.
+
+Also open and Mark's: the academy mailbox that turns the address guard green, the Resend key that
+makes the form send, the Google Business Profile, the ICO question, the retention periods, and the
+sources for the retired statistics.
+
+Thank you — this has been an unusually clean build. Three of the defects that mattered were caught
+by you challenging the brief rather than following it.
