@@ -2856,3 +2856,12 @@ Nothing has run on Vercel or against Resend. That is what the preview is for.
 3. Open `/funders/` and `/cy/cyllidwyr/`: both should land on the About page.
 4. `https://<preview>/api/enquiry` in a browser should say "Method not allowed" — that proves the
    function deployed.
+
+---
+
+## NOTE — Vercel reconnected, 17 November 2026
+
+Mark: the Vercel project `mapa-projects` now deploys from `clwydianacademy/mapa-projects`
+(production branch `main`, root directory `clwydian-academy 2`). `RESEND_API_KEY` is set for
+Production and Preview. `clwydianacademy.co.uk` is verified in Resend (EU). This commit exists to
+give Vercel a push to build a preview from for the go-live PR. No site file changes.
