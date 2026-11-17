@@ -26,9 +26,18 @@
     });
   }
 
-  // Scroll reveals
+  // Scroll reveals. The content is visible by default (main.css), so a visitor without
+  // JavaScript — or whose copy of this file failed to load — still sees every section. Only once
+  // this script is running do we hide what is still below the fold and fade it in on scroll;
+  // anything already on screen is left exactly as it is, so nothing flashes.
   var revealEls = document.querySelectorAll(".reveal");
-  if ("IntersectionObserver" in window && revealEls.length) {
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if ("IntersectionObserver" in window && revealEls.length && !reduced) {
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    revealEls.forEach(function (el) {
+      if (el.getBoundingClientRect().top < vh) el.classList.add("is-in");
+    });
+    document.documentElement.classList.add("reveal-on");
     var io = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (en) {
@@ -40,9 +49,7 @@
       },
       { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
     );
-    revealEls.forEach(function (el) { io.observe(el); });
-  } else {
-    revealEls.forEach(function (el) { el.classList.add("is-in"); });
+    revealEls.forEach(function (el) { if (!el.classList.contains("is-in")) io.observe(el); });
   }
 
   // Enquiry form — progressive enhancement over a plain POST to /api/enquiry.

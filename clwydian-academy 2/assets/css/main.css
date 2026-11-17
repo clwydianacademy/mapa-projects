@@ -449,9 +449,11 @@ a.card { text-decoration: none; color: inherit; display: flex; flex-direction: c
 .footer-legal a { color: rgba(247, 245, 242, 0.65); }
 
 /* ---------- reveal animations ---------- */
-.reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.9s var(--ease), transform 0.9s var(--ease); transition-delay: var(--d, 0s); }
-.reveal.is-in { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
+/* Visible by default: no JavaScript, or a main.js that failed to load, must never hide content.
+   main.js adds .reveal-on to <html> once it is running, and only then is anything faded in. */
+.reveal-on .reveal { opacity: 0; transform: translateY(26px); }
+.reveal-on .reveal.is-in { opacity: 1; transform: none; transition: opacity 0.9s var(--ease), transform 0.9s var(--ease); transition-delay: var(--d, 0s); }
+@media (prefers-reduced-motion: reduce) { .reveal-on .reveal { opacity: 1; transform: none; transition: none; } }
 
 /* ---------- breadcrumb ---------- */
 .crumbs { padding-top: 1.6rem; font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
