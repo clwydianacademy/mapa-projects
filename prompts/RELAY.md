@@ -2790,3 +2790,69 @@ Deletions only.
 1. The 12 rows above.
 2. The plan text on `main`, in `clwydian-academy/` and in history — see the top of this report.
 3. `vercel.json` on a preview deployment.
+
+---
+
+## REPORT — AUDIT PHASE 1d (go-live preparation)
+
+**Coder, 17 November 2026.** PM has approved going live; instruction relayed by Mark. `main` is
+still `40723c9` and is **not** merged into by the coder: PR 1 is merged into
+`backup/site-rebuild-mac`, and a second PR into `main` is opened for Mark to merge after he has
+tested a Vercel preview.
+
+| SHA | Step |
+|---|---|
+| `66b4335` | 1/4 `/about/` — three sentences reworded |
+| `931e94b` | 2/4 form failure: clear message, `hello@` fallback, input kept |
+| `5acd8a8` | 3/4 build output |
+| *(this)* | 4/4 this report |
+
+### What changed
+1. **`/about/` and `/cy/amdanom/`.** "…regulated externally and audited by our grant funders,
+   with dual unrelated signatories…" → "…regulated externally." · "…no grant income reaches any
+   related company, and … the board and the bank mandate." → "…and an unrelated independent
+   director sits on the board." · "…capital structuring, funding applications and enterprise
+   risk." → "…finance and enterprise risk." The first two are deletions, so nothing new is claimed.
+2. **When the form cannot send.** Missing key, Resend refusing, a platform error page, or the
+   network dropping: the visitor stays on the page, is told it was not sent, is given
+   `hello@clwydianacademy.co.uk` as a link, and every field keeps what they typed — with and
+   without JavaScript, in both languages. `main.js` no longer calls `form.submit()` on failure.
+3. **A failed confirmation is no longer a failed enquiry.** If the academy's copy is delivered
+   and only the visitor's confirmation fails, the visitor sees the thank-you.
+
+### Deployment facts checked in the repository
+- `clwydian-academy 2/vercel.json` and `clwydian-academy 2/api/enquiry.js` are both inside the
+  Vercel root directory. There is no other `vercel.json`, `api/` folder or `package.json`.
+- `api/enquiry.js` has no dependencies and reads three environment variables: `RESEND_API_KEY`
+  (required), `ENQUIRY_TO` and `ENQUIRY_FROM` (optional; leave unset).
+- It sends from and delivers to `hello@clwydianacademy.co.uk`, so the domain being verified in
+  Resend is the right one.
+- `main` is an ancestor of this branch: the go-live PR has no conflicts.
+
+### Evidence, on the output of `5acd8a8`
+- `build.py` clean; second build a no-op.
+- `check_claims` clean · `check_dates` 0 · `check_links` 2340 references, 0 broken, 4 redirect
+  rules · `check_locale` 57 pages clean · `check_forms` clean · `test_enquiry.js` 23/23.
+- The 4 new tests fail against the code before `931e94b`.
+- Chromium, 57 pages × 1280px and 375px: 0 console errors, 0 failed requests, 0 contrast failures.
+  Overflow, 57 pages × 7 widths: 0.
+- Failure paths in a browser, both languages: key missing (JS on and off), Resend refusing (JS on
+  and off), error page instead of JSON (JS on), network dropped (JS on). In all 12 runs: message
+  shown, `mailto:` link present, name and message kept, 0 emails sent.
+- The working paths are unchanged.
+
+### Not verified
+Nothing has run on Vercel or against Resend. That is what the preview is for.
+
+### WELSH FOR REVIEW
+- `/cy/amdanom/`: "Yn cyfarwyddo llywodraethu, cyllid a risg menter." (one new word, *cyllid*).
+- The two failure messages now end ": hello@clwydianacademy.co.uk." (punctuation and the address).
+
+### NEEDS A HUMAN — the preview test, before merging into `main`
+1. Add `RESEND_API_KEY` in Vercel for **Preview and Production**. Without it the preview shows
+   the "form is not working" message — which is itself worth seeing once.
+2. On the preview: send the form from `/contact/` and `/cy/cysylltu/`; confirm the enquiry
+   arrives at `hello@` and the confirmation arrives at the sender.
+3. Open `/funders/` and `/cy/cyllidwyr/`: both should land on the About page.
+4. `https://<preview>/api/enquiry` in a browser should say "Method not allowed" — that proves the
+   function deployed.
