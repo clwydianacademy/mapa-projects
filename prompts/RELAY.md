@@ -2892,3 +2892,10 @@ to build a fresh preview with the new key. No site file changes.
 
 Mark rotated `RESEND_API_KEY` in Vercel again (Production and Preview). This commit gives Vercel
 a push to build a fresh preview that picks the new key up. No site file changes.
+
+---
+
+## NOTE — Resend key now set by the Resend integration, 17 November 2026, 19:52
+
+Mark: `RESEND_API_KEY` is now set by Resend's official Vercel integration, for all environments.
+This commit gives Vercel a push to build a fresh preview that picks it up. No site file changes.
