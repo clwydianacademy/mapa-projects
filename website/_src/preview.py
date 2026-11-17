@@ -8,14 +8,14 @@ and points directory links at their index.html so file:// browsing works.
 The production folder is untouched.
 
 Defaults are relative to the repository, so it runs the same from any directory on any OS:
-built-dir = <repo>/clwydian-academy 2, preview-dir = <repo>/_preview (git-ignored).
+built-dir = <repo>/site, preview-dir = <repo>/_preview (git-ignored).
 The enquiry form cannot send from a file:// preview - it needs the /api/enquiry function.
 """
 import os, re, shutil, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
-SITE = os.path.abspath(sys.argv[1]) if len(sys.argv) > 1 else os.path.join(REPO, "clwydian-academy 2")
+SITE = os.path.abspath(sys.argv[1]) if len(sys.argv) > 1 else os.path.join(REPO, "site")
 PREV = os.path.abspath(sys.argv[2]) if len(sys.argv) > 2 else os.path.join(REPO, "_preview")
 
 BADGE = ('<div style="position:fixed;bottom:14px;left:14px;z-index:999;'

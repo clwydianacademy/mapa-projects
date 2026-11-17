@@ -2,7 +2,7 @@
 """
 check_forms.py — the enquiry route is a real form, everywhere, in both languages.
 
-    python3 scripts/check_forms.py ["clwydian-academy 2"]
+    python3 scripts/check_forms.py ["site"]
 
   * no <a class="btn …" href="mailto:…"> anywhere — a mailto in a CTA position is a dead end on
     a phone (a plain email address in an address block or a policy is fine)
@@ -69,7 +69,7 @@ def check(root):
     return problems, forms, pages
 
 def main():
-    root = sys.argv[1] if len(sys.argv) > 1 else "clwydian-academy 2"
+    root = sys.argv[1] if len(sys.argv) > 1 else "site"
     if not os.path.isdir(root):
         print(f"check_forms: no such directory: {root}"); return 2
     problems, forms, pages = check(root)
@@ -77,7 +77,7 @@ def main():
         print(f"check_forms: {pages} pages, {forms} forms — no mailto CTAs, every form posts to a real action, every control labelled."); return 0
     print(f"check_forms: {pages} pages, {forms} forms — {len(problems)} problem(s)\n")
     for p in problems: print("  ", p)
-    print("\nFAIL — fix the fragment (or add the function under clwydian-academy 2/api/), then rebuild.")
+    print("\nFAIL — fix the fragment (or add the function under site/api/), then rebuild.")
     return 1
 
 if __name__ == "__main__":

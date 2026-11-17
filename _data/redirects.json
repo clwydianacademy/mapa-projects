@@ -1,5 +1,5 @@
 {
-  "_source": "Retired URLs and where they now lead. website/_src/build.py turns this list into `clwydian-academy 2/vercel.json` (permanent 301 redirects, with and without the trailing slash) and deletes any built page still sitting at a retired URL. To retire another page: remove it from website/_src/pages.json, delete its fragments, add one line here, rebuild. `to` must be a page that exists; the build fails if it is not.",
+  "_source": "Retired URLs and where they now lead. website/_src/build.py turns this list into `site/vercel.json` (permanent 301 redirects, with and without the trailing slash) and deletes any built page still sitting at a retired URL. To retire another page: remove it from website/_src/pages.json, delete its fragments, add one line here, rebuild. `to` must be a page that exists; the build fails if it is not.",
   "redirects": [
     {
       "from": "/funders/",

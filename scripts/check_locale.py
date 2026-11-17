@@ -2,7 +2,7 @@
 """
 check_locale.py — the English and Welsh sites are mirrors.
 
-    python3 scripts/check_locale.py ["clwydian-academy 2"]
+    python3 scripts/check_locale.py ["site"]
 
 For every page except /404.html:
   * <html lang> is en-GB outside /cy/ and cy inside it
@@ -95,7 +95,7 @@ def check(root):
     return problems, len(site)
 
 def main():
-    root = sys.argv[1] if len(sys.argv) > 1 else "clwydian-academy 2"
+    root = sys.argv[1] if len(sys.argv) > 1 else "site"
     if not os.path.isdir(root):
         print(f"check_locale: no such directory: {root}"); return 2
     problems, n = check(root)

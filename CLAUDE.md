@@ -6,10 +6,14 @@ under `### NEEDS A HUMAN` rather than following the brief.
 ## Deployment
 - Live at `https://www.clwydianacademy.co.uk`. Host **Vercel**, team
   `charlotte-eleanor-s-projects`, project `mapa-projects`, production branch `main`,
-  **root directory `clwydian-academy 2`** (with the space and the 2). Static build, ~1 min.
-- `clwydian-academy/` and `clwydian-academy-preview/` at repo root are stale. Never edit.
+  **root directory `site`**. Static build, ~1 min. `site/vercel.json` (redirects) and
+  `site/api/` (the enquiry function) must stay inside that folder.
+- The folder was called `clwydian-academy 2` until 17 November 2026. Vercel refuses a serverless
+  function whose path contains a space (`invalid_function_name`), so it was renamed. **Never put
+  a space in the name of the deployed folder or anything under `site/api/`.**
+- The stale `clwydian-academy/` folder was deleted on the same day. There is one site folder.
 - GitHub Pages is **dead** for this site. Do not write `CNAME` or `.nojekyll`.
-- The deployed HTML in `clwydian-academy 2` is the source of truth for content.
+- The deployed HTML in `site` is the source of truth for content.
   `website/_src/` is a July 2026 generator that missed every August edit.
 
 ## The entity — funding-critical, never regress

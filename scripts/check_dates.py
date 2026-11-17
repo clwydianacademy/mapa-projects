@@ -10,7 +10,7 @@ Re-derives, from the data alone:
   * price == round((fixed + per_glh * glh) / round_to) * round_to, plus £50 for UHB206
   * dates are ascending and within the term
 
-And, against the built tree (second argument, default "clwydian-academy 2"), every
+And, against the built tree (second argument, default "site"), every
 Course / CourseInstance in the JSON-LD:
   * its startDate is a cohort in the data (and a unit code in the Course name, if any, agrees)
   * endDate, offers.price and maximumAttendeeCapacity match that cohort
@@ -152,7 +152,7 @@ def check_built(data, root):
 def main():
     if not os.path.exists(DATA):
         print(f"check_dates: no data file at {os.path.normpath(DATA)}"); return 2
-    root = sys.argv[1] if len(sys.argv) > 1 else "clwydian-academy 2"
+    root = sys.argv[1] if len(sys.argv) > 1 else "site"
     with open(DATA, encoding="utf-8") as f:
         data = json.load(f)
     problems = check(data)

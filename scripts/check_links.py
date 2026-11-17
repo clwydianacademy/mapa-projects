@@ -2,7 +2,7 @@
 """
 check_links.py — every root-relative href / src / srcset in the built tree resolves to a file.
 
-    python3 scripts/check_links.py ["clwydian-academy 2"]
+    python3 scripts/check_links.py ["site"]
 
 Exit 0 = clean. Exit 1 = broken references (listed, with the page they are on). Exit 2 = no dir.
 Fragments (#…) and query strings are ignored; a directory URL must contain index.html;
@@ -62,7 +62,7 @@ def check_redirects(root):
     return problems, len(rules)
 
 def main():
-    root = sys.argv[1] if len(sys.argv) > 1 else "clwydian-academy 2"
+    root = sys.argv[1] if len(sys.argv) > 1 else "site"
     if not os.path.isdir(root):
         print(f"check_links: no such directory: {root}"); return 2
     broken, refs = check(root)

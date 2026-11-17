@@ -2,7 +2,7 @@
 """extract.py — pull the source of truth out of the deployed HTML.
 
 Brief 01 (September 2026): the generator was abandoned in July and the August edits went
-straight into the deployed files in `clwydian-academy 2`. This script reads those files and
+straight into the deployed files in `site`. This script reads those files and
 writes everything build.py needs to reproduce them:
 
     pages/<locale>/<key>.html   the body fragment — the contents of <main id="main">
@@ -11,7 +11,7 @@ writes everything build.py needs to reproduce them:
     pages.json                  the registry: paths, titles, descriptions, nav item,
                                 sitemap priority, footer legal-line variant, per locale
 
-Rerunnable and deterministic. It changes nothing in `clwydian-academy 2`.
+Rerunnable and deterministic. It changes nothing in `site`.
 Run it only when the deployed HTML has been edited by hand and the source must catch up —
 the normal direction of travel is the other way (edit source, run build.py).
 """
@@ -19,7 +19,7 @@ import json, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
-SITE = os.path.join(REPO, "clwydian-academy 2")
+SITE = os.path.join(REPO, "site")
 DOMAIN = "https://www.clwydianacademy.co.uk"   # canonical host; the apex 301s here at Vercel
 
 # Registry order = the order the deployed sitemap listed the English pages, then 404.

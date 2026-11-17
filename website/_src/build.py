@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Assemble the Clwydian Academy static site from body fragments + shared chrome, in two locales.
 
-    python3 website/_src/build.py                    # writes into clwydian-academy 2/
-    python3 scripts/check_claims.py "clwydian-academy 2"
+    python3 website/_src/build.py                    # writes into site/
+    python3 scripts/check_claims.py "site"
 
 Every fact in ORG and the chrome below must agree with /CLAUDE.md. The body fragments in
 pages/ and the page-specific JSON-LD in jsonld/ were extracted from the deployed HTML in
 Brief 01 (extract.py); the registry in pages.json says which fragment goes where, in which
 language, with which title and description.
 
-Output goes to `clwydian-academy 2` — the Vercel root directory. Nothing is written for
+Output goes to `site` — the Vercel root directory. Nothing is written for
 GitHub Pages (no CNAME, no .nojekyll); that hosting is dead.
 """
 import datetime, json, os, subprocess, sys
@@ -20,7 +20,7 @@ import cpd   # everything rendered from _data/cpd-2027.json
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
-OUT = os.path.join(REPO, "clwydian-academy 2")
+OUT = os.path.join(REPO, "site")
 DOMAIN = "https://www.clwydianacademy.co.uk"   # canonical host; the apex 301s here at Vercel
 LOCALES = ("en", "cy")
 SITE = cpd.site()   # _data/site.json: the one contact address, the company number, the registered office
@@ -329,6 +329,14 @@ def redirects(pages):
 def build():
     if not os.path.isdir(OUT):
         sys.exit(f"build: output directory missing: {OUT}")
+    # Vercel names each serverless function by its path from the repository root and refuses a
+    # name with a space in it (invalid_function_name). That is why this folder is `site` and not
+    # `clwydian-academy 2`: the deployment of 17 Nov 2026 failed on exactly this.
+    for dirpath, _dirs, files in os.walk(os.path.join(OUT, "api")):
+        for fn in files:
+            rel = os.path.relpath(os.path.join(dirpath, fn), REPO).replace(os.sep, "/")
+            if " " in rel:
+                sys.exit(f"build: {rel!r} contains a space — Vercel will refuse to deploy this function")
     pages = json.loads(read("pages.json"))
     cpd.configure(DOMAIN, next(p for p in pages if p.get("generated") == "cpd-calendar"))
     urls = {"en": [], "cy": []}

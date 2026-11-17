@@ -3,7 +3,7 @@
 
     python scripts/make_hero_images.py        # needs Pillow:  pip install Pillow
 
-Reads the two masters in `clwydian-academy 2/assets/img/` (never modified):
+Reads the two masters in `site/assets/img/` (never modified):
     hero-training.jpg          2880 x 1920  landscape, desktop and tablet
     hero-training-mobile.jpg   1160 x 1450  portrait crop, phones (max-width 700px)
 and writes hero-training-<width>.jpg/.webp and hero-training-mobile-<width>.jpg/.webp beside
@@ -17,7 +17,7 @@ try:
 except ImportError:
     sys.exit("make_hero_images: Pillow is not installed — run: pip install Pillow")
 
-IMG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "clwydian-academy 2", "assets", "img")
+IMG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "site", "assets", "img")
 WIDTHS = {"hero-training": (960, 1440, 1920, 2560), "hero-training-mobile": (480, 800, 1160)}
 
 def main():

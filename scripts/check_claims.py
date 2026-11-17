@@ -6,7 +6,7 @@ Fails the build on any claim the academy cannot stand behind, any regression to 
 copy, and any personal contact detail or personal name (scans .html, .md, .txt, .json and .js in
 the tree — .js so that the enquiry function's own addresses are covered). Run against the built output before every commit:
 
-    python3 scripts/check_claims.py "clwydian-academy 2"
+    python3 scripts/check_claims.py "site"
 
 Exit 0 = clean. Exit 1 = findings. Add rules here rather than trusting anyone to remember.
 Every rule below traces to CLAUDE.md; if you relax one, change CLAUDE.md in the same commit
@@ -132,7 +132,7 @@ def check(root):
     return findings, pages
 
 def main():
-    root = sys.argv[1] if len(sys.argv) > 1 else "clwydian-academy 2"
+    root = sys.argv[1] if len(sys.argv) > 1 else "site"
     if not os.path.isdir(root):
         print(f"check_claims: no such directory: {root}"); return 2
     findings, pages = check(root)

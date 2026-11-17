@@ -1,5 +1,5 @@
 {
-  "_source": "Site-wide contact and company details, in one place. Read by website/_src/build.py (footer, Organization JSON-LD) and as {{site:...}} tokens in page fragments. The enquiry function (clwydian-academy 2/api/enquiry.js) cannot read this file at run time, so it repeats the email address; scripts/test_enquiry.js fails if the two differ.",
+  "_source": "Site-wide contact and company details, in one place. Read by website/_src/build.py (footer, Organization JSON-LD) and as {{site:...}} tokens in page fragments. The enquiry function (site/api/enquiry.js) cannot read this file at run time, so it repeats the email address; scripts/test_enquiry.js fails if the two differ.",
   "email": "hello@clwydianacademy.co.uk",
   "company_number": "17330962",
   "registered_office": {

@@ -13,7 +13,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("node:path");
 
-const handler = require(path.join(__dirname, "..", "clwydian-academy 2", "api", "enquiry.js"));
+const handler = require(path.join(__dirname, "..", "site", "api", "enquiry.js"));
 
 const fs = require("node:fs");
 const SITE_EMAIL = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "_data", "site.json"), "utf8")).email;
@@ -229,7 +229,7 @@ test("the enquiry is delivered but the confirmation fails: success, and no secon
 });
 
 test("main.js carries the same fallback address and never abandons the page on a failed request", () => {
-  const src = fs.readFileSync(path.join(__dirname, "..", "clwydian-academy 2", "assets", "js", "main.js"), "utf8");
+  const src = fs.readFileSync(path.join(__dirname, "..", "site", "assets", "js", "main.js"), "utf8");
   assert.ok(src.includes('var CONTACT = "' + SITE_EMAIL + '";'), "main.js CONTACT differs from _data/site.json email");
   assert.doesNotMatch(src, /form\.submit\(\)/);
 });
@@ -244,7 +244,7 @@ test("rate limit: the sixth enquiry from one address in ten minutes is refused",
 });
 
 test("the function's address is the one in _data/site.json, and the old address and phone are gone", () => {
-  const src = fs.readFileSync(path.join(__dirname, "..", "clwydian-academy 2", "api", "enquiry.js"), "utf8");
+  const src = fs.readFileSync(path.join(__dirname, "..", "site", "api", "enquiry.js"), "utf8");
   assert.equal(SITE_EMAIL, "hello@clwydianacademy.co.uk");
   assert.ok(src.includes('const CONTACT = "' + SITE_EMAIL + '";'), "enquiry.js CONTACT differs from _data/site.json email");
   assert.doesNotMatch(src, /charlotteeleanorgroup|7714/);
