@@ -67,17 +67,30 @@
     if (pre && sel && sel.querySelector('option[value="' + pre + '"]')) sel.value = pre;
     var errBox = document.getElementById("form-error");
     var okBox = document.getElementById("form-ok");
+    var CONTACT = "hello@clwydianacademy.co.uk";   // the same address as _data/site.json (test_enquiry.js checks)
     var say = function (box, text) {
       if (!box) return;
-      if (text) box.textContent = text;
+      if (text) {
+        // plain text, except that the contact address becomes a link the visitor can press
+        box.textContent = "";
+        var parts = text.split(CONTACT);
+        parts.forEach(function (part, i) {
+          box.appendChild(document.createTextNode(part));
+          if (i < parts.length - 1) {
+            var a = document.createElement("a");
+            a.href = "mailto:" + CONTACT; a.textContent = CONTACT;
+            box.appendChild(a);
+          }
+        });
+      }
       box.hidden = false;
       box.setAttribute("tabindex", "-1");
       box.focus();
     };
     var messages = {
       rate: cy ? "Gormod o ymholiadau o'r cyfeiriad hwn — rhowch gynnig arall mewn ychydig funudau." : "Too many enquiries from this address — please try again in a few minutes.",
-      config: cy ? "Nid yw'r ffurflen wedi'i chysylltu eto. E-bostiwch ni'n uniongyrchol." : "The form is not connected yet. Please email us directly.",
-      send: cy ? "Ni allem anfon eich ymholiad. Rhowch gynnig arall, neu e-bostiwch ni." : "We could not send your enquiry. Please try again, or email us.",
+      config: cy ? "Nid yw'r ffurflen wedi'i chysylltu eto. E-bostiwch ni'n uniongyrchol: " + CONTACT + "." : "Sorry — the form is not working at the moment, and your enquiry has not been sent. Please email us at " + CONTACT + ". What you typed has been kept.",
+      send: cy ? "Ni allem anfon eich ymholiad. Rhowch gynnig arall, neu e-bostiwch ni: " + CONTACT + "." : "Sorry — we could not send your enquiry. Please try again, or email us at " + CONTACT + ". What you typed has been kept.",
       fields: cy ? "Gwiriwch y meysydd sydd wedi'u marcio a rhowch gynnig arall." : "Please check the highlighted fields and try again.",
       confirm: cy ? "Bron yno — gwiriwch eich manylion a phwyswch anfon unwaith eto i gadarnhau." : "Nearly there — please check your details and press send once more to confirm.",
     };
@@ -131,7 +144,10 @@
               if (first) first.focus();
             }
           })
-          .catch(function () { form.submit(); })   // network failure: let the browser do it
+          // No answer we can read — the network dropped, or the server sent something that is not
+          // our JSON (a platform error page). Never navigate away: that would throw away what the
+          // visitor typed. Say it failed, give the address, keep the form as it is.
+          .catch(function () { mark([]); say(errBox, messages.send); })
           .then(function () { if (btn) btn.disabled = false; });
       });
     }

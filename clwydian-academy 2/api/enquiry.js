@@ -13,8 +13,10 @@
  * been time-stamped yet), the function answers with the form itself, refilled with what the
  * visitor typed and with the fields that need attention marked — nothing they wrote is lost.
  *
- * Secrets: RESEND_API_KEY is read from process.env and is set by Mark in the Vercel dashboard.
- * It is never in this repo. ENQUIRY_TO and ENQUIRY_FROM are optional overrides.
+ * Configuration: ONE environment variable is required — RESEND_API_KEY, set in the Vercel
+ * dashboard and never in this repo. Without it nothing is sent and the visitor is told to email
+ * instead. ENQUIRY_TO and ENQUIRY_FROM are optional overrides of the address below; leave them
+ * unset. The sending domain (clwydianacademy.co.uk) must be verified in Resend.
  *
  * Abuse controls (all best effort — there is no CAPTCHA):
  *   - same-origin only: the Origin (or Referer) header must be this site
@@ -95,8 +97,8 @@ const TEXT = {
       fields: "Please check the highlighted fields and try again.",
       confirm: "Nearly there — please check your details and press send once more to confirm.",
       rate: "Too many enquiries from this address — please try again in a few minutes.",
-      config: "The form is not connected yet. Please email us directly.",
-      send: "We could not send your enquiry. Please try again, or email us.",
+      config: "Sorry — the form is not working at the moment, and your enquiry has not been sent. Please email us at " + CONTACT + ". What you typed has been kept.",
+      send: "Sorry — we could not send your enquiry. Please try again, or email us at " + CONTACT + ". What you typed has been kept.",
     },
   },
   cy: {
@@ -109,8 +111,8 @@ const TEXT = {
       fields: "Gwiriwch y meysydd sydd wedi'u marcio a rhowch gynnig arall.",
       confirm: "Bron yno — gwiriwch eich manylion a phwyswch anfon unwaith eto i gadarnhau.",
       rate: "Gormod o ymholiadau o'r cyfeiriad hwn — rhowch gynnig arall mewn ychydig funudau.",
-      config: "Nid yw'r ffurflen wedi'i chysylltu eto. E-bostiwch ni'n uniongyrchol.",
-      send: "Ni allem anfon eich ymholiad. Rhowch gynnig arall, neu e-bostiwch ni.",
+      config: "Nid yw'r ffurflen wedi'i chysylltu eto. E-bostiwch ni'n uniongyrchol: " + CONTACT + ".",
+      send: "Ni allem anfon eich ymholiad. Rhowch gynnig arall, neu e-bostiwch ni: " + CONTACT + ".",
     },
   },
 };
@@ -242,7 +244,8 @@ function formPage(pageLang, f, bad, code, ts) {
     '<a href="' + BACK[pageLang] + '">' + t.back + "</a></div></header>\n" +
     '<main id="main"><section class="section section--tight"><div class="wrap" style="max-width:820px">\n' +
     "<h1>" + t.title + "</h1>\n" +
-    '<p id="form-error" class="form-note form-alert mt-2" role="alert">' + esc(t.msg[code] || t.msg.fields) + "</p>\n" +
+    '<p id="form-error" class="form-note form-alert mt-2" role="alert">' +
+    esc(t.msg[code] || t.msg.fields).replace(CONTACT, '<a href="mailto:' + CONTACT + '">' + CONTACT + "</a>") + "</p>\n" +
     '<form id="interest-form" class="form-grid mt-2" method="post" action="/api/enquiry">\n' +
     fields + "\n" +
     '<div class="field" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">' +
@@ -341,12 +344,21 @@ module.exports = async (req, res) => {
     text: NEXT[f.lang].body(label[f.lang]),
   };
 
+  // The enquiry itself. If this fails, nothing has reached the academy: say so, keep what the
+  // visitor typed, and give them the address to write to instead.
   try {
     await send(key, notification);
-    await send(key, autoReply);
   } catch (e) {
     console.error("enquiry: send failed —", e.message);
     return fail(502, "send");
+  }
+  // The confirmation to the visitor. The academy already has the enquiry, so a failure here
+  // (a mistyped address, say) is logged and NOT reported as a failure — otherwise the visitor
+  // would be told to try again and the academy would receive the same enquiry twice.
+  try {
+    await send(key, autoReply);
+  } catch (e) {
+    console.error("enquiry: delivered, but the confirmation to the visitor failed —", e.message);
   }
   return done();
 };

@@ -24,9 +24,9 @@ const GOOD = { name: "Test Person", email: "test@example.com", phone: "", org: "
 let ipCounter = 0;
 
 /* Call the handler like Vercel would. `as` is how the body was sent. */
-async function post(fields, { as = "form", headers = {}, key = "test-key" } = {}) {
+async function post(fields, { as = "form", headers = {}, key = "test-key", resend = null } = {}) {
   const sent = [];
-  globalThis.fetch = async (url, init) => { sent.push({ url, mail: JSON.parse(init.body) }); return { ok: true, status: 200, text: async () => "" }; };
+  globalThis.fetch = async (url, init) => { if (resend) return resend(); sent.push({ url, mail: JSON.parse(init.body) }); return { ok: true, status: 200, text: async () => "" }; };
   if (key) process.env.RESEND_API_KEY = key; else delete process.env.RESEND_API_KEY;
   const types = { form: "application/x-www-form-urlencoded", json: "application/json", multipart: "multipart/form-data; boundary=x" };
   const req = {
@@ -194,9 +194,44 @@ test("Welsh reply language: Welsh confirmation and Welsh thank-you page", async 
 test("no API key: nothing is sent and the visitor keeps their input", async () => {
   const r = await post({ ...GOOD, ts: old(10000) }, { key: null });
   assert.equal(r.status, 500);
-  assert.match(r.body, /The form is not connected yet/);
+  assert.match(r.body, /your enquiry has not been sent/);
+  assert.ok(r.body.includes('<a href="mailto:' + SITE_EMAIL + '">' + SITE_EMAIL + "</a>"), "the fallback address is a link");
   assert.match(r.body, /value="Test Person"/);
+  assert.match(r.body, />Do you have seats in March\?\nThanks<\/textarea>/);
   assert.equal(r.sent.length, 0);
+  const j = await post({ ...GOOD, ts: old(10000) }, { key: null, headers: JSON_ACCEPT });
+  assert.equal(j.status, 500);
+  assert.equal(j.body.error, "config");
+});
+
+test("Resend refuses the enquiry: the visitor is told, given the address, and keeps their input", async () => {
+  for (const lang of ["en", "cy"]) {
+    const r = await post({ ...GOOD, lang, ts: old(10000) }, { resend: () => ({ ok: false, status: 403, text: async () => "domain is not verified" }),
+                                                             headers: { referer: ORIGIN + (lang === "cy" ? "/cy/cysylltu/" : "/contact/") } });
+    assert.equal(r.status, 502);
+    assert.match(r.body, lang === "cy" ? /Ni allem anfon eich ymholiad/ : /we could not send your enquiry/);
+    assert.ok(r.body.includes('mailto:' + SITE_EMAIL));
+    assert.match(r.body, /value="Test Person"/);
+    assert.match(r.body, /value="test@example\.com"/);
+    assert.match(r.body, /<option value="cpd" selected>/);
+  }
+  const j = await post({ ...GOOD, ts: old(10000) }, { resend: () => { throw new Error("network down"); }, headers: JSON_ACCEPT });
+  assert.equal(j.status, 502);
+  assert.equal(j.body.error, "send");
+});
+
+test("the enquiry is delivered but the confirmation fails: success, and no second copy invited", async () => {
+  let n = 0;
+  const r = await post({ ...GOOD, ts: old(10000) }, { resend: () => (++n === 1 ? { ok: true, status: 200, text: async () => "" } : { ok: false, status: 422, text: async () => "invalid to" }) });
+  assert.equal(r.status, 303);
+  assert.equal(r.headers.location, "/contact/thanks/");
+  assert.equal(n, 2);
+});
+
+test("main.js carries the same fallback address and never abandons the page on a failed request", () => {
+  const src = fs.readFileSync(path.join(__dirname, "..", "clwydian-academy 2", "assets", "js", "main.js"), "utf8");
+  assert.ok(src.includes('var CONTACT = "' + SITE_EMAIL + '";'), "main.js CONTACT differs from _data/site.json email");
+  assert.doesNotMatch(src, /form\.submit\(\)/);
 });
 
 test("rate limit: the sixth enquiry from one address in ten minutes is refused", async () => {
