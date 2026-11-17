@@ -29,8 +29,12 @@
 "use strict";
 
 const RESEND_URL = "https://api.resend.com/emails";
-const TO_DEFAULT = "markp@charlotteeleanorgroup.uk";
-const FROM_DEFAULT = "Clwydian Academy <enquiries@clwydianacademy.co.uk>";
+// The one contact address (the same value as "email" in _data/site.json — scripts/test_enquiry.js
+// fails if they differ). Enquiries are delivered here unless ENQUIRY_TO is set in Vercel, and the
+// confirmation is sent from here unless ENQUIRY_FROM is set.
+const CONTACT = "hello@clwydianacademy.co.uk";
+const TO_DEFAULT = CONTACT;
+const FROM_DEFAULT = "Clwydian Academy <" + CONTACT + ">";
 const SITE = "https://www.clwydianacademy.co.uk";
 const SITE_HOSTS = ["www.clwydianacademy.co.uk", "clwydianacademy.co.uk"];
 

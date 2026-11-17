@@ -15,6 +15,8 @@ const path = require("node:path");
 
 const handler = require(path.join(__dirname, "..", "clwydian-academy 2", "api", "enquiry.js"));
 
+const fs = require("node:fs");
+const SITE_EMAIL = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "_data", "site.json"), "utf8")).email;
 const HOST = "www.clwydianacademy.co.uk";
 const ORIGIN = "https://" + HOST;
 const GOOD = { name: "Test Person", email: "test@example.com", phone: "", org: "", enquiry: "cpd",
@@ -50,7 +52,9 @@ test("JavaScript path: urlencoded body with a stamp sends both emails", async ()
   assert.equal(r.status, 200);
   assert.deepEqual(r.body, { ok: true, next: "/contact/thanks/" });
   assert.equal(r.sent.length, 2);
-  assert.deepEqual(r.sent[0].mail.to, ["markp@charlotteeleanorgroup.uk"]);
+  assert.deepEqual(r.sent[0].mail.to, [SITE_EMAIL]);
+  assert.equal(r.sent[0].mail.from, "Clwydian Academy <" + SITE_EMAIL + ">");
+  assert.equal(r.sent[1].mail.reply_to, SITE_EMAIL);
   assert.match(r.sent[0].mail.text, /Do you have seats in March\?/);     // the academy gets the message
   assert.deepEqual(r.sent[1].mail.to, ["test@example.com"]);
 });
@@ -202,6 +206,22 @@ test("rate limit: the sixth enquiry from one address in ten minutes is refused",
   assert.equal(r.status, 429);
   assert.equal(r.body.error, "rate");
   assert.equal(r.sent.length, 0);
+});
+
+test("the function's address is the one in _data/site.json, and the old address and phone are gone", () => {
+  const src = fs.readFileSync(path.join(__dirname, "..", "clwydian-academy 2", "api", "enquiry.js"), "utf8");
+  assert.equal(SITE_EMAIL, "hello@clwydianacademy.co.uk");
+  assert.ok(src.includes('const CONTACT = "' + SITE_EMAIL + '";'), "enquiry.js CONTACT differs from _data/site.json email");
+  assert.doesNotMatch(src, /charlotteeleanorgroup|7714/);
+});
+
+test("ENQUIRY_TO and ENQUIRY_FROM, when set in the environment, override the defaults", async () => {
+  process.env.ENQUIRY_TO = "override@example.org"; process.env.ENQUIRY_FROM = "Someone <from@example.org>";
+  try {
+    const r = await post({ ...GOOD, ts: old(10000) });
+    assert.deepEqual(r.sent[0].mail.to, ["override@example.org"]);
+    assert.equal(r.sent[0].mail.from, "Someone <from@example.org>");
+  } finally { delete process.env.ENQUIRY_TO; delete process.env.ENQUIRY_FROM; }
 });
 
 test("GET is not allowed", async () => {
