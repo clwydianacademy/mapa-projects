@@ -56,11 +56,20 @@ NAV = [
     {"en": ("/apprenticeships/", "Apprenticeships"), "cy": ("/cy/prentisiaethau/", "Prentisiaethau")},
     {"en": ("/funding/", "Fees &amp; Funding"),    "cy": ("/cy/ffioedd-a-chyllid/", "Ffioedd a Chyllid")},
     {"en": ("/for-salons/", "For Salons"),         "cy": ("/cy/i-salonau/", "I Salonau")},
-    {"en": ("/salon/", "Salon"),                   "cy": ("/cy/salon/", "Salon")},
     {"en": ("/about/", "About"),                   "cy": ("/cy/amdanom/", "Amdanom")},
     {"en": ("/guides/", "Guides"),                 "cy": ("/cy/canllawiau/", "Canllawiau")},
     {"en": ("/contact/", "Contact"),               "cy": ("/cy/cysylltu/", "Cysylltu")},
 ]
+
+# The training salon's nav item. Added to NAV only while the salon is public — see salon.is_public().
+SALON_NAV = {"en": ("/salon/", "Our Salon"), "cy": ("/cy/salon/", "Ein Salon")}
+SALON_ON = salon.is_public()      # build() may force this on for a preview build in a scratch folder
+
+def nav_items():
+    if not SALON_ON:
+        return NAV
+    at = next(i for i, item in enumerate(NAV) if item["en"][0] == "/for-salons/") + 1
+    return NAV[:at] + [SALON_NAV] + NAV[at:]
 
 # Every locale-specific string in the chrome. Welsh strings are machine-written and
 # unreviewed (CLAUDE.md "Bilingual") — any change here goes under WELSH FOR REVIEW.
@@ -197,15 +206,13 @@ def head(page, loc, jsonld):
     lines.append(ld(ORG))
     lines += [ld(block) for block in jsonld]
     lines.append('<script src="/assets/js/main.js" defer></script>')
-    if is_salon(page):
-        lines += [f'<script src="{src}" defer></script>' for src in salon.scripts(page["generated"])]
     lines.append("</head>")
     return "\n".join(lines)
 
 def header(page, loc):
     c = CHROME[loc]
     links = []
-    for item in NAV:
+    for item in nav_items():
         href, label = item[loc]
         cur = ' aria-current="page"' if page.get("nav") == item["en"][0] else ""
         links.append(f'<a href="{href}"{cur}>{label}</a>')
@@ -340,11 +347,7 @@ def redirects(pages):
             try: os.rmdir(os.path.dirname(stale))
             except OSError: pass
             print("removed retired page", out_path(src))
-    # The staff day sheet and every function answer "do not index" at the HTTP level too: robots.txt
-    # asks crawlers not to fetch them, this tells any that do.
-    headers = [{"source": src, "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}]}
-               for src in ("/staff/(.*)", "/api/(.*)")]
-    write("vercel.json", json.dumps({"redirects": rules, "headers": headers}, indent=2) + "\n")
+    write("vercel.json", json.dumps({"redirects": rules}, indent=2) + "\n")
     return len(wanted)
 
 def build():
@@ -359,14 +362,23 @@ def build():
             if " " in rel:
                 sys.exit(f"build: {rel!r} contains a space — Vercel will refuse to deploy this function")
     pages = json.loads(read("pages.json"))
-    for rel in [s for srcs in salon.ASSETS.values() for s in srcs] + ["/assets/css/salon.css"]:
-        if not os.path.exists(os.path.join(OUT, rel.lstrip("/"))):
-            sys.exit(f"build: {rel} is missing — the salon pages load it")
+    if SALON_ON and not os.path.exists(os.path.join(OUT, "assets", "css", "salon.css")):
+        sys.exit("build: /assets/css/salon.css is missing — the salon pages load it")
     cpd.configure(DOMAIN, next(p for p in pages if p.get("generated") == "cpd-calendar"))
     urls = {"en": [], "cy": []}
     for page in pages:
         for loc in LOCALES:
             if not page.get(loc):
+                continue
+            if is_salon(page) and not SALON_ON:
+                # THE SWITCH IS OFF: the page is not built, and one left over from an earlier
+                # build is removed, so the deployed folder holds no trace of the salon.
+                stale = os.path.join(OUT, out_path(page[loc]["path"]))
+                if os.path.exists(stale):
+                    os.remove(stale)
+                    try: os.removedirs(os.path.dirname(stale))
+                    except OSError: pass
+                    print("removed (salon not public)", out_path(page[loc]["path"]))
                 continue
             if is_salon(page):
                 body = salon.body(page["generated"], loc, SITE)
@@ -405,14 +417,28 @@ def build():
                    "  </url>"]
     sm.append("</urlset>")
     write("sitemap.xml", "\n".join(sm) + "\n")
-    write("robots.txt", f"User-agent: *\nAllow: /\nDisallow: /staff/\nDisallow: /api/\n\nSitemap: {DOMAIN}/sitemap.xml\n")
-    salon.copy_for_engine()      # site/api/_lib/salon/policy.json — the booking engine's copy of the policy
-    todo, draft = salon.todo_paths(salon.raw()), salon.draft_paths(salon.raw())
-    print(f"salon: {len(todo)} placeholder(s) and {len(draft)} PM draft value(s) in _data/salon/policy.json — salon pages are "
-          + ("noindex and out of the sitemap" if todo or draft else "indexed"))
+    write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {DOMAIN}/sitemap.xml\n")
+    if SALON_ON:
+        todo, draft = salon.todo_paths(salon.raw()), salon.draft_paths(salon.raw())
+        print(f"salon: ON — {len(todo)} placeholder(s) and {len(draft)} draft value(s): salon pages are "
+              + ("noindex and out of the sitemap" if todo or draft else "indexed"))
+    else:
+        print("salon: OFF — no salon page and no nav item built (\"public\" is false in _data/salon/policy.json)")
     n = sum(len(v) for v in urls.values())
     r = redirects(pages)
     print(f"built sitemap.xml ({n} urls), robots.txt, vercel.json ({r} redirected urls)")
 
 if __name__ == "__main__":
+    # `build.py --salon-preview DIR`: copy the deployed folder to DIR and build THERE with the salon
+    # switched on. For looking at the salon pages, and for scripts/test_salon_pages.js, without
+    # putting anything into the folder that is deployed. DIR must not be inside the repository.
+    if len(sys.argv) == 3 and sys.argv[1] == "--salon-preview":
+        import shutil
+        target = os.path.abspath(sys.argv[2])
+        if target == OUT or target.startswith(REPO + os.sep):
+            sys.exit("build: --salon-preview must write outside the repository")
+        shutil.copytree(OUT, target, dirs_exist_ok=True)
+        OUT, SALON_ON = target, True
+    elif len(sys.argv) > 1:
+        sys.exit("usage: build.py [--salon-preview DIR]")
     build()

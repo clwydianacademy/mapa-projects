@@ -4,7 +4,7 @@ check_locale.py — the English and Welsh sites are mirrors.
 
     python3 scripts/check_locale.py ["site"]
 
-For every page except /404.html and /staff/ (the salon's staff day sheet: internal, noindex):
+For every page except /404.html:
   * <html lang> is en-GB outside /cy/ and cy inside it
   * the head carries hreflang en, cy and x-default; x-default equals en
   * the counterpart named by hreflang exists, and its own hreflang points straight back
@@ -19,9 +19,6 @@ import os, re, sys
 
 HOST = "https://www.clwydianacademy.co.uk"   # the one canonical host; the apex 301s here at Vercel
 DOMAIN = HOST
-# Pages with no Welsh mirror, by decision: the error page, and the salon's staff day sheet — an
-# internal, password-protected, noindex application, not a page of copy (Salon Release 1, Nov 2026).
-MONOLINGUAL = ("/404.html", "/staff/")
 
 def pages(root):
     out = {}
@@ -48,7 +45,7 @@ def check(root):
                 problems.append(f"sitemap.xml: {u} is not on {HOST}")
         sitemap = set(strip(u) for u in re.findall(r"<loc>(.*?)</loc>", sm_text))
     for url, html in sorted(site.items()):
-        if url in MONOLINGUAL:
+        if url == "/404.html":
             continue
         is_cy = url.startswith("/cy/")
         head = html.split("</head>", 1)[0]

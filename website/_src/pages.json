@@ -520,24 +520,6 @@
     }
   },
   {
-    "key": "salon-book",
-    "nav": "/salon/",
-    "noindex": false,
-    "priority": "0.7",
-    "legal": "plain",
-    "generated": "salon-book",
-    "en": {
-      "path": "/salon/book/",
-      "title": "Book the Training Salon | Clwydian Academy",
-      "desc": "Book an appointment with a Clwydian Academy learner in St Asaph: choose a service, a learner level and a time."
-    },
-    "cy": {
-      "path": "/cy/salon/archebu/",
-      "title": "Archebu'r Salon Hyfforddi | Clwydian Academy",
-      "desc": "Archebwch apwyntiad gyda dysgwr Clwydian Academy yn Llanelwy: dewiswch wasanaeth, lefel dysgwr ac amser."
-    }
-  },
-  {
     "key": "salon-models",
     "nav": "/salon/",
     "noindex": false,
@@ -565,27 +547,13 @@
     "en": {
       "path": "/salon/terms/",
       "title": "Training Salon Booking Terms | Clwydian Academy",
-      "desc": "Booking terms for the Clwydian Academy training salon: deposits, cancellation, patch tests and under-16s."
+      "desc": "Booking terms for the Clwydian Academy training salon: deposits, cancellation, allergy alert tests and age."
     },
     "cy": {
       "path": "/cy/salon/telerau/",
       "title": "Telerau Archebu'r Salon Hyfforddi | Clwydian Academy",
-      "desc": "Telerau archebu salon hyfforddi Clwydian Academy: blaendaliadau, canslo, profion patsh a rhai o dan 16 oed."
+      "desc": "Telerau archebu salon hyfforddi Clwydian Academy: blaendaliadau, canslo, profion rhybudd alergedd ac oedran."
     }
-  },
-  {
-    "key": "salon-staff",
-    "nav": null,
-    "noindex": true,
-    "priority": null,
-    "legal": "plain",
-    "generated": "salon-staff",
-    "en": {
-      "path": "/staff/",
-      "title": "Salon Day Sheet | Clwydian Academy",
-      "desc": "Staff sign-in for the training salon day sheet."
-    },
-    "cy": null
   },
   {
     "key": "404",
