@@ -2865,3 +2865,13 @@ Mark: the Vercel project `mapa-projects` now deploys from `clwydianacademy/mapa-
 (production branch `main`, root directory `clwydian-academy 2`). `RESEND_API_KEY` is set for
 Production and Preview. `clwydianacademy.co.uk` is verified in Resend (EU). This commit exists to
 give Vercel a push to build a preview from for the go-live PR. No site file changes.
+
+---
+
+## NOTE — deployed folder is `site`, 17 November 2026
+
+The first preview (`bf034a8`) failed with `invalid_function_name`: Vercel refuses a function whose
+path contains a space, and the folder was `clwydian-academy 2`. `876c87b` renamed it to `site` and
+deleted the stale `clwydian-academy/` folder. That deployment failed only because Vercel's Root
+Directory still said `clwydian-academy 2`; Mark has now set it to `site`. This commit gives
+Vercel a push to build from. No site file changes.
