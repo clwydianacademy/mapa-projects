@@ -3608,3 +3608,11 @@ Everything in the Release 1 list still stands. In addition:
    opening.
 3. Graduate adders, the Level 2 "highlights" adder, and Level 3 / graduate prices for outlines
    were not in the input.
+
+---
+
+## CORRECTION — to item 7 of "Readings of the input that the PM should check", 17 November 2026
+
+Item 7 above is badly worded. It should read: **Modern perm** does not require an allergy alert
+test, asks about length and thickness only, and is **not offered to anyone under 16** (it is not on
+the 12–15 list). Whether a perm should need a skin test is a question for the PM.
