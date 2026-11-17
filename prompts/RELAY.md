@@ -3616,3 +3616,82 @@ Everything in the Release 1 list still stands. In addition:
 Item 7 above is badly worded. It should read: **Modern perm** does not require an allergy alert
 test, asks about length and thickness only, and is **not offered to anyone under 16** (it is not on
 the 12–15 list). Whether a perm should need a skin test is a question for the PM.
+
+---
+
+## S0 REPORT — PAUSED. What the source's own rules say, against what is on `feat/salon`
+
+**Coder, 17 November 2026, evening.** Building is stopped on Mark's instruction. This is a
+read-only report: `PLAN.md`, `PLATFORM.md`, `FRANCHISE.md` §3 and the code they describe, in the
+source repository at `fd5505f`. Nothing in the source was changed. Read with the PM decisions of
+the same evening.
+
+### 1. What the source says
+| Question | Finding |
+|---|---|
+| Is `src/feasible.js` fenced? | **Yes.** Not edited in ordinary work; opened once (4 Sep 2026) on Mark's ruling. PLATFORM.md fork F2: "Approve the diff, or the phase does not start." |
+| One deployment, one stylist? | **Yes.** `src/tenants/index.js`: "ONE DEPLOYMENT SERVES EXACTLY ONE ROUND" — a new Vercel project on the same repository, own Upstash, domain and secrets; "not a fork, and not multi-tenancy inside one process" (FRANCHISE.md §3). |
+| P3 — `assignedTo`, per-person columns | **Not built.** Brief written (`prompts/13-employees-in-the-diary.md`). `assignedTo` appears nowhere in `src/`, `public/` or the tests. The only seam is `stylistId`, defaulted on every booking and filtered on nowhere. Design: filter the day's chain per person; move `BASE` and `WORKING_DAYS` onto the `workingDay` argument; additive diff only; one-person screens must look identical. |
+| P4 — skills | **Not built.** Brief written (`prompts/14-skills-and-assignment.md`). No `skills` or `requiresSkills` in code. Design: skills with expiry, `requiresSkills` on services, suggest-and-confirm rather than auto-assign (fork F4, not ruled). |
+| P1 identity, P2 numbers | Built (`src/users.js`, `magic.js`, `audit.js`, `numbers.js`). |
+| Tenant mechanism | `TENANT` selects from a static map (`charlotte`, `_template`); unknown throws; **unset silently serves the source business**. A tenant is three data files: catalogue, identity, **places** (base, villages, working days, zones). |
+| `BOOKING_OPEN` | Exact string `true` or the public journey is closed. Staff booking is unaffected. |
+| `EMAIL_PROVIDER` | Defaults to `brevo`; `resend` is supported with `RESEND_API_KEY`. SMS is Brevo only. |
+| Domain root assumed? | **Yes.** `/` redirects to `/book/`; `/book/`, `/diary/`, `/app/`, `/staff/`, `/b/<token>`, `/api/*` and `/assets/*` are root-absolute throughout (34 `/api/` references in `diary.js` alone). It fits a subdomain; it does not fit `/salon/` on the academy's domain. |
+| Also relevant | English only — no Welsh anywhere. Consultation answers are not encrypted at rest. ESM, Node 24.x. Roughly 685 tests. |
+
+### 2. Conflicts between those documents and `feat/salon`
+1. **Not the engine.** `site/api/salon/` is a rewrite in the source's style, not a copy. None of the
+   source's ~685 tests, its staff diary, its hold/receipt/reminder paths or its P1 identity came
+   across.
+2. **One deployment, one round.** The salon engine sits inside the academy website's Vercel
+   project, sharing its deployment and environment — the opposite of the ruling.
+3. **Domain root.** Booking at `/salon/book/` and `/api/salon/` on the main domain.
+4. **P3's shape.** The source plans `assignedTo` and a per-person chain. `feat/salon` has
+   `studentId` plus a segment model (chair, basin, educator check) the source has no concept of.
+5. **P4's shape.** The source plans skills with expiry and suggest-and-confirm. `feat/salon`
+   gates by level and auto-assigns "any learner" with no confirmation.
+6. **Store.** One `bookings` key in the source; one key per day here. The data is not compatible.
+7. **Identity.** The source has real users, magic links and an audit log. `feat/salon` has one
+   shared password and a log line on each booking — a step back from the source.
+8. **"The diary stays as it is"** (Mark, 3 Sep). The `/staff/` day sheet here is a different thing.
+9. **Patch test.** The source: self-declared first colour, home kit, 48 h lead. Here: a recorded
+   test, 48 h to 12 months, same product. (The brief asked for this; it is still a divergence.)
+10. **Go-public.** `feat/salon` puts a "Salon" nav item and "Opening soon" pages on every page.
+    The PM's decision 5 says nothing public until VTCT approval and the signed lease.
+11. **Pricing.** The policy file holds the earlier input (graduate tier, adders). Decision 4
+    replaces it.
+
+No conflict on: zero dependencies; paid only by the verified webhook; the 30-minute hold;
+degrade when a key is missing; failing test first.
+
+### 3. Is the PM's shape (own repository, own project, `book.` subdomain) better?
+**Yes, on balance** — it removes conflicts 1, 2, 3, 6, 7 and 8 at once, and brings a proven
+payment path and staff diary. Four things to settle before it starts:
+- **"Not a fork."** A new repository created from the engine IS a fork by FRANCHISE.md's
+  definition. That is the point of arm's length, but it means fixes never flow between the two.
+- **"Additive-only" and "mobile features removed" pull against each other** in `feasible.js`: the
+  drive chain is woven through `whyNot()`. The additive route is to keep it and make it inert —
+  one place, zero drive — rather than delete it. Deleting it is not additive.
+- **Mark's ruling on the fence** — does it cover the new repository only? The source stays
+  untouched either way.
+- **What the engine does not have and the salon needs:** many learners working at once (P3, to
+  be built); skills/levels (P4, to be built); chairs, basins and educator time (no design);
+  Welsh; term dates; level durations; a recorded patch test; the under-16 rules; encrypted
+  consultation answers. One-long-service-per-day, the 10-minute slack and the 12 setup minutes
+  are single-mobile-stylist rules that would need switching off per tenant.
+
+### 4. What carries over from `feat/salon`
+- **To the new engine, as specifications and tests:** the rule cases (95 tests, 44 breaks) for
+  patch test, under-16, level gating, term time, concession, deposits; the policy file's
+  structure as the `clwydian` tenant's configuration; `seal.js` (AES-256-GCM); the owner-checked
+  lock; the bilingual messages and journey strings (372 Welsh strings awaiting review).
+- **Staying in this repository:** `check_claims.py` (name, domain, colour guard); the salon
+  marketing pages and `salon.py`, to sit behind a flag and link to the booking subdomain; the
+  HairSalon structured data; `docs/salon/engine-inventory.md`.
+- **Not carrying over:** `site/api/salon/` and `site/api/_lib/salon/`, `/staff/`, the journey
+  script, and the prices in `policy.json`.
+
+### State
+`feat/salon` is pushed; PR 3 is a draft and must not be merged as it stands (conflict 10).
+Waiting for the next brief.
