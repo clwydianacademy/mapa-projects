@@ -16,6 +16,7 @@
   --gold-deep: #a2843a;
   --paper: #f7f5f2;
   --card: #fffefc;
+  --error: #a3261c;       /* 7.3:1 on white */
   --navy: #1c2a45;
   --navy-deep: #152138;
   --line: rgba(48, 54, 60, 0.13);
@@ -381,6 +382,16 @@ a.card { text-decoration: none; color: inherit; display: flex; flex-direction: c
   outline: none; border-color: var(--heather); box-shadow: 0 0 0 4px rgba(87, 68, 99, 0.12);
 }
 .form-note { font-size: 0.86rem; color: var(--muted); }
+/* a field the server (or main.js) sent back for correction, and the message that says so */
+.field input[aria-invalid="true"], .field select[aria-invalid="true"], .field textarea[aria-invalid="true"] {
+  border-color: var(--error); border-width: 2px; background: #fff8f7;
+}
+.field.is-invalid label { color: var(--error); }
+.field.is-invalid label::after { content: " \2190"; }
+#form-error:not([hidden]), .form-alert {
+  font-size: 0.95rem; font-weight: 600; color: var(--error); background: #fff8f7;
+  border: 1.5px solid var(--error); border-radius: 10px; padding: 0.8rem 1rem; margin-top: 1rem;
+}
 
 /* ---------- funders / document panel ---------- */
 .doc-panel {

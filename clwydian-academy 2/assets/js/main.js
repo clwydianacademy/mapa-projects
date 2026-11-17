@@ -72,24 +72,56 @@
       config: cy ? "Nid yw'r ffurflen wedi'i chysylltu eto. E-bostiwch ni'n uniongyrchol." : "The form is not connected yet. Please email us directly.",
       send: cy ? "Ni allem anfon eich ymholiad. Rhowch gynnig arall, neu e-bostiwch ni." : "We could not send your enquiry. Please try again, or email us.",
       fields: cy ? "Gwiriwch y meysydd sydd wedi'u marcio a rhowch gynnig arall." : "Please check the highlighted fields and try again.",
+      confirm: cy ? "Bron yno — gwiriwch eich manylion a phwyswch anfon unwaith eto i gadarnhau." : "Nearly there — please check your details and press send once more to confirm.",
     };
+    // Mark the fields the server rejected (and clear the marks from an earlier attempt).
+    var mark = function (names) {
+      Array.prototype.forEach.call(form.querySelectorAll("[aria-invalid]"), function (el) {
+        el.removeAttribute("aria-invalid");
+        el.removeAttribute("aria-describedby");
+        if (el.parentNode) el.parentNode.classList.remove("is-invalid");
+      });
+      var first = null;
+      (names || []).forEach(function (n) {
+        var el = form.querySelector('[name="' + n + '"]');
+        if (!el) return;
+        el.setAttribute("aria-invalid", "true");
+        if (errBox) el.setAttribute("aria-describedby", errBox.id);
+        if (el.parentNode) el.parentNode.classList.add("is-invalid");
+        first = first || el;
+      });
+      return first;
+    };
+    form.addEventListener("input", function (e) {
+      if (e.target && e.target.getAttribute && e.target.getAttribute("aria-invalid")) {
+        e.target.removeAttribute("aria-invalid");
+        if (e.target.parentNode) e.target.parentNode.classList.remove("is-invalid");
+      }
+    });
     if (params.get("error")) say(errBox, messages[params.get("error")] || messages.fields);
-    if (window.fetch && window.FormData) {
+    if (window.fetch && window.FormData && window.URLSearchParams) {
       form.addEventListener("submit", function (e) {
         e.preventDefault();
         var btn = form.querySelector('button[type="submit"]');
         if (btn) btn.disabled = true;
         if (errBox) errBox.hidden = true;
-        fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } })
+        // Send exactly what the browser would send without us: application/x-www-form-urlencoded.
+        // A raw FormData body is multipart/form-data, which the Vercel function cannot read.
+        fetch(form.action, { method: "POST", body: new URLSearchParams(new FormData(form)), headers: { Accept: "application/json" } })
           .then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
           .then(function (r) {
             if (r.body && r.body.ok) {
+              mark([]);
               form.reset();
               if (stamp) stamp.value = String(Date.now());
-              say(okBox);
+              if (okBox && okBox.textContent.replace(/\s+/g, "")) say(okBox);
+              else if (r.body.next) window.location.href = r.body.next;
             } else {
               var code = (r.body && r.body.error) || "fields";
+              if (stamp && r.body && r.body.ts) stamp.value = String(r.body.ts);
+              var first = mark(r.body && r.body.fields);
               say(errBox, messages[code] || messages.fields);
+              if (first) first.focus();
             }
           })
           .catch(function () { form.submit(); })   // network failure: let the browser do it
