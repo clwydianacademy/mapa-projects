@@ -2875,3 +2875,13 @@ path contains a space, and the folder was `clwydian-academy 2`. `876c87b` rename
 deleted the stale `clwydian-academy/` folder. That deployment failed only because Vercel's Root
 Directory still said `clwydian-academy 2`; Mark has now set it to `site`. This commit gives
 Vercel a push to build from. No site file changes.
+
+---
+
+## NOTE — Resend key replaced, 17 November 2026
+
+The preview of `d0e56a5` built and deployed. Mark's form test on it returned 502; the Vercel log
+said `Resend 400: API key is invalid`. The function behaved as designed (nothing sent, visitor
+told, input kept). Mark has replaced `RESEND_API_KEY` in Vercel for Production and Preview.
+Environment variables are read at build time of a deployment, so this commit gives Vercel a push
+to build a fresh preview with the new key. No site file changes.
