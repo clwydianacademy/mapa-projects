@@ -122,10 +122,11 @@ strong { color: var(--slate); }
 .brand-name { font-family: "Jost", var(--font-sans); font-weight: 500; font-size: 1.08rem; letter-spacing: 0.16em; color: var(--slate); text-transform: uppercase; }
 .brand-sub { font-family: "Jost", var(--font-sans); font-size: 0.64rem; font-weight: 600; letter-spacing: 0.4em; color: var(--gold-deep); text-transform: uppercase; margin-top: 2px; }
 
-/* The desktop row holds eight links, the language switch and the button, and the Welsh labels
-   are the longer set. It is sized for Welsh: the gap and the type scale fluidly from the
-   narrowest width at which the Welsh row fits (1300px) up to full size at 1600px, labels never
-   wrap, and below 1300px both languages use the menu button (see the media query below). */
+/* The desktop row holds seven links, the language switch and the button, and the Welsh labels
+   are the longer set. It is sized for Welsh: labels never wrap, the gap and the type are at
+   their tightest up to 1300px and scale fluidly to full size at 1600px, and below 1240px both
+   languages use the menu button (see the media query below). At 1240px the Welsh row has about
+   40px to spare. Add a nav item, or lengthen a label, and this breakpoint must be re-measured. */
 .site-nav { display: flex; align-items: center; gap: clamp(0.7rem, 6.4vw - 72px, 1.9rem); }
 .site-nav a { white-space: nowrap; font-size: clamp(0.88rem, 0.373vw + 9.23px, 0.95rem); font-weight: 500; color: var(--slate); text-decoration: none; position: relative; padding-block: 0.4rem; }
 .site-nav a::after {
@@ -173,7 +174,7 @@ strong { color: var(--slate); }
 
 .nav-toggle { display: none; }
 
-@media (max-width: 1299px) {
+@media (max-width: 1239px) {
   .site-nav {
     position: fixed; inset: 78px 0 auto 0; z-index: 99;
     flex-direction: column; align-items: stretch; gap: 0;

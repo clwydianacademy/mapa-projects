@@ -1,7 +1,7 @@
 /* Clwydian Academy — loaded only inside <noscript> (see head() in website/_src/build.py).
-   Below 1300px the navigation sits behind a menu button that needs main.js to open it.
+   Below 1240px the navigation sits behind a menu button that needs main.js to open it.
    Without JavaScript that button can do nothing, so show the links as a plain wrapping row. */
-@media (max-width: 1299px) {
+@media (max-width: 1239px) {
   .site-header { position: static; }
   .header-bar { flex-wrap: wrap; height: auto; min-height: 78px; row-gap: 0.3rem; padding-top: 0.9rem; }
   .nav-toggle { display: none; }
