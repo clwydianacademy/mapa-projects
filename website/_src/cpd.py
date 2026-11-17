@@ -462,6 +462,21 @@ def fee_token(name, loc):
     else: out = _pound(v) if key in FEE_MONEY else str(v)
     return (out[:1].upper() + out[1:]) if cap else out
 
+SITE_RE = re.compile(r"\{\{site:([A-Za-z_]+)\}\}")
+SITE_PATH = os.path.join(REPO, "_data", "site.json")
+
+def site():
+    with open(SITE_PATH, encoding="utf-8") as f:
+        return json.load(f)
+
+def site_token(name, loc):
+    """{{site:email}}, {{site:companyNumber}}, {{site:registeredOffice}} — from _data/site.json."""
+    s = site()
+    if name == "email": return s["email"]
+    if name == "companyNumber": return s["company_number"]
+    if name == "registeredOffice": return s["registered_office"][loc]
+    raise KeyError(f"site token {name!r} is not defined")
+
 STAT_RE = re.compile(r"\{\{stat:([a-z_]+):([A-Za-z]+)\}\}")
 STATS_PATH = os.path.join(REPO, "_data", "statistics.json")
 
@@ -487,6 +502,8 @@ def render(text, loc):
     if "{{cpd:" in text:
         data = load()
         text = TOKEN_RE.sub(lambda m: token(m.group(1), loc, data), text)
+    if "{{site:" in text:
+        text = SITE_RE.sub(lambda m: site_token(m.group(1), loc), text)
     if "{{fee:" in text:
         text = FEE_RE.sub(lambda m: fee_token(m.group(1), loc), text)
     return text
