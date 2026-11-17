@@ -185,6 +185,8 @@ def head(page, loc, jsonld):
         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
         f'<link href="{FONTS}" rel="stylesheet">',
         '<link rel="stylesheet" href="/assets/css/main.css">',
+        # without JavaScript the menu button cannot open the menu: show the links instead
+        '<noscript><link rel="stylesheet" href="/assets/css/nojs.css"></noscript>',
         ld(ORG),
     ]
     lines += [ld(block) for block in jsonld]
