@@ -1,0 +1,137 @@
+/* ==========================================================================
+   Clwydian Academy — training salon
+   Loaded after main.css on the salon pages and the staff day sheet only.
+   The salon has its own accent: a deep teal, beside the academy's heather.
+   Every control a client touches is at least 54px tall; selection is never
+   carried by colour alone (a tick and a heavier border say it too).
+   ========================================================================== */
+:root {
+  --salon: #0f5c5a;        /* 7.6:1 on paper, 8.3:1 on white */
+  --salon-deep: #0a4442;
+  --salon-tint: #e4f0ef;
+  --salon-line: #5d8f8d;   /* control borders: 3.6:1 on white */
+  --target: 54px;
+}
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+.salon-hero { border-top: 4px solid var(--salon); }
+.salon-hero .eyebrow { color: var(--salon); }
+.salon-h1 { font-size: clamp(1.9rem, 3.4vw, 2.6rem); }
+.salon-h2 { font-size: clamp(1.45rem, 2.4vw, 1.9rem); }
+
+.btn-salon { background: var(--salon); color: #fff; border-color: var(--salon); }
+.btn-salon:hover { background: var(--salon-deep); color: #fff; }
+
+.salon-subnav { background: var(--salon); }
+.salon-subnav .wrap { display: flex; flex-wrap: wrap; gap: 0.25rem 0.5rem; padding-block: 0.35rem; }
+.salon-subnav a { color: #fff; text-decoration: none; font-weight: 600; font-size: 0.95rem; padding: 0.75rem 0.9rem; border-radius: 8px; min-height: 44px; display: inline-flex; align-items: center; }
+.salon-subnav a:hover { background: rgba(255, 255, 255, 0.14); color: #fff; }
+.salon-subnav a[aria-current="page"] { background: #fff; color: var(--salon-deep); }
+
+.salon-notice { background: var(--salon-tint); border: 2px solid var(--salon); border-radius: var(--radius-sm); padding: 1.1rem 1.3rem; margin-bottom: 2rem; max-width: 70ch; }
+.salon-notice h2 { font-size: 1.35rem; margin-bottom: 0.35rem; }
+.salon-notice a { color: var(--salon-deep); font-weight: 600; }
+.salon-banner { background: #fff4d6; border: 2px solid #7a5b00; color: #3d2e00; font-weight: 700; border-radius: 10px; padding: 0.7rem 1rem; margin-bottom: 1.2rem; }
+
+/* ---------- prices ---------- */
+.salon-table-wrap { overflow-x: auto; margin-top: 0.9rem; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--card); }
+.salon-prices { width: 100%; border-collapse: collapse; min-width: 640px; }
+.salon-prices th, .salon-prices td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.salon-prices thead th { font-size: 0.86rem; color: var(--salon-deep); background: var(--salon-tint); }
+.salon-prices tbody th { font-weight: 600; color: var(--slate); }
+.salon-prices small { display: block; font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+.salon-prices tr:last-child th, .salon-prices tr:last-child td { border-bottom: 0; }
+.salon-na { color: var(--muted); }
+
+/* ---------- the booking journey, the model form, the day sheet ---------- */
+.salon-app { max-width: 46rem; font-size: 1.1875rem; line-height: 1.55; }   /* 19px */
+.salon-app.salon-staff { max-width: none; font-size: 1.0625rem; }
+.salon-app h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); margin-bottom: 0.6rem; }
+.salon-app h2:focus { outline: none; }
+.salon-app h3 { font-size: 1.2rem; margin: 1.4rem 0 0.5rem; font-family: var(--font-sans); font-weight: 700; color: var(--slate); letter-spacing: 0; }
+.salon-app p { margin-bottom: 0.8rem; }
+.salon-step-n { font-family: var(--font-mono); font-size: 0.85rem; color: var(--salon-deep); letter-spacing: 0.04em; margin-bottom: 0.5rem; }
+.salon-hint { color: var(--muted); font-size: 0.95em; }
+
+.salon-choices { display: grid; gap: 0.6rem; margin: 0.9rem 0 0; padding: 0; list-style: none; }
+.salon-choice, .salon-slot, .salon-day {
+  font: inherit; color: var(--ink); background: #fff; text-align: left; cursor: pointer;
+  border: 2px solid var(--salon-line); border-radius: 12px; min-height: var(--target);
+  padding: 0.8rem 1rem 0.8rem 2.9rem; width: 100%; position: relative; display: block;
+}
+.salon-choice::before {
+  content: ""; position: absolute; left: 0.95rem; top: 50%; width: 1.25rem; height: 1.25rem; margin-top: -0.625rem;
+  border: 2px solid var(--salon-line); border-radius: 50%; background: #fff;
+}
+.salon-choice[aria-pressed="true"], .salon-slot[aria-pressed="true"], .salon-day[aria-pressed="true"] {
+  border-color: var(--salon-deep); border-width: 3px; background: var(--salon-tint); font-weight: 600;
+}
+.salon-choice[aria-pressed="true"] { padding-left: calc(2.9rem - 1px); }
+.salon-choice[aria-pressed="true"]::before { background: var(--salon-deep); border-color: var(--salon-deep); box-shadow: inset 0 0 0 3px #fff; }
+.salon-choice small, .salon-slot small { display: block; font-weight: 400; color: var(--muted); font-size: 0.9em; }
+.salon-choice:hover, .salon-slot:hover, .salon-day:hover { border-color: var(--salon-deep); }
+.salon-app :focus-visible { outline: 3px solid var(--salon-deep); outline-offset: 3px; border-radius: 6px; }
+
+.salon-days { display: grid; grid-template-columns: repeat(auto-fill, minmax(5.6rem, 1fr)); gap: 0.5rem; margin: 0.9rem 0; padding: 0; list-style: none; }
+.salon-day { padding: 0.55rem 0.4rem; text-align: center; min-height: 5.2rem; }
+.salon-day b { display: block; font-size: 1.05em; }
+.salon-day span { display: block; font-size: 0.82em; color: var(--muted); }
+.salon-day em { display: block; font-style: normal; font-weight: 700; font-size: 0.82em; margin-top: 0.15rem; color: var(--salon-deep); }
+.salon-day[data-full="full"] em, .salon-day[data-full="closed"] em { color: var(--muted); }
+.salon-day[data-full="closed"] { background: var(--paper); border-style: dashed; }
+.salon-day[aria-pressed="true"] em::before { content: "\2713\00a0"; }
+.salon-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 0.5rem; padding: 0; list-style: none; }
+.salon-slot { padding: 0.6rem 0.8rem; text-align: center; }
+.salon-slot[aria-pressed="true"] b::before { content: "\2713\00a0"; }
+.salon-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.3rem; align-items: center; }
+.salon-btn {
+  font: inherit; font-weight: 600; cursor: pointer; min-height: var(--target); padding: 0.75rem 1.5rem; border-radius: 999px;
+  border: 2px solid var(--salon); background: var(--salon); color: #fff;
+}
+.salon-btn:hover { background: var(--salon-deep); border-color: var(--salon-deep); }
+.salon-btn.is-quiet { background: #fff; color: var(--salon-deep); border-color: var(--salon-line); }
+.salon-btn.is-quiet:hover { border-color: var(--salon-deep); background: var(--salon-tint); }
+.salon-btn.is-danger { background: #fff; color: var(--error); border-color: var(--error); }
+.salon-btn.is-small { min-height: 44px; padding: 0.45rem 1rem; font-size: 0.92rem; }
+.salon-error { color: var(--error); font-weight: 600; background: #fff8f7; border: 2px solid var(--error); border-radius: 10px; padding: 0.7rem 1rem; margin-top: 1rem; }
+.salon-error:empty { display: none; }
+
+.salon-field { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 1rem; }
+.salon-field label { font-weight: 600; color: var(--slate); }
+.salon-field input, .salon-field select, .salon-field textarea {
+  font: inherit; color: var(--ink); background: #fff; border: 2px solid var(--salon-line); border-radius: 10px;
+  padding: 0.7rem 0.9rem; min-height: var(--target); width: 100%;
+}
+.salon-field textarea { min-height: 6.5rem; }
+.salon-field [aria-invalid="true"] { border-color: var(--error); border-width: 3px; }
+.salon-check { display: grid; grid-template-columns: 1.9rem 1fr; gap: 0.7rem; align-items: start; margin-top: 1rem; min-height: var(--target); padding: 0.6rem 0.2rem; }
+.salon-check input { width: 1.9rem; height: 1.9rem; accent-color: var(--salon-deep); margin-top: 0.1rem; }
+.salon-summary { margin: 1rem 0; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--card); }
+.salon-summary div { display: grid; grid-template-columns: minmax(7rem, 11rem) 1fr; gap: 1rem; padding: 0.8rem 1rem; border-bottom: 1px solid var(--line-soft); }
+.salon-summary div:last-child { border-bottom: 0; }
+.salon-summary dt { color: var(--muted); }
+.salon-summary dd { font-weight: 600; }
+@media (max-width: 520px) { .salon-summary div { grid-template-columns: 1fr; gap: 0.1rem; } }
+
+/* ---------- staff day sheet ---------- */
+.salon-toolbar { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: end; margin: 1rem 0 1.4rem; }
+.salon-toolbar .salon-field { margin-top: 0; }
+.salon-group { margin-top: 1.6rem; }
+.salon-group > h2 { font-size: 1.3rem; font-family: var(--font-sans); font-weight: 700; border-bottom: 2px solid var(--salon); padding-bottom: 0.35rem; }
+.salon-group > h2 small { font-weight: 400; color: var(--muted); font-size: 0.85em; }
+.salon-card { border: 1px solid var(--line); border-left: 6px solid var(--salon-line); border-radius: 10px; background: var(--card); padding: 0.9rem 1rem; margin-top: 0.7rem; }
+.salon-card[data-status="cancelled"], .salon-card[data-status="no_show"] { opacity: 0.7; border-left-style: dashed; }
+.salon-card[data-status="completed"] { border-left-color: var(--slate); }
+.salon-card h3 { margin: 0 0 0.2rem; font-size: 1.1rem; }
+.salon-card p { margin: 0.15rem 0; }
+.salon-status { display: inline-block; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 500; border: 1.5px solid currentColor; border-radius: 6px; padding: 0.1rem 0.5rem; margin-left: 0.4rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.salon-flags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.4rem 0; padding: 0; list-style: none; }
+.salon-flags li { font-size: 0.85rem; font-weight: 600; background: var(--salon-tint); border: 1px solid var(--salon-line); border-radius: 6px; padding: 0.1rem 0.5rem; }
+.salon-flags li.is-warn { background: #fff8f7; border-color: var(--error); color: var(--error); }
+.salon-empty { color: var(--muted); margin-top: 0.6rem; }
+dialog.salon-dialog { border: 0; border-radius: var(--radius-sm); padding: 1.4rem; width: min(34rem, calc(100vw - 2rem)); box-shadow: var(--shadow-2); color: var(--ink); }
+dialog.salon-dialog::backdrop { background: rgba(21, 33, 56, 0.55); }
+dialog.salon-dialog h2 { font-size: 1.4rem; margin-bottom: 0.4rem; }
+.salon-roster { display: grid; grid-template-columns: 1fr 9rem auto; gap: 0.5rem; align-items: end; margin-top: 0.6rem; }
+.salon-roster .salon-field { margin-top: 0; }
+@media (max-width: 560px) { .salon-roster { grid-template-columns: 1fr; } }

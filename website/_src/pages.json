@@ -484,6 +484,110 @@
     }
   },
   {
+    "key": "salon",
+    "nav": "/salon/",
+    "noindex": false,
+    "priority": "0.8",
+    "legal": "plain",
+    "generated": "salon",
+    "en": {
+      "path": "/salon/",
+      "title": "Training Salon, St Asaph | Clwydian Academy",
+      "desc": "Hair services by Clwydian Academy learners in St Asaph, under supervision, at learner prices. Term time only."
+    },
+    "cy": {
+      "path": "/cy/salon/",
+      "title": "Salon Hyfforddi, Llanelwy | Clwydian Academy",
+      "desc": "Gwasanaethau gwallt gan ddysgwyr Clwydian Academy yn Llanelwy, dan oruchwyliaeth, am brisiau dysgwyr. Yn ystod y tymor yn unig."
+    }
+  },
+  {
+    "key": "salon-prices",
+    "nav": "/salon/",
+    "noindex": false,
+    "priority": "0.7",
+    "legal": "plain",
+    "generated": "salon-prices",
+    "en": {
+      "path": "/salon/prices/",
+      "title": "Training Salon Prices | Clwydian Academy",
+      "desc": "Training salon prices by learner level, with the real length of each appointment."
+    },
+    "cy": {
+      "path": "/cy/salon/prisiau/",
+      "title": "Prisiau'r Salon Hyfforddi | Clwydian Academy",
+      "desc": "Prisiau'r salon hyfforddi yn ôl lefel y dysgwr, gyda gwir hyd pob apwyntiad."
+    }
+  },
+  {
+    "key": "salon-book",
+    "nav": "/salon/",
+    "noindex": false,
+    "priority": "0.7",
+    "legal": "plain",
+    "generated": "salon-book",
+    "en": {
+      "path": "/salon/book/",
+      "title": "Book the Training Salon | Clwydian Academy",
+      "desc": "Book an appointment with a Clwydian Academy learner in St Asaph: choose a service, a learner level and a time."
+    },
+    "cy": {
+      "path": "/cy/salon/archebu/",
+      "title": "Archebu'r Salon Hyfforddi | Clwydian Academy",
+      "desc": "Archebwch apwyntiad gyda dysgwr Clwydian Academy yn Llanelwy: dewiswch wasanaeth, lefel dysgwr ac amser."
+    }
+  },
+  {
+    "key": "salon-models",
+    "nav": "/salon/",
+    "noindex": false,
+    "priority": "0.6",
+    "legal": "plain",
+    "generated": "salon-models",
+    "en": {
+      "path": "/salon/models/",
+      "title": "Be a Hair Model | Clwydian Academy",
+      "desc": "Join the Clwydian Academy model register in St Asaph and be contacted when a learner needs a model."
+    },
+    "cy": {
+      "path": "/cy/salon/modelau/",
+      "title": "Bod yn Fodel Gwallt | Clwydian Academy",
+      "desc": "Ymunwch â chofrestr modelau Clwydian Academy yn Llanelwy a chael gwybod pan fydd angen model ar ddysgwr."
+    }
+  },
+  {
+    "key": "salon-terms",
+    "nav": "/salon/",
+    "noindex": false,
+    "priority": "0.4",
+    "legal": "plain",
+    "generated": "salon-terms",
+    "en": {
+      "path": "/salon/terms/",
+      "title": "Training Salon Booking Terms | Clwydian Academy",
+      "desc": "Booking terms for the Clwydian Academy training salon: deposits, cancellation, patch tests and under-16s."
+    },
+    "cy": {
+      "path": "/cy/salon/telerau/",
+      "title": "Telerau Archebu'r Salon Hyfforddi | Clwydian Academy",
+      "desc": "Telerau archebu salon hyfforddi Clwydian Academy: blaendaliadau, canslo, profion patsh a rhai o dan 16 oed."
+    }
+  },
+  {
+    "key": "salon-staff",
+    "nav": null,
+    "noindex": true,
+    "priority": null,
+    "legal": "plain",
+    "generated": "salon-staff",
+    "en": {
+      "path": "/staff/",
+      "title": "Salon Day Sheet | Clwydian Academy",
+      "desc": "Staff sign-in for the training salon day sheet."
+    },
+    "cy": null
+  },
+  {
     "key": "404",
     "nav": null,
     "noindex": true,

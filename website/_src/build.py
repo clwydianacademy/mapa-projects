@@ -17,6 +17,7 @@ import html as html_mod
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import cpd   # everything rendered from _data/cpd-2027.json
+import salon # the training salon's pages, rendered from _data/salon/policy.json
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
@@ -55,6 +56,7 @@ NAV = [
     {"en": ("/apprenticeships/", "Apprenticeships"), "cy": ("/cy/prentisiaethau/", "Prentisiaethau")},
     {"en": ("/funding/", "Fees &amp; Funding"),    "cy": ("/cy/ffioedd-a-chyllid/", "Ffioedd a Chyllid")},
     {"en": ("/for-salons/", "For Salons"),         "cy": ("/cy/i-salonau/", "I Salonau")},
+    {"en": ("/salon/", "Salon"),                   "cy": ("/cy/salon/", "Salon")},
     {"en": ("/about/", "About"),                   "cy": ("/cy/amdanom/", "Amdanom")},
     {"en": ("/guides/", "Guides"),                 "cy": ("/cy/canllawiau/", "Canllawiau")},
     {"en": ("/contact/", "Contact"),               "cy": ("/cy/cysylltu/", "Cysylltu")},
@@ -135,6 +137,14 @@ def other(loc):
 def out_path(path):
     return path.lstrip("/") if path.endswith(".html") else path.strip("/") + "/index.html" if path != "/" else "index.html"
 
+def is_salon(page):
+    return str(page.get("generated") or "").startswith("salon")
+
+def hidden(page):
+    """Not to be indexed: a page marked noindex, and EVERY salon page while any value in
+    _data/salon/policy.json is still a placeholder — nothing unconfirmed goes out to a search engine."""
+    return bool(page.get("noindex")) or (is_salon(page) and not salon.confirmed())
+
 def head(page, loc, jsonld):
     c, me = CHROME[loc], page[loc]
     url = DOMAIN + me["path"]
@@ -147,7 +157,7 @@ def head(page, loc, jsonld):
         f"<title>{me['title']}</title>",
         f'<meta name="description" content="{me["desc"]}">',
     ]
-    if page.get("noindex"):
+    if hidden(page):
         lines.append('<meta name="robots" content="noindex, nofollow">')
     lines.append(f'<link rel="canonical" href="{url}">')
     if page.get("cy"):
@@ -181,10 +191,15 @@ def head(page, loc, jsonld):
         '<link rel="stylesheet" href="/assets/css/main.css">',
         # without JavaScript the menu button cannot open the menu: show the links instead
         '<noscript><link rel="stylesheet" href="/assets/css/nojs.css"></noscript>',
-        ld(ORG),
     ]
+    if is_salon(page):
+        lines.append('<link rel="stylesheet" href="/assets/css/salon.css">')
+    lines.append(ld(ORG))
     lines += [ld(block) for block in jsonld]
-    lines += ['<script src="/assets/js/main.js" defer></script>', "</head>"]
+    lines.append('<script src="/assets/js/main.js" defer></script>')
+    if is_salon(page):
+        lines += [f'<script src="{src}" defer></script>' for src in salon.scripts(page["generated"])]
+    lines.append("</head>")
     return "\n".join(lines)
 
 def header(page, loc):
@@ -273,7 +288,9 @@ def footer(page, loc):
 def lastmod(page, loc, fallback):
     """Date of the last commit touching this page's sources; the build date if none.
     Sources are the fragment and JSON-LD, plus the CPD data and cpd.py for pages that render from them."""
-    if page.get("generated"):
+    if is_salon(page):
+        paths = [salon.DATA_PATH, os.path.join(HERE, "salon.py")]
+    elif page.get("generated"):
         paths = [cpd.DATA_PATH, os.path.join(HERE, "cpd.py")]
     else:
         paths = [os.path.join("pages", loc, page["key"] + ".html"), os.path.join("jsonld", loc, page["key"] + ".json")]
@@ -323,7 +340,11 @@ def redirects(pages):
             try: os.rmdir(os.path.dirname(stale))
             except OSError: pass
             print("removed retired page", out_path(src))
-    write("vercel.json", json.dumps({"redirects": rules}, indent=2) + "\n")
+    # The staff day sheet and every function answer "do not index" at the HTTP level too: robots.txt
+    # asks crawlers not to fetch them, this tells any that do.
+    headers = [{"source": src, "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}]}
+               for src in ("/staff/(.*)", "/api/(.*)")]
+    write("vercel.json", json.dumps({"redirects": rules, "headers": headers}, indent=2) + "\n")
     return len(wanted)
 
 def build():
@@ -338,13 +359,19 @@ def build():
             if " " in rel:
                 sys.exit(f"build: {rel!r} contains a space — Vercel will refuse to deploy this function")
     pages = json.loads(read("pages.json"))
+    for rel in [s for srcs in salon.ASSETS.values() for s in srcs] + ["/assets/css/salon.css"]:
+        if not os.path.exists(os.path.join(OUT, rel.lstrip("/"))):
+            sys.exit(f"build: {rel} is missing — the salon pages load it")
     cpd.configure(DOMAIN, next(p for p in pages if p.get("generated") == "cpd-calendar"))
     urls = {"en": [], "cy": []}
     for page in pages:
         for loc in LOCALES:
             if not page.get(loc):
                 continue
-            if page.get("generated") == "cpd-calendar":
+            if is_salon(page):
+                body = salon.body(page["generated"], loc, SITE)
+                jsonld = salon.jsonld(page["generated"], loc, DOMAIN, ORG, SITE)
+            elif page.get("generated") == "cpd-calendar":
                 body = cpd.calendar_body(loc, page)
                 jsonld = cpd.calendar_jsonld(loc, page)
             else:
@@ -361,7 +388,7 @@ def build():
             html = head(page, loc, jsonld) + "\n" + header(page, loc) + "\n" + body + footer(page, loc)
             rel = out_path(page[loc]["path"])
             write(rel, html)
-            if not page.get("noindex"):
+            if not hidden(page):
                 urls[loc].append(page)
             print("built", rel)
 
@@ -378,7 +405,11 @@ def build():
                    "  </url>"]
     sm.append("</urlset>")
     write("sitemap.xml", "\n".join(sm) + "\n")
-    write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {DOMAIN}/sitemap.xml\n")
+    write("robots.txt", f"User-agent: *\nAllow: /\nDisallow: /staff/\nDisallow: /api/\n\nSitemap: {DOMAIN}/sitemap.xml\n")
+    salon.copy_for_engine()      # site/api/_lib/salon/policy.json — the booking engine's copy of the policy
+    todo = salon.todo_paths(salon.raw())
+    print(f"salon: {len(todo)} placeholder(s) in _data/salon/policy.json — salon pages are "
+          + ("noindex and out of the sitemap" if todo else "indexed"))
     n = sum(len(v) for v in urls.values())
     r = redirects(pages)
     print(f"built sitemap.xml ({n} urls), robots.txt, vercel.json ({r} redirected urls)")

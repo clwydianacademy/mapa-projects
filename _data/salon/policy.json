@@ -78,6 +78,11 @@
    "value": 15
   }
  },
+ "_terms_approved": "The wording of /salon/terms/ (built from website/_src/salon.py). The page says DRAFT until this is true.",
+ "terms_approved": {
+  "todo_pm": true,
+  "value": false
+ },
  "cancel_window_hours": 48,
  "_hold_minutes": "How long a slot is held while the client pays. 30 is Stripe's minimum Checkout expiry, so it is not a placeholder.",
  "hold_minutes": 30,
