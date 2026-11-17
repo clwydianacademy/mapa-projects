@@ -1,0 +1,19 @@
+# One line-ending everywhere, on every OS: LF in the repo and in the working tree.
+# (The Mac build wrote LF; without this a Windows checkout or rebuild turns every file CRLF.)
+* text=auto eol=lf
+
+*.html text eol=lf
+*.css  text eol=lf
+*.js   text eol=lf
+*.json text eol=lf
+*.py   text eol=lf
+*.md   text eol=lf
+*.xml  text eol=lf
+*.txt  text eol=lf
+*.svg  text eol=lf
+
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.ico  binary

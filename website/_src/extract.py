@@ -116,7 +116,7 @@ def main():
 
 def write(path, text):
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
+    with open(path, "w", encoding="utf-8", newline="\n") as f:   # LF on every OS
         f.write(text)
 
 if __name__ == "__main__":
