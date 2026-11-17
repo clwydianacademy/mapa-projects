@@ -146,7 +146,10 @@
     var flags = [];
     if (b.deposit > 0) flags.push([b.depositPaid ? "Deposit £" + b.deposit + " paid" : "Deposit £" + b.deposit + " NOT paid", !b.depositPaid]);
     if (b.needsRefund) flags.push(["Paid after the slot was released — refund needed", true]);
-    if (b.under16) flags.push(["Under 16 · guardian: " + (b.guardian || "none recorded"), !b.guardian]);
+    if (b.age && b.age !== "adult") flags.push([(b.age === "u12" ? "Under 12" : "Age 12 to 15") + " · guardian must be present: " + (b.guardian || "none recorded"), !b.guardian]);
+    if (b.concession) flags.push(["Concession price — check proof", false]);
+    if (b.addons && b.addons.length) flags.push(["Extras: " + b.addons.join(", "), false]);
+    Object.keys(b.answers || {}).forEach(function (k) { flags.push([k.replace("_", " ") + ": " + b.answers[k], false]); });
     if (b.patchProduct) flags.push(["Patch test on record: " + b.patchProduct, false]);
     if (b.patchFor) flags.push(["Patch test for: " + b.patchFor, false]);
     var actions = b.next.map(function (to) {
@@ -161,7 +164,7 @@
     return el("article", { class: "salon-card", "data-status": b.status }, [
       el("h3", {}, [clock(b.start) + "–" + clock(b.end) + " · " + serviceName(b.serviceId), el("span", { class: "salon-status", text: STATUS[b.status] || b.status })]),
       el("p", {}, [el("strong", { text: b.client.name }), " · " + contact]),
-      el("p", { class: "salon-hint", text: b.id + " · £" + b.price + " · " + b.minutes + " min (" + b.segments.map(function (s) { return s.kind + " " + s.minutes; }).join(", ") + ")" }),
+      el("p", { class: "salon-hint", text: b.id + " · £" + (Math.round(b.price) === b.price ? b.price : b.price.toFixed(2)) + " · " + b.minutes + " min (" + b.segments.map(function (s) { return s.kind + " " + s.minutes; }).join(", ") + ")" }),
       flags.length ? el("ul", { class: "salon-flags" }, flags.map(function (f) { return el("li", { class: f[1] ? "is-warn" : null, text: f[0] }); })) : null,
       el("div", { class: "salon-row", style: "margin-top:0.6rem" }, actions),
     ]);

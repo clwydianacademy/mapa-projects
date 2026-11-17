@@ -13,7 +13,7 @@
 const crypto = require("node:crypto");
 const T = require("./time");
 const { policy: loadPolicy } = require("./policy");
-const { quote, levelsFor } = require("./quote");
+const { quote, segmentsFor, total } = require("./quote");
 const { feasible, blocks, endOf } = require("./feasible");
 const A = require("./availability");
 const { transact, Refused, storeFromEnv, K } = require("./store");
@@ -54,7 +54,7 @@ function refusal(ctx, r, l) {
 /** Whether the salon can take bookings at all, and why not. */
 function openState(ctx) {
   const env = ctx.env, p = ctx.policy;
-  const placeholders = p.todo.length > 0;
+  const placeholders = p.unconfirmed > 0;          // placeholders and PM drafts alike: neither is confirmed
   // Placeholders can be exercised on a preview deployment, with test keys. Never in production.
   const allowed = env.SALON_ALLOW_PLACEHOLDERS === "1" && env.VERCEL_ENV !== "production";
   let reason = null;
@@ -86,6 +86,25 @@ function sameOrigin(req) {
 }
 const text = (v, max) => String(v === undefined || v === null ? "" : v).replace(/[\u0000-\u001f\u007f]+/g, " ").trim().slice(0, max);
 const bool = (v) => (v === true || v === "true" || v === "1" ? true : v === false || v === "false" || v === "0" ? false : null);
+const ageOf = (v) => (v === "u12" || v === "u16" || v === "adult" ? v : null);
+/** The client's answers and extras, from a query string or a JSON body. Only known ids survive. */
+function choicesOf(p, service, src) {
+  let answers = src.answers;
+  if (typeof answers === "string") { try { answers = JSON.parse(answers); } catch { answers = {}; } }
+  const clean = {};
+  for (const q of service.questions || []) if (answers && typeof answers[q] === "string") clean[q] = answers[q].slice(0, 30);
+  let addons = src.addons;
+  if (typeof addons === "string") addons = addons.split(",");
+  addons = (Array.isArray(addons) ? addons : []).map((x) => String(x).slice(0, 30)).filter((x) => p.addons[x]);
+  return { answers: clean, addons, concession: bool(src.concession) === true };
+}
+/** The record a free test or consultation appointment creates when staff complete it. */
+function recordFor(p, service, raw) {
+  const v = text(raw, 60);
+  if (service.is_patch_test) return p.patch_test.products[v] ? v : null;
+  if (service.is_consultation) { const m = /^consult:(.+)$/.exec(v); const t = m && p.serviceById.get(m[1]); return t && t.consultation_first ? v : null; }
+  return null;
+}
 
 async function studentsOf(ctx) { return ((await ctx.store.get(K.students)) || { v: 0, list: [] }); }
 async function patchFor(ctx, email) {
@@ -119,12 +138,20 @@ function config(ctx) {
   if (!state.open) return ok(body);            // nothing unconfirmed is ever sent to a browser
   body.levels = p.levelIds.map((id) => ({ id, name: p.levels[id].name }));
   for (const id of Object.keys(p.patch_test.products)) body.products[id] = p.patch_test.products[id].name;
+  body.questions = {};
+  for (const id of Object.keys(p.questions)) body.questions[id] = { ask: p.questions[id].ask, options: p.questions[id].options.map((o) => ({ id: o.id, label: o.label, levels: p.levelIds.filter((l) => o.add[l] !== undefined) })) };
+  body.concession = { percent: p.concession.percent, days: p.concession.days, who: p.concession.who };
+  body.age = { under12: p.age.under12_services, under16: p.age.under16_services };
   body.services = p.services.map((s) => ({
-    id: s.id, group: s.group, name: s.name, chemical: s.chemical || null, patchProduct: s.patch_test_product || null,
-    isPatchTest: s.is_patch_test === true,
-    under16: !(s.chemical && p.age.restricted_chemicals.includes(s.chemical)),
-    levels: levelsFor(p, s).map((l) => { const q = quote(p, { serviceId: s.id, level: l });
-      return { id: l, minutes: q.minutes, qualifiedMinutes: q.qualifiedMinutes, price: q.price, deposit: q.deposit }; }),
+    id: s.id, group: s.group, name: s.name, note: s.note || null, chemical: s.chemical || null, patchProduct: s.patch_test_product || null,
+    isPatchTest: s.is_patch_test === true, isConsultation: s.is_consultation === true, consultFirst: s.consultation_first === true,
+    quoteOnly: s.quote_only === true, childrenOnly: s.children_only === true, concession: s.concession === true,
+    restricted: Boolean(s.chemical && p.age.restricted_chemicals.includes(s.chemical)),
+    questions: s.questions || [],
+    addons: Object.keys(p.addons).filter((a) => p.addons[a].for.includes(s.id)).map((a) => ({ id: a, name: p.addons[a].name, prices: p.addons[a].prices })),
+    // "from" figures: the service with no extras and the cheapest answers
+    levels: s.levels.map((l) => ({ id: l, from: s.prices[l], minutes: total(segmentsFor(p, s, l, 0)),
+      qualifiedMinutes: total(segmentsFor(p, s, p.levelIds[p.levelIds.length - 1], 0)) })),
   }));
   return ok(body);
 }
@@ -133,9 +160,16 @@ function config(ctx) {
 function quoteHandler(ctx, body) {
   const l = lang(body && body.lang);
   if (!openState(ctx).open) return unavailable(l, openState(ctx).reason);
-  const q = quote(ctx.policy, { serviceId: body.serviceId, level: body.level });
-  if (!q.ok) return fail(400, q.code, l);
-  return ok({ quote: q });
+  const p = ctx.policy, service = p.serviceById.get(body && body.serviceId);
+  if (!service) return fail(400, "unknown-service", l);
+  const c = choicesOf(p, service, body);
+  // one answer per level the service is offered at: the price and length there, or why not
+  const levels = service.levels.map((level) => {
+    const q = quote(p, { serviceId: service.id, level, answers: c.answers, addons: c.addons });
+    return q.ok ? { level, ok: true, minutes: q.minutes, qualifiedMinutes: q.qualifiedMinutes, price: q.price, deposit: q.deposit }
+      : { level, ok: false, code: q.code, needs: q.needs || null, missing: q.missing || null };
+  });
+  return ok({ serviceId: service.id, levels });
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -149,13 +183,13 @@ async function availability(ctx, query, req) {
   if (!service) return fail(400, "unknown-service", l);
   const who = query.who === "any" || p.levels[query.who] ? query.who : null;
   if (!who) return fail(400, "unknown-level", l);
-  const under16 = bool(query.under16);
-  if (under16 === null) return fail(400, "age-missing", l);
-  const request = { serviceId: service.id, who, under16, guardianConsent: bool(query.guardianConsent) === true };
+  const age = ageOf(query.age);
+  if (!age) return fail(400, "age-missing", l);
+  const request = Object.assign({ serviceId: service.id, who, age, guardianConsent: bool(query.guardianConsent) === true }, choicesOf(p, service, query));
   const now = ctx.now();
   try {
     const students = (await studentsOf(ctx)).list;
-    const patch = service.patch_test_product ? (await patchFor(ctx, query.email)).records : [];
+    const patch = service.patch_test_product || service.consultation_first ? (await patchFor(ctx, query.email)).records : [];
     const fctx = { policy: p, students, patch, now };
     const blocked = A.clientBlock(request, fctx);
     if (blocked) return refusal(ctx, blocked, l);
@@ -172,8 +206,8 @@ async function availability(ctx, query, req) {
       return dates.map((d, i) => {
         const slots = openDay(d) ? A.slotsForDate(request, d, dayDoc(docs[i]).bookings, fctx) : [];
         return { date: d, open: openDay(d), fullness: openDay(d) ? A.fullness(slots.length) : "closed",
-          slots: slots.map((s) => ({ start: s.start, end: s.end, level: s.level, s: s.studentId, minutes: s.minutes,
-            price: s.price, deposit: s.deposit, period: s.period })) };
+          slots: slots.map((s) => ({ start: s.start, end: s.end, level: s.level, s: s.studentId, minutes: s.minutes, qualifiedMinutes: s.qualifiedMinutes,
+            price: s.price, fullPrice: s.fullPrice, concession: s.concession, deposit: s.deposit, period: s.period })) };
       });
     };
     const days = await scan(from, p.booking.strip_days);
@@ -206,8 +240,10 @@ async function book(ctx, body, req) {
   if (!who) return fail(400, "unknown-level", l);
   const start = Number(b.start);
   if (!T.isDate(b.date) || !Number.isInteger(start)) return fail(400, "bad-request", l);
-  const under16 = bool(b.under16);
-  if (under16 === null) return fail(400, "age-missing", l);
+  const age = ageOf(b.age);
+  if (!age) return fail(400, "age-missing", l);
+  const under16 = age !== "adult";
+  const choices = choicesOf(p, service, b);
 
   const client = { name: text(b.client && b.client.name, 80), email: text(b.client && b.client.email, 254).toLowerCase(),
     phone: text(b.client && b.client.phone, 30) };
@@ -227,26 +263,27 @@ async function book(ctx, body, req) {
     consultation = { reaction, notes: text(c.notes, 600), history: text(c.history, 40) };
   }
   const dataKey = S.keyFrom(ctx.env);
-  if ((consultation || service.patch_test_product || service.is_patch_test) && !dataKey) return unavailable(l, "no-encryption");
-  let patchProduct = null;
-  if (service.is_patch_test) {
-    patchProduct = text(b.forProduct, 40);
-    if (!p.patch_test.products[patchProduct]) return fail(400, "bad-request", l);
+  const needsRecords = service.patch_test_product || service.consultation_first || service.is_patch_test || service.is_consultation;
+  if ((consultation || needsRecords) && !dataKey) return unavailable(l, "no-encryption");
+  let patchProduct = null;                    // what this appointment, once completed, puts on record
+  if (service.is_patch_test || service.is_consultation) {
+    patchProduct = recordFor(p, service, b.forProduct);
+    if (!patchProduct) return fail(400, "bad-request", l);
   }
 
   const now = ctx.now();
   let record, students, patch;
   try {
     students = (await studentsOf(ctx)).list;
-    patch = service.patch_test_product || service.is_patch_test ? await patchFor(ctx, client.email) : { clientKey: null, records: [] };
+    patch = needsRecords ? await patchFor(ctx, client.email) : { clientKey: null, records: [] };
   } catch (e) { console.error("[salon book]", e && e.message); return unavailable(l, "store-error"); }
 
   // The learner the client was offered first, then anyone else at the level they chose.
   const people = A.candidatesFor(p, service, who, students);
   people.sort((x, y) => (y.id === b.s) - (x.id === b.s));
   if (!people.length) return refusal(ctx, { code: "student-unknown" }, l);
-  const firstQuote = quote(p, { serviceId: service.id, level: people[0].level });
-  if (firstQuote.ok && firstQuote.deposit > 0 && !state.payments) return unavailable(l, "no-payments");
+  const quoteAt = (level) => quote(p, { serviceId: service.id, level, answers: choices.answers, addons: choices.addons, concession: choices.concession, date: b.date });
+  if (!state.payments && people.some((x) => { const q = quoteAt(x.level); return q.ok && q.deposit > 0; })) return unavailable(l, "no-payments");
 
   const id = newRef();
   const fctx = { policy: p, students, patch: patch.records, now };
@@ -255,9 +292,9 @@ async function book(ctx, body, req) {
       const doc = dayDoc(cur[K.day(b.date)]);
       let why = null;
       for (const student of people) {
-        const q = quote(p, { serviceId: service.id, level: student.level });
+        const q = quoteAt(student.level);
         if (!q.ok) { why = why || { code: q.code }; continue; }
-        const cand = A.candidateFrom(q, { id, date: b.date, start, studentId: student.id, under16, guardianConsent });
+        const cand = A.candidateFrom(q, { id, date: b.date, start, studentId: student.id, age, guardianConsent });
         const no = feasible(cand, doc.bookings, fctx);            // THE check that counts — inside the lock
         if (no) { why = why || no; continue; }
         const held = q.deposit > 0;
@@ -265,10 +302,12 @@ async function book(ctx, body, req) {
           id, v: 1, createdAt: new Date(now).toISOString(), lang: l,
           date: b.date, start, segments: q.segments, minutes: q.minutes,
           serviceId: service.id, level: student.level, studentId: student.id,
-          price: q.price, deposit: q.deposit, chemical: q.chemical, patchProduct: q.patchProduct,
+          price: q.price, fullPrice: q.fullPrice, concession: q.concession, deposit: q.deposit,
+          answers: q.answers, addons: q.addons, needsLevel: q.needsLevel,
+          chemical: q.chemical, patchProduct: q.patchProduct, consultFirst: q.consultFirst,
           patchFor: patchProduct, clientKey: patch.clientKey,
           status: held ? "held" : "confirmed", heldUntil: held ? now + p.hold_minutes * 60000 : null,
-          under16, guardian: guardianConsent ? { name: guardian.name, at: new Date(now).toISOString() } : null,
+          age, guardian: guardianConsent ? { name: guardian.name, at: new Date(now).toISOString() } : null,
           client,
           consultation: consultation ? S.seal(dataKey, id, consultation) : null,
           consent: { terms: { at: new Date(now).toISOString(), version: CONSENT_VERSION },
@@ -294,8 +333,8 @@ async function book(ctx, body, req) {
       key: stripe.secretKey(ctx.env), booking: record, base: stripe.returnBase(req && req.headers),
       paths: { book: l === "cy" ? "/cy/salon/archebu/" : "/salon/book/" }, holdUntil: record.heldUntil, fetchImpl: ctx.fetch,
       description: l === "cy"
-        ? { name: "Blaendal — " + service.name.cy, detail: "Yn dod oddi ar eich bil ar y diwrnod. £" + (record.price - record.deposit) + " i'w dalu yn y salon." }
-        : { name: "Deposit — " + service.name.en, detail: "Comes off your bill on the day. £" + (record.price - record.deposit) + " to pay in the salon." },
+        ? { name: "Blaendal — " + service.name.cy, detail: "Yn dod oddi ar eich bil ar y diwrnod. " + M.money(record.price - record.deposit) + " i'w dalu yn y salon." }
+        : { name: "Deposit — " + service.name.en, detail: "Comes off your bill on the day. " + M.money(record.price - record.deposit) + " to pay in the salon." },
     });
     return ok({ ref: record.id, status: "held", checkout: session.url, heldUntil: record.heldUntil });
   } catch (e) {
@@ -470,7 +509,8 @@ function staffView(bk, now) {
     serviceId: bk.serviceId, level: bk.level, studentId: bk.studentId, status: bk.status === "held" && !blocks(bk, now) ? "expired" : bk.status,
     next: NEXT[bk.status] || [], client: bk.client, price: bk.price, deposit: bk.deposit,
     depositPaid: bk.payments.some((x) => x.status === "paid"), needsRefund: bk.needsRefund === true,
-    under16: bk.under16, guardian: bk.guardian ? bk.guardian.name : null, hasConsultation: Boolean(bk.consultation),
+    concession: bk.concession === true, answers: bk.answers || {}, addons: bk.addons || [],
+    age: bk.age, guardian: bk.guardian ? bk.guardian.name : null, hasConsultation: Boolean(bk.consultation),
     patchFor: bk.patchFor || null, patchProduct: bk.patchProduct || null };
 }
 
@@ -498,7 +538,7 @@ async function staff(ctx, body, req) {
       return ok({ date, v: doc.v, today: T.isoDate(now), students: roster.list, studentsV: roster.v,
         bookings: doc.bookings.map((x) => staffView(x, now)).filter((x) => x.status !== "expired").sort((x, y) => x.start - y.start),
         services: p.services.map((s) => ({ id: s.id, name: s.name.en })), levels: p.levelIds.map((id) => ({ id, name: p.levels[id].name.en })),
-        products: Object.keys(p.patch_test.products), encryption: Boolean(S.keyFrom(ctx.env)) });
+        products: Object.keys(p.patch_test.products).concat(p.services.filter((x) => x.consultation_first).map((x) => "consult:" + x.id)), encryption: Boolean(S.keyFrom(ctx.env)) });
     }
 
     if (action === "status") {
@@ -582,7 +622,8 @@ async function staff(ctx, body, req) {
       const dataKey = S.keyFrom(ctx.env);
       if (!dataKey) return unavailable(l, "no-encryption");
       const email = text(b.email, 254).toLowerCase(), product = text(b.product, 40);
-      if (!EMAIL_RE.test(email) || !p.patch_test.products[product] || !T.isDate(b.testedOn) || b.testedOn > T.isoDate(now)) return fail(400, "details", l);
+      const known = p.patch_test.products[product] || (/^consult:/.test(product) && (p.serviceById.get(product.slice(8)) || {}).consultation_first);
+      if (!EMAIL_RE.test(email) || !known || !T.isDate(b.testedOn) || b.testedOn > T.isoDate(now)) return fail(400, "details", l);
       const key = K.patch(S.clientKey(dataKey, email));
       await transact(ctx.store, [key], (cur) => ({ writes: { [key]: { records: [...(((cur[key] || {}).records) || []),
         { product, testedAt: T.instantOf(b.testedOn, 12 * 60), by: "staff" }] } } }));

@@ -49,7 +49,8 @@ const inTerm = (p, date) => p.opening.terms.some((t) => date >= t.from && date <
 
 /**
  * @param {object} c    the candidate: { id?, date, start, segments, studentId, serviceId, level,
- *                       under16, guardianConsent, chemical, patchProduct }
+ *                       age ("u12" | "u16" | "adult"), guardianConsent, chemical, patchProduct,
+ *                       consultFirst }
  * @param {object[]} day   every booking stored for that date (any status)
  * @param {object} ctx  { policy, students, patch, now, actor? }   actor "staff" lifts the notice rule only
  *                       students: [{ id, level, active, days?, skills? }]
@@ -82,10 +83,17 @@ function feasible(c, day, ctx) {
   // ---- age ---------------------------------------------------------------------------------
   // Under 16: no permanent or quasi-permanent colour, bleach or relaxer — no consent unlocks it.
   // Anything else for an under-16 needs a parent or guardian's consent.
-  if (c.under16 === true) {
+  // 12 to 15: the listed services only. Under 12: the children's cut only. Both: a parent or
+  // guardian must consent and be present. A children-only service is not sold to an adult.
+  if (c.age === "u12" || c.age === "u16") {
     if (c.chemical && p.age.restricted_chemicals.includes(c.chemical)) return { code: "under16-chemical" };
+    const allowed = c.age === "u12" ? p.age.under12_services : p.age.under16_services;
+    if (!allowed.includes(c.serviceId)) return { code: c.age === "u12" ? "under12-service" : "under16-service" };
     if (c.guardianConsent !== true) return { code: "guardian-consent" };
-  } else if (c.under16 !== false) {
+  } else if (c.age === "adult") {
+    const svc = p.serviceById.get(c.serviceId);
+    if (svc && svc.children_only) return { code: "children-only" };
+  } else {
     return { code: "age-missing" };          // fails closed: an unanswered age question is not "adult"
   }
 
@@ -103,6 +111,15 @@ function feasible(c, day, ctx) {
     }
   }
 
+  // ---- a free consultation first, where the service needs one --------------------------------
+  // Recorded when staff complete the consultation appointment; good for as long as a patch test.
+  if (c.consultFirst) {
+    const at = T.instantOf(c.date, start);
+    const oldest = T.monthsBefore(at, p.patch_test.max_months);
+    const seen = (ctx.patch || []).some((r) => r.product === "consult:" + c.serviceId && r.testedAt <= at && r.testedAt >= oldest);
+    if (!seen) return { code: "consultation-first" };
+  }
+
   // ---- the learner: exists, is in that day, and is allowed to do this ------------------------
   const service = p.serviceById.get(c.serviceId);
   if (!service) return { code: "unknown-service" };
@@ -110,7 +127,10 @@ function feasible(c, day, ctx) {
   if (!student || student.active === false) return { code: "student-unknown" };
   if (student.level !== c.level) return { code: "student-level-changed" };
   if (Array.isArray(student.days) && !student.days.includes(T.dayKey(c.date))) return { code: "student-not-in" };
-  if (rank(p, student.level) < rank(p, service.min_level)) return { code: "skill-level", needs: service.min_level };
+  // the level must be switched on, the service offered at it, and high enough for what the
+  // client's answers call for (bleach history or a big lift route a colour to Level 3)
+  if (!service.levels.includes(student.level)) return { code: "skill-level", needs: service.levels[0] || null };
+  if (c.needsLevel && rank(p, student.level) < rank(p, c.needsLevel)) return { code: "skill-level", needs: c.needsLevel };
   if (Array.isArray(student.skills) && !student.skills.includes(service.id)) return { code: "skill-not-signed-off" };
 
   // ---- resources, segment by segment ----------------------------------------------------------

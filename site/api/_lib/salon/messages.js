@@ -19,7 +19,15 @@ const REASON = {
   "too-far":            { en: "We are only booking up to {days} days ahead.", cy: "Dim ond hyd at {days} diwrnod ymlaen llaw yr ydym yn archebu." },
   "age-missing":        { en: "Please tell us whether the person having the service is under 16.", cy: "Dywedwch wrthym a yw'r person sy'n cael y gwasanaeth o dan 16 oed." },
   "under16-chemical":   { en: "We cannot offer permanent or quasi-permanent colour, bleach or relaxer to anyone under 16.", cy: "Ni allwn gynnig lliw parhaol na chwasi-barhaol, cannydd nac ymlaciwr i unrhyw un o dan 16 oed." },
-  "guardian-consent":   { en: "Someone under 16 needs a parent or guardian's consent for this service.", cy: "Mae angen caniatâd rhiant neu warcheidwad ar rywun o dan 16 oed ar gyfer y gwasanaeth hwn." },
+  "under12-service":    { en: "For children under 12 we offer the children's cut only.", cy: "Ar gyfer plant o dan 12 oed rydym yn cynnig y toriad plant yn unig." },
+  "under16-service":    { en: "That service is not offered to anyone under 16.", cy: "Nid yw'r gwasanaeth hwnnw'n cael ei gynnig i unrhyw un o dan 16 oed." },
+  "children-only":      { en: "The children's cut is for children under 12.", cy: "Mae'r toriad plant ar gyfer plant o dan 12 oed." },
+  "consultation-first": { en: "This service needs a free consultation with us first. Please book a consultation.", cy: "Mae angen ymgynghoriad am ddim gyda ni yn gyntaf ar gyfer y gwasanaeth hwn. Archebwch ymgynghoriad." },
+  "quote-only":         { en: "This service is priced at a free consultation and cannot be booked online. Please book a consultation.", cy: "Prisir y gwasanaeth hwn mewn ymgynghoriad am ddim ac ni ellir ei archebu ar-lein. Archebwch ymgynghoriad." },
+  "needs-higher-level": { en: "From what you have told us about your hair, this needs a more experienced learner. Please choose a higher level.", cy: "O'r hyn rydych wedi'i ddweud wrthym am eich gwallt, mae angen dysgwr mwy profiadol ar gyfer hyn. Dewiswch lefel uwch." },
+  "answers-missing":    { en: "Please answer the questions about your hair.", cy: "Atebwch y cwestiynau am eich gwallt." },
+  "unknown-addon":      { en: "That extra cannot be added to this service.", cy: "Ni ellir ychwanegu'r ychwanegiad hwnnw at y gwasanaeth hwn." },
+  "guardian-consent":   { en: "Someone under 16 needs a parent or guardian to consent and to be present.", cy: "Mae angen i riant neu warcheidwad gydsynio a bod yn bresennol ar gyfer rhywun o dan 16 oed." },
   "patch-none":         { en: "This service needs a patch test with us first, at least {hours} hours before your appointment. We could not find one for that email address.", cy: "Mae angen prawf patsh gyda ni yn gyntaf ar gyfer y gwasanaeth hwn, o leiaf {hours} awr cyn eich apwyntiad. Ni allem ddod o hyd i un ar gyfer y cyfeiriad e-bost hwnnw." },
   "patch-too-recent":   { en: "Your patch test has to be at least {hours} hours before the appointment. Please pick a later time.", cy: "Rhaid i'ch prawf patsh fod o leiaf {hours} awr cyn yr apwyntiad. Dewiswch amser diweddarach." },
   "patch-expired":      { en: "Your patch test for this product is more than {months} months old, so you need a new one first.", cy: "Mae eich prawf patsh ar gyfer y cynnyrch hwn dros {months} mis oed, felly mae angen un newydd arnoch yn gyntaf." },
@@ -66,6 +74,9 @@ function longDate(iso, lang) {
   return `${DAYS[l][d.getUTCDay()]} ${d.getUTCDate()} ${MONTHS[l][d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 
+/** £10, £14.50 — never £14.5. */
+const money = (n) => "£" + (Number.isInteger(n) ? String(n) : Number(n).toFixed(2));
+
 /** The confirmation email. Fixed text plus the booking's own facts; nothing the client typed
  *  except their name is repeated back. */
 function confirmation(booking, serviceName, levelName, policy, clock) {
@@ -81,7 +92,7 @@ function confirmation(booking, serviceName, levelName, policy, clock) {
     "Gwasanaeth: " + serviceName,
     "Gyda: " + levelName + ", dan oruchwyliaeth",
     "Pryd: " + when,
-    "Pris: £" + booking.price + (paid ? " (blaendal o £" + booking.deposit + " wedi'i dalu; £" + (booking.price - booking.deposit) + " i'w dalu ar y diwrnod)" : ""),
+    "Pris: " + money(booking.price) + (paid ? " (blaendal o " + money(booking.deposit) + " wedi'i dalu; " + money(booking.price - booking.deposit) + " i'w dalu ar y diwrnod)" : ""),
     "",
     "Mae dysgwyr yn cymryd mwy o amser na steilydd cymwysedig, ac mae goruchwyliwr yn gwirio'r gwaith. Caniatewch yr amser llawn a ddangosir uchod.",
     "",
@@ -97,7 +108,7 @@ function confirmation(booking, serviceName, levelName, policy, clock) {
     "Service: " + serviceName,
     "With: " + levelName + ", supervised",
     "When: " + when,
-    "Price: £" + booking.price + (paid ? " (£" + booking.deposit + " deposit paid; £" + (booking.price - booking.deposit) + " to pay on the day)" : ""),
+    "Price: " + money(booking.price) + (paid ? " (" + money(booking.deposit) + " deposit paid; " + money(booking.price - booking.deposit) + " to pay on the day)" : ""),
     "",
     "Learners take longer than a qualified stylist, and a supervisor checks the work. Please allow the full time shown above.",
     "",
@@ -111,4 +122,4 @@ function confirmation(booking, serviceName, levelName, policy, clock) {
   };
 }
 
-module.exports = { say, REASON, longDate, confirmation };
+module.exports = { say, REASON, longDate, confirmation, money };

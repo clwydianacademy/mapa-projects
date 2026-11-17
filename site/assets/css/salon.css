@@ -135,3 +135,9 @@ dialog.salon-dialog h2 { font-size: 1.4rem; margin-bottom: 0.4rem; }
 .salon-roster { display: grid; grid-template-columns: 1fr 9rem auto; gap: 0.5rem; align-items: end; margin-top: 0.6rem; }
 .salon-roster .salon-field { margin-top: 0; }
 @media (max-width: 560px) { .salon-roster { grid-template-columns: 1fr; } }
+
+/* a choice where several may be pressed at once: a square box, ticked */
+.salon-choice.is-multi::before { border-radius: 4px; }
+.salon-choice.is-multi[aria-pressed="true"]::before { box-shadow: none; content: "\2713"; color: #fff; font-size: 0.95rem; line-height: 1.1rem; text-align: center; font-weight: 700; }
+.salon-draft { border-style: dashed; }
+p.salon-notice { margin-top: 0.8rem; }

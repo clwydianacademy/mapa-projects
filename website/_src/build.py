@@ -407,9 +407,9 @@ def build():
     write("sitemap.xml", "\n".join(sm) + "\n")
     write("robots.txt", f"User-agent: *\nAllow: /\nDisallow: /staff/\nDisallow: /api/\n\nSitemap: {DOMAIN}/sitemap.xml\n")
     salon.copy_for_engine()      # site/api/_lib/salon/policy.json — the booking engine's copy of the policy
-    todo = salon.todo_paths(salon.raw())
-    print(f"salon: {len(todo)} placeholder(s) in _data/salon/policy.json — salon pages are "
-          + ("noindex and out of the sitemap" if todo else "indexed"))
+    todo, draft = salon.todo_paths(salon.raw()), salon.draft_paths(salon.raw())
+    print(f"salon: {len(todo)} placeholder(s) and {len(draft)} PM draft value(s) in _data/salon/policy.json — salon pages are "
+          + ("noindex and out of the sitemap" if todo or draft else "indexed"))
     n = sum(len(v) for v in urls.values())
     r = redirects(pages)
     print(f"built sitemap.xml ({n} urls), robots.txt, vercel.json ({r} redirected urls)")

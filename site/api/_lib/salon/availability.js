@@ -20,7 +20,7 @@ function candidatesFor(p, service, who, students) {
 
 /**
  * Slots on one date.
- * @param {object} req  { serviceId, who ("any" | level id), under16, guardianConsent }
+ * @param {object} req  { serviceId, who ("any" | level id), age, guardianConsent, answers, addons, concession }
  * @param {object} ctx  { policy, students, patch, now }
  * @returns {Array<{date,start,end,level,studentId,minutes,price,deposit,period}>}
  */
@@ -36,13 +36,14 @@ function slotsForDate(req, date, dayBookings, ctx) {
     const open = T.parseClock(session.open), close = T.parseClock(session.close);
     for (let start = open; start < close; start += p.booking.slot_step_minutes) {
       for (const student of people) {
-        const q = quote(p, { serviceId: service.id, level: student.level });
-        if (!q.ok) continue;
+        const q = quote(p, { serviceId: service.id, level: student.level, answers: req.answers, addons: req.addons, concession: req.concession, date });
+        if (!q.ok) continue;                       // not offered at this learner's level, for these answers
         const candidate = candidateFrom(q, { date, start, studentId: student.id,
-          under16: req.under16, guardianConsent: req.guardianConsent });
+          age: req.age, guardianConsent: req.guardianConsent });
         if (feasible(candidate, dayBookings, ctx) === null) {
           out.push({ date, start, end: start + q.minutes, level: student.level, studentId: student.id,
-            minutes: q.minutes, price: q.price, deposit: q.deposit,
+            minutes: q.minutes, qualifiedMinutes: q.qualifiedMinutes, price: q.price, fullPrice: q.fullPrice,
+            concession: q.concession, deposit: q.deposit,
             period: start < afternoon ? "morning" : "afternoon" });
           break;                                   // one offer per start time
         }
@@ -57,7 +58,7 @@ function slotsForDate(req, date, dayBookings, ctx) {
 function candidateFrom(q, extra) {
   return Object.assign({
     serviceId: q.serviceId, level: q.level, segments: q.segments,
-    chemical: q.chemical, patchProduct: q.patchProduct,
+    chemical: q.chemical, patchProduct: q.patchProduct, consultFirst: q.consultFirst, needsLevel: q.needsLevel,
   }, extra);
 }
 
@@ -73,13 +74,23 @@ function clientBlock(req, ctx) {
   const p = ctx.policy;
   const service = p.serviceById.get(req.serviceId);
   if (!service) return { code: "unknown-service" };
-  if (req.under16 === true) {
+  if (req.age === "u12" || req.age === "u16") {
     if (service.chemical && p.age.restricted_chemicals.includes(service.chemical)) return { code: "under16-chemical" };
+    const allowed = req.age === "u12" ? p.age.under12_services : p.age.under16_services;
+    if (!allowed.includes(service.id)) return { code: req.age === "u12" ? "under12-service" : "under16-service" };
     if (req.guardianConsent !== true) return { code: "guardian-consent" };
-  }
+  } else if (req.age === "adult") {
+    if (service.children_only) return { code: "children-only" };
+  } else return { code: "age-missing" };
+  if (service.quote_only) return { code: "quote-only" };
+  if (service.consultation_first && !(ctx.patch || []).some((r) => r.product === "consult:" + service.id)) return { code: "consultation-first" };
   if (service.patch_test_product && !(ctx.patch || []).some((r) => r.product === service.patch_test_product)) {
     return { code: "patch-none", product: service.patch_test_product };
   }
+  // no level at all can do this for these answers (asked for one level; the answers need a higher one)
+  const levels = req.who === "any" ? service.levels : [req.who];
+  const tries = levels.map((level) => quote(p, { serviceId: service.id, level, answers: req.answers, addons: req.addons }));
+  if (!tries.some((q) => q.ok)) return tries[tries.length - 1] || { code: "skill-level" };
   return null;
 }
 

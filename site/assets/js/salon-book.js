@@ -19,7 +19,7 @@
   var D = JSON.parse(dataEl.textContent), S = D.t;
   var API = "/api/salon/";
   var cfg = null;
-  var st = { serviceId: null, under16: null, patch: null, patchEmail: "", reaction: null, who: null,
+  var st = { serviceId: null, age: null, answers: {}, addons: [], concession: null, quotes: null, patch: null, patchEmail: "", reaction: null, who: null,
              from: null, days: null, next: null, date: null, slot: null,
              name: "", email: "", phone: "", guardianName: "", guardianOk: false, notes: "", health: false, terms: false, forProduct: null };
   var step = "service";
@@ -41,7 +41,7 @@
     var h = Math.floor(m / 60), r = m % 60;
     return !h ? fill(S.minutes, { m: r }) : !r ? fill(S.hours, { h: h }) : fill(S.hours_minutes, { h: h, m: r });
   }
-  function money(n) { return "£" + n; }
+  function money(n) { return "£" + (Math.round(n) === n ? n : Number(n).toFixed(2)); }
   function longDate(iso) { var d = new Date(iso + "T00:00:00Z"); return D.days[d.getUTCDay()] + " " + d.getUTCDate() + " " + D.months[d.getUTCMonth()]; }
   function service() { return cfg.services.filter(function (s) { return s.id === st.serviceId; })[0] || null; }
   function levelName(id) { var l = cfg.levels.filter(function (x) { return x.id === id; })[0]; return l ? l.name[D.lang] : id; }
@@ -61,14 +61,23 @@
   }
 
   // ---- the frame every step is drawn in ------------------------------------------------------------
-  var ORDER = ["service", "age", "patch", "reaction", "who", "when", "details", "review"];
   function stepsNow() {
-    var s = service();
-    return ORDER.filter(function (k) {
-      if (k === "patch") return s && s.patchProduct;
-      if (k === "reaction") return s && s.chemical;
-      return true;
-    });
+    var s = service(), list = ["service", "age"];
+    if (s && s.patchProduct) list.push("patch");
+    if (s && s.chemical) list.push("reaction");
+    if (s) s.questions.forEach(function (q) { list.push("q:" + q); });
+    if (s && s.addons.length) list.push("extras");
+    if (s && s.concession && st.age === "adult") list.push("concession");
+    return list.concat(["who", "when", "details", "review"]);
+  }
+  /** Anything that changes the price or who can do it throws away what was worked out from it. */
+  function stale() { st.quotes = null; st.days = null; st.slot = null; }
+  function chooseService(id) {
+    st.serviceId = id; st.answers = {}; st.addons = []; st.concession = null; st.who = null; st.date = null; st.patch = null; st.reaction = null; stale();
+    if (!service().isPatchTest && !service().isConsultation) st.forProduct = null;
+  }
+  function choicesQuery() {
+    return { serviceId: st.serviceId, answers: st.answers, addons: st.addons, concession: st.concession === true };
   }
   function show(name, build) {
     step = name;
@@ -132,15 +141,16 @@
           root.appendChild(el("h3", { text: cfg.groups[g][D.lang] }));
           root.appendChild(choices(list.map(function (s) {
             var lo = s.levels[0], hi = s.levels[s.levels.length - 1];
-            return { value: s.id, label: s.name[D.lang],
-              detail: lo.price === hi.price ? (lo.price ? money(lo.price) : "") : money(lo.price) + "–" + money(hi.price) };
-          }), st.serviceId, function (v) {
-            if (v !== st.serviceId) { st.serviceId = v; st.who = null; st.slot = null; st.date = null; st.days = null; st.patch = null; st.reaction = null; if (!service().isPatchTest) st.forProduct = null; }
-          }));
+            return { value: s.id, label: s.name[D.lang], detail2: s.note ? s.note[D.lang] : "",
+              detail: !lo ? "" : lo.from === 0 && hi.from === 0 ? "" : fill(S.from_price, { price: money(lo.from) }) };
+          }), st.serviceId, function (v) { if (v !== st.serviceId) chooseService(v); }));
         });
         root.appendChild(nav(err, function () {
           if (!st.serviceId) return missing(err, S.service_missing, root.querySelector(".salon-choice"));
-          if (service().isPatchTest && !st.forProduct) st.forProduct = Object.keys(cfg.products)[0];
+          var s = service();
+          if (s.isPatchTest && !st.forProduct) st.forProduct = Object.keys(cfg.products)[0];
+          if (s.isConsultation && !st.forProduct) { var first = cfg.services.filter(function (x) { return x.consultFirst; })[0]; st.forProduct = first ? "consult:" + first.id : null; }
+          if (s.quoteOnly) return needConsult(s.id);            // priced in person: the only thing to book is the consultation
           advance();
         }));
         return h;
@@ -149,10 +159,71 @@
     age: function () {
       show("age", function (err) {
         var h = el("h2", { text: S.age_h }); root.appendChild(h);
-        root.appendChild(choices([{ value: false, label: S.no }, { value: true, label: S.yes }], st.under16, function (v) { st.under16 = v; st.days = null; st.slot = null; }));
+        root.appendChild(choices([{ value: "adult", label: S.age_adult }, { value: "u16", label: S.age_u16, detail: S.age_guardian }, { value: "u12", label: S.age_u12, detail: S.age_guardian }],
+          st.age, function (v) { st.age = v; if (v !== "adult") st.concession = null; stale(); }));
         root.appendChild(nav(err, function () {
-          if (st.under16 === null) return missing(err, S.age_missing, root.querySelector(".salon-choice"));
-          if (st.under16 && !service().under16) return blocked(S.age_blocked_h, S.age_blocked_p, S.choose_other, function () { go("service"); });
+          if (!st.age) return missing(err, S.age_missing, root.querySelector(".salon-choice"));
+          var s = service(), back = function () { go("service"); };
+          if (st.age === "adult" && s.childrenOnly) return blocked(S.age_service_h, S.children_only, S.choose_other, back);
+          if (st.age !== "adult" && s.restricted) return blocked(S.age_blocked_h, S.age_blocked_p, S.choose_other, back);
+          if (st.age === "u16" && cfg.age.under16.indexOf(s.id) < 0) return blocked(S.age_service_h, S.age_service_u16, S.choose_other, back);
+          if (st.age === "u12" && cfg.age.under12.indexOf(s.id) < 0) return blocked(S.age_service_h, S.age_service_u12, S.choose_other, back);
+          advance();
+        }));
+        return h;
+      });
+    },
+    question: function (qid) {
+      show("q:" + qid, function (err) {
+        var q = cfg.questions[qid], s = service();
+        var h = el("h2", { text: q.ask[D.lang] }); root.appendChild(h);
+        root.appendChild(choices(q.options.map(function (o) {
+          // an answer the lowest level cannot take is still offered — it just needs a more experienced learner
+          var low = s.levels.length && o.levels.indexOf(s.levels[0].id) < 0;
+          return { value: o.id, label: o.label[D.lang], detail: low ? S.q_l3 : "" };
+        }), st.answers[qid], function (v) { st.answers[qid] = v; st.who = null; stale(); }));
+        root.appendChild(nav(err, function () {
+          if (!st.answers[qid]) return missing(err, S.q_missing, root.querySelector(".salon-choice"));
+          advance();
+        }));
+        return h;
+      });
+    },
+    extras: function () {
+      show("extras", function (err) {
+        var s = service();
+        var h = el("h2", { text: S.extras_h }); root.appendChild(h);
+        root.appendChild(el("p", { text: S.extras_p }));
+        var ul = el("ul", { class: "salon-choices" });
+        s.addons.forEach(function (a) {
+          var ps = cfg.levels.map(function (l) { return a.prices[l.id]; }).filter(function (x) { return x !== undefined; });
+          var lo = Math.min.apply(null, ps), hi = Math.max.apply(null, ps);
+          var needs = s.levels.length && a.prices[s.levels[0].id] === undefined;
+          // a tick box in all but name: several may be pressed at once
+          var b = el("button", { type: "button", class: "salon-choice is-multi", "aria-pressed": String(st.addons.indexOf(a.id) >= 0) }, [
+            el("b", { text: a.name[D.lang] }), el("small", { text: lo === hi ? fill(S.extra_price, { price: money(lo) }) : fill(S.extra_range, { lo: money(lo), hi: money(hi) }) }),
+            needs ? el("small", { text: S.extra_from_l3 }) : null]);
+          b.addEventListener("click", function () {
+            var i = st.addons.indexOf(a.id);
+            if (i >= 0) st.addons.splice(i, 1); else st.addons.push(a.id);
+            b.setAttribute("aria-pressed", String(i < 0)); st.who = null; stale();
+          });
+          ul.appendChild(el("li", {}, [b]));
+        });
+        root.appendChild(ul);
+        root.appendChild(nav(err, advance));
+        return h;
+      });
+    },
+    concession: function () {
+      show("concession", function (err) {
+        var c = cfg.concession;
+        var h = el("h2", { text: S.conc_h }); root.appendChild(h);
+        root.appendChild(el("ul", {}, c.who[D.lang].map(function (w) { return el("li", { text: w }); })));
+        root.appendChild(el("p", { text: fill(S.conc_p, { percent: c.percent, days: c.days.map(function (d) { return D.days[["sun", "mon", "tue", "wed", "thu", "fri", "sat"].indexOf(d)]; }).join(", ") }) }));
+        root.appendChild(choices([{ value: false, label: S.conc_no }, { value: true, label: S.conc_yes }], st.concession, function (v) { st.concession = v; stale(); }));
+        root.appendChild(nav(err, function () {
+          if (st.concession === null) return missing(err, S.conc_missing, root.querySelector(".salon-choice"));
           advance();
         }));
         return h;
@@ -165,7 +236,7 @@
         root.appendChild(el("p", { text: fill(S.patch_p, { product: product, hours: cfg.rules.patchMinHours }) }));
         var emailField = field("salon-patch-email", S.patch_email_h, "email", st.patchEmail || st.email, null, "email");
         emailField.wrap.hidden = st.patch !== true;
-        root.appendChild(choices([{ value: true, label: S.patch_yes }, { value: false, label: S.patch_no }], st.patch, function (v) { st.patch = v; emailField.wrap.hidden = v !== true; st.days = null; }));
+        root.appendChild(choices([{ value: true, label: S.patch_yes }, { value: false, label: S.patch_no }], st.patch, function (v) { st.patch = v; emailField.wrap.hidden = v !== true; stale(); }));
         root.appendChild(emailField.wrap);
         root.appendChild(nav(err, function () {
           if (st.patch === null) return missing(err, S.patch_missing, root.querySelector(".salon-choice"));
@@ -192,15 +263,24 @@
       });
     },
     who: function () {
+      if (!st.quotes) {
+        root.textContent = ""; root.appendChild(el("p", { text: S.loading }));
+        return api("POST", "quote", Object.assign({ lang: D.lang }, choicesQuery())).then(function (r) {
+          if (!r.ok) return r.code === "unavailable" ? closed(r.reason, null) : blocked(S.closed_h, r.message || S.error, S.choose_other, function () { go("service"); });
+          st.quotes = r.levels; STEPS.who();
+        });
+      }
       show("who", function (err) {
-        var s = service();
         var h = el("h2", { text: S.who_h }); root.appendChild(h);
         root.appendChild(el("p", { text: S.who_p }));
-        var items = s.levels.map(function (l) {
-          return { value: l.id, label: levelName(l.id), detail: fill(S.who_detail, { time: dur(l.minutes), price: l.price ? money(l.price) : "" }).replace(/ — $/, ""),
+        var okLevels = st.quotes.filter(function (q) { return q.ok; });
+        if (st.quotes.some(function (q) { return q.code === "needs-higher-level"; })) root.appendChild(el("p", { class: "salon-notice", text: S.who_higher }));
+        var items = okLevels.map(function (l) {
+          return { value: l.level, label: levelName(l.level), detail: fill(S.who_detail, { time: dur(l.minutes), price: l.price ? money(l.price) : "" }).replace(/ — $/, ""),
             detail2: l.minutes > l.qualifiedMinutes ? fill(S.who_qualified, { time: dur(l.qualifiedMinutes) }) : "" };
         });
-        if (s.levels.length > 1) items.unshift({ value: "any", label: S.who_any, detail: fill(S.who_any_detail, { from: money(s.levels[0].price) }) });
+        if (okLevels.length > 1) items.unshift({ value: "any", label: S.who_any, detail: fill(S.who_any_detail, { from: money(okLevels[0].price) }) });
+        if (st.who && st.who !== "any" && !okLevels.some(function (l) { return l.level === st.who; })) st.who = null;
         root.appendChild(choices(items, st.who, function (v) { st.who = v; st.days = null; st.slot = null; }));
         root.appendChild(nav(err, function () {
           if (!st.who) return missing(err, S.who_missing, root.querySelector(".salon-choice"));
@@ -243,7 +323,7 @@
             var ul = el("ul", { class: "salon-slots" });
             list.forEach(function (x) {
               var b = el("button", { type: "button", class: "salon-slot", "aria-pressed": String(st.slot && st.slot.start === x.start) }, [
-                el("b", { text: clock(x.start) }), el("small", { text: fill(S.slot_detail, { start: clock(x.start), end: clock(x.end), level: levelName(x.level), price: x.price ? money(x.price) : S.sum_price + " £0" }) })]);
+                el("b", { text: clock(x.start) }), el("small", { text: fill(S.slot_detail, { start: clock(x.start), end: clock(x.end), level: levelName(x.level), price: x.price ? money(x.price) + (x.concession ? " (" + S.conc_applied + ")" : "") : S.sum_price + " £0" }) })]);
               b.addEventListener("click", function () {
                 st.slot = x;
                 Array.prototype.forEach.call(root.querySelectorAll(".salon-slot"), function (o) { o.setAttribute("aria-pressed", "false"); });
@@ -270,7 +350,7 @@
         var phone = field("salon-phone", S.phone, "tel", st.phone, S.phone_hint, "tel");
         [name, email, phone].forEach(function (f) { root.appendChild(f.wrap); });
         var gName = null, gOk = null, notes = null, health = null;
-        if (st.under16) {
+        if (st.age !== "adult") {
           root.appendChild(el("h3", { text: S.guardian_h }));
           gName = field("salon-guardian", S.guardian_name, "text", st.guardianName, null, "name"); root.appendChild(gName.wrap);
           gOk = check("salon-guardian-ok", S.guardian_confirm, st.guardianOk); root.appendChild(gOk.wrap);
@@ -299,12 +379,14 @@
     },
     review: function () {
       show("review", function (err) {
-        var s = service(), x = st.slot, lv = s.levels.filter(function (l) { return l.id === x.level; })[0];
+        var s = service(), x = st.slot;
         var h = el("h2", { text: x.deposit > 0 ? S.review_h : S.review_h_free }); root.appendChild(h);
         var rows = [[S.sum_service, s.name[D.lang]], [S.sum_who, fill(S.supervised, { level: levelName(x.level) })],
           [S.sum_when, longDate(st.date) + ", " + clock(x.start) + "–" + clock(x.end)],
-          [S.sum_length, lv && x.minutes > lv.qualifiedMinutes ? fill(S.length_honest, { time: dur(x.minutes), qualified: dur(lv.qualifiedMinutes) }) : fill(S.length_same, { time: dur(x.minutes) })],
-          [S.sum_price, money(x.price)]];
+          [S.sum_length, x.minutes > x.qualifiedMinutes ? fill(S.length_honest, { time: dur(x.minutes), qualified: dur(x.qualifiedMinutes) }) : fill(S.length_same, { time: dur(x.minutes) })]];
+        if (st.addons.length) rows.push([S.sum_extras, s.addons.filter(function (a) { return st.addons.indexOf(a.id) >= 0; }).map(function (a) { return a.name[D.lang]; }).join(", ")]);
+        rows.push([S.sum_price, money(x.price) + (x.concession ? " (" + S.conc_applied + ")" : "")]);
+        if (st.concession && !x.concession) rows.push([S.conc_h, S.conc_not_today]);
         if (x.deposit > 0) { rows.push([S.sum_deposit, money(x.deposit)]); rows.push([S.sum_balance, money(x.price - x.deposit)]); }
         root.appendChild(el("dl", { class: "salon-summary" }, rows.map(function (r) { return el("div", {}, [el("dt", { text: r[0] }), el("dd", { text: r[1] })]); })));
         if (x.deposit > 0) root.appendChild(el("p", { class: "salon-hint", text: fill(S.pay_note, { minutes: 30 }) }));
@@ -314,8 +396,9 @@
           busy = true;
           var btn = root.querySelector(".salon-row .salon-btn:not(.is-quiet)"), label = btn.textContent;
           btn.textContent = S.paying;
-          api("POST", "book", { serviceId: st.serviceId, who: st.who, date: st.date, start: x.start, s: x.s, under16: st.under16, lang: D.lang, forProduct: st.forProduct,
-            client: { name: st.name, email: st.email, phone: st.phone }, guardian: st.under16 ? { name: st.guardianName, confirmed: st.guardianOk } : null,
+          api("POST", "book", { serviceId: st.serviceId, who: st.who, date: st.date, start: x.start, s: x.s, age: st.age, lang: D.lang, forProduct: st.forProduct,
+            answers: st.answers, addons: st.addons, concession: st.concession === true,
+            client: { name: st.name, email: st.email, phone: st.phone }, guardian: st.age !== "adult" ? { name: st.guardianName, confirmed: st.guardianOk } : null,
             consultation: s.chemical ? { reaction: st.reaction, notes: st.notes } : null, consent: { terms: st.terms, health: st.health }, website: "" })
             .then(function (r) {
               busy = false; btn.textContent = label;
@@ -323,6 +406,7 @@
               if (r.ok) return result({ ref: r.ref, status: r.status });
               if (r.code === "unavailable") return closed(r.reason, null);
               err.textContent = r.message || fill(S.error, { email: D.email });
+              if (r.code === "consultation-first") return needConsult(st.serviceId);
               if (r.httpStatus === 409) { st.days = null; st.slot = null; }      // the slot went: availability must be read again
               err.setAttribute("tabindex", "-1"); err.focus();
             });
@@ -343,22 +427,32 @@
     var input = el("input", { id: id, type: "checkbox" }); input.checked = Boolean(checked);
     return { wrap: el("div", { class: "salon-check" }, [input, el("label", { for: id, text: label })]), input: input };
   }
+  function switchTo(test, forProduct) {
+    if (!test) return closed("error");
+    chooseService(test.id); st.forProduct = forProduct;
+    go(st.age ? "who" : "age");
+  }
   function needPatch() {
     var product = service().patchProduct;
     blocked(S.patch_none_h, fill(S.patch_none_p, { hours: cfg.rules.patchMinHours }), S.patch_book, function () {
-      var test = cfg.services.filter(function (s) { return s.isPatchTest; })[0];
-      if (!test) return closed("error");
-      st.serviceId = test.id; st.forProduct = product; st.who = null; st.slot = null; st.days = null; st.patch = null; st.reaction = null;
-      go("who");
+      switchTo(cfg.services.filter(function (s) { return s.isPatchTest; })[0], product);
+    });
+  }
+  function needConsult(serviceId) {
+    blocked(S.consult_h, S.consult_p, S.consult_book, function () {
+      switchTo(cfg.services.filter(function (s) { return s.isConsultation; })[0], "consult:" + serviceId);
     });
   }
   function loadDays(from, then) {
     root.textContent = ""; root.appendChild(el("p", { text: S.loading }));
-    var q = "availability?serviceId=" + encodeURIComponent(st.serviceId) + "&who=" + encodeURIComponent(st.who) + "&under16=" + (st.under16 ? "true" : "false")
-      + "&guardianConsent=" + (st.under16 ? "true" : "false") + "&lang=" + D.lang + (from ? "&from=" + from : "") + (st.patchEmail ? "&email=" + encodeURIComponent(st.patchEmail) : "");
+    var guardian = st.age !== "adult";
+    var q = "availability?serviceId=" + encodeURIComponent(st.serviceId) + "&who=" + encodeURIComponent(st.who) + "&age=" + st.age
+      + "&guardianConsent=" + (guardian ? "true" : "false") + "&lang=" + D.lang + (from ? "&from=" + from : "") + (st.patchEmail ? "&email=" + encodeURIComponent(st.patchEmail) : "")
+      + "&answers=" + encodeURIComponent(JSON.stringify(st.answers)) + "&addons=" + encodeURIComponent(st.addons.join(",")) + "&concession=" + (st.concession === true ? "true" : "false");
     api("GET", q).then(function (r) {
       if (!r.ok) {
         if (r.code === "patch-none") return needPatch();
+        if (r.code === "consultation-first" || r.code === "quote-only") return needConsult(st.serviceId);
         if (r.code === "unavailable") return closed(r.reason, null);
         return blocked(S.closed_h, r.message || S.error, S.choose_other, function () { go("service"); });
       }
@@ -367,7 +461,7 @@
       then();
     });
   }
-  function go(name) { if (STEPS[name]) STEPS[name](); }
+  function go(name) { if (/^q:/.test(name)) STEPS.question(name.slice(2)); else if (STEPS[name]) STEPS[name](); }
 
   // ---- coming back from the payment page -------------------------------------------------------------
   function result(r, tries) {
