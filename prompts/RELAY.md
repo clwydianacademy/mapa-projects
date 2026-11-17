@@ -2507,3 +2507,100 @@ sources for the retired statistics.
 
 Thank you — this has been an unusually clean build. Three of the defects that mattered were caught
 by you challenging the brief rather than following it.
+
+---
+
+## REPORT — AUDIT PHASE 1 (fix only)
+
+**Coder, 17 November 2026.** Instruction from Mark directly, after the audit of
+`backup/site-rebuild-mac`: fix nine named defects on a new branch `fix/audit-phase-1`; no rebuild;
+leave `check_claims`, `CLAUDE.md`, folder names, fee tokens, personal details and the Welsh text
+alone. `main` is still `40723c9` and was not touched. Nothing is merged. Draft PR into
+`backup/site-rebuild-mac`.
+
+| SHA | Step |
+|---|---|
+| `854ca8f` | 1/10 `.gitattributes` (LF); `preview.py` relative paths + UTF-8; `build.py` writes LF on every OS |
+| `addd319` | 2/10 `api/enquiry.js`: origin check, `ts` required, confirmation repeats nothing typed, form re-served refilled; `scripts/test_enquiry.js` |
+| `7ce0331` | 3/10 `main.js` posts urlencoded (the JavaScript-on fix); rejected fields highlighted |
+| `8f44b02` | 4/10 `.reveal` visible without JavaScript |
+| `29e8d3d` | 5/10 contrast to WCAG AA |
+| `03fe405` | 6/10 header navigation: no wrapping, menu button below 1300px, `nojs.css` |
+| `48602be` | 7/10 no horizontal overflow at any width |
+| `4a3e2df` | 8/10 responsive hero photograph |
+| `7b34cf0` | 9/10 build output |
+| *(this)* | 10/10 this report |
+
+### What was wrong, in one line each
+1. **Form, JavaScript on.** `main.js` posted `FormData` (multipart); Vercel does not parse it; the
+   function saw an empty body. Every JavaScript submission failed. Now urlencoded.
+2. **Welsh header.** Ten items do not fit one row below ~1300px in Welsh — and English was
+   wrapping at the same widths. One breakpoint for both languages: menu button below 1300px.
+3. **Contrast.** Header button 1.4:1 (a specificity bug), gold text 3.3:1, navy-panel text down to
+   1.2:1, footer legal line 4.46:1. All ≥ 4.5:1 now.
+4. **`.reveal`.** Hidden by CSS until `main.js` ran. Now visible by default.
+5. **Failed no-JavaScript submit.** Redirected to an empty form. The function now answers with
+   the form refilled and the bad fields marked.
+6. **Windows.** No `.gitattributes`; `preview.py` pointed at `/sessions/…` and read files in the
+   platform encoding.
+7. **`/contact/` overflow.** A grid child cannot shrink below its longest string — the email
+   address. Fixed at the cause, which also fixed phones.
+8. **Hero.** One 673 KB file for every screen, no dimensions. Now 18–130 KB by screen.
+9. **Form abuse.** Confirmation echoed the typed name and message to any address; `ts` could be
+   omitted; no origin check. All three closed.
+
+### Guards watched failing (CLAUDE.md "Build discipline")
+`scripts/test_enquiry.js` is new. Run against the previous `enquiry.js` it fails 12 of 18 — the
+multipart case, the echo, the subject line break, the origin check, every `ts` case, the refilled
+form, the inherited-property enquiry type. Against the new function: 18 of 18.
+
+### Evidence, on the output of `7b34cf0`
+- `build.py` clean; a second build is a no-op.
+- `check_dates` 0 problems · `check_links` 2534 references, 0 broken · `check_locale` 59 pages
+  clean · `check_forms` clean · `check_claims` red on the address rule only (59, unchanged).
+- Browser (Chromium), every page: 0 console errors, 0 failed requests.
+- axe-core WCAG 2 A/AA, 59 pages × 1280px and 375px: 0 contrast failures (was 118 page-views
+  with failures). `heading-order` remains on 57 pages — not in this brief.
+- Overflow: 59 pages × 14 widths (320–1920px) = 826 page-views, 0 overflow.
+- Header: 59 pages × 9 widths (1100–1920px) = 531 page-views, 0 wrapped labels, 0 collisions.
+- Form, in a browser against a local stand-in for Vercel that does not parse multipart:
+  JavaScript on → urlencoded, 2 emails, thank-you inline. JavaScript off → first press returns
+  the form refilled, second press sends and lands on `/contact/thanks/`. Invalid, no JavaScript →
+  400, Welsh page in Welsh, `name` and `email` marked, focus on `name`, every value kept.
+
+### Not verified
+- **Nothing was tested on Vercel or against Resend.** The session cannot reach the live site. The
+  multipart behaviour is Vercel's documented behaviour, reproduced locally. Test on a preview
+  deployment before this goes anywhere near `main`.
+- Safari and Firefox were not run; Chromium only.
+
+### Changed behaviour to know about
+- **Without JavaScript the form takes two presses of send.** `ts` is required and only JavaScript
+  or the function can set it, so the first press returns the form (filled) with a stamp.
+- **Between 921px and 1299px the navigation is now behind the menu button**, in both languages.
+- The confirmation email no longer says "Hello <name>" or repeats the message.
+
+### WELSH FOR REVIEW
+One new machine-written sentence, in two files (`api/enquiry.js` `TEXT.cy.msg.confirm`,
+`assets/js/main.js` `messages.confirm`):
+
+> Bron yno — gwiriwch eich manylion a phwyswch anfon unwaith eto i gadarnhau.
+> (*Nearly there — please check your details and press send once more to confirm.*)
+
+Two existing Welsh strings were shortened by deletion only, in the confirmation email: "Helo
+<enw>," is now "Helo," and the block "Yr hyn a ddywedoch wrthym: …" is removed. The re-served
+form reuses the labels already on `/cy/cysylltu/`. No page copy and no navigation label changed.
+
+### NEEDS A HUMAN
+1. **The form note is now slightly wrong.** `/contact/` and `/cy/cysylltu/` say what you send "is
+   emailed to us and to you". It is emailed to us; you get a confirmation without it. Copy and
+   Welsh — not changed.
+2. **The pull quote on `/contact/` is signed "Charlotte & Mark Parker".** `check_claims` bans
+   "Charlotte Parker"; this reads as the same claim and the regex does not see it. Not changed.
+3. **The hero alt text** says "Clwydian Academy students" of what looks like a stock photograph,
+   before the first cohort. Not changed.
+4. **Navigation at 1280px.** If the full row is wanted on 1280px laptops, something has to give:
+   shorter Welsh labels, or one fewer item. A content decision.
+5. Everything the instruction set aside: `check_claims` and the address rule, `CLAUDE.md`, the
+   folder names, the hardcoded £4,500 and 32-week figures, personal details in the repo, the
+   Welsh review.
