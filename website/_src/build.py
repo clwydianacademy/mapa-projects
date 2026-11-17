@@ -23,10 +23,13 @@ REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 OUT = os.path.join(REPO, "clwydian-academy 2")
 DOMAIN = "https://www.clwydianacademy.co.uk"   # canonical host; the apex 301s here at Vercel
 LOCALES = ("en", "cy")
+SITE = cpd.site()   # _data/site.json: the one contact address, the company number, the registered office
 
 # Organization — one block, both languages: the live homepage block of 11 Sep 2026 plus the
 # current legalName and Companies House identifier (COWORK VERIFICATION 01, decision 2).
 # No parentOrganization, no OLD legalName: see CLAUDE.md "The entity".
+# Privacy (PM decision, 17 Nov 2026): the organisation only — no telephone, no founder or Person,
+# no personal profile links. scripts/check_claims.py fails the build if any of them returns.
 ORG = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
@@ -38,18 +41,12 @@ ORG = {
     "url": DOMAIN + "/",
     "logo": DOMAIN + "/assets/img/seal-512.png",
     "image": DOMAIN + "/assets/img/og-image.png",
-    "email": "markp@charlotteeleanorgroup.uk",
-    "telephone": "+447714198743",
+    "email": SITE["email"],
     "foundingDate": "2026",
-    "identifier": {"@type": "PropertyValue", "propertyID": "Companies House", "value": "17330962"},
+    "identifier": {"@type": "PropertyValue", "propertyID": "Companies House", "value": SITE["company_number"]},
     "knowsLanguage": ["en", "cy"],
     "address": {"@type": "PostalAddress", "addressLocality": "St Asaph", "addressRegion": "Denbighshire", "addressCountry": "GB"},
     "areaServed": ["North Wales", "Denbighshire", "Conwy", "Flintshire", "Wrexham", "Chester", "Cheshire", "North West England"],
-    "founder": [
-        {"@type": "Person", "name": "Mark Parker", "jobTitle": "Chief Executive Officer", "sameAs": "https://www.linkedin.com/in/mark-parker-07a885316"},
-        {"@type": "Person", "name": "Charlotte Roberts", "jobTitle": "Director of the Academy"},
-    ],
-    "sameAs": ["https://www.linkedin.com/in/mark-parker-07a885316"],
 }
 
 # Primary navigation: one list, both languages. A page's "nav" in pages.json is the EN path.
@@ -60,7 +57,6 @@ NAV = [
     {"en": ("/for-salons/", "For Salons"),         "cy": ("/cy/i-salonau/", "I Salonau")},
     {"en": ("/about/", "About"),                   "cy": ("/cy/amdanom/", "Amdanom")},
     {"en": ("/guides/", "Guides"),                 "cy": ("/cy/canllawiau/", "Canllawiau")},
-    {"en": ("/funders/", "Funders"),               "cy": ("/cy/cyllidwyr/", "Cyllidwyr")},
     {"en": ("/contact/", "Contact"),               "cy": ("/cy/cysylltu/", "Cysylltu")},
 ]
 
@@ -86,14 +82,13 @@ CHROME = {
         academy=[("/about/", "About &amp; Mission"),
                  ("/apprenticeships/", "Apprenticeships"),
                  ("/for-salons/", "For Salons"),
-                 ("/funders/", "Funders &amp; Partners"),
                  ("/guides/", "Guides"),
                  ("/contact/", "Contact")],
         visit_label="Visit &amp; Contact",
         address=("St Asaph", "Denbighshire, North Wales"),
         legal={
             "plain": "&copy; 2026 Clwydian Academy CBC — a community benefit company, constituted as a Community Interest Company.",
-            "registered": "&copy; 2026 Clwydian Academy CBC (Cwmni Buddiant Cymunedol) &middot; Company no. 17330962 &middot; Registered office: 2 Bod Hyfryd, Rhes-y-Cae, Holywell CH8 8JG.",
+            "registered": "&copy; 2026 Clwydian Academy CBC (Cwmni Buddiant Cymunedol) &middot; Company no. " + SITE["company_number"] + " &middot; Registered office: " + SITE["registered_office"]["en"] + ".",
         },
         privacy=("/privacy/", "Privacy"),
     ),
@@ -116,14 +111,13 @@ CHROME = {
         academy=[("/cy/amdanom/", "Amdanom a&rsquo;n Cenhadaeth"),
                  ("/cy/prentisiaethau/", "Prentisiaethau"),
                  ("/cy/i-salonau/", "I Salonau"),
-                 ("/cy/cyllidwyr/", "Cyllidwyr a Phartneriaid"),
                  ("/cy/canllawiau/", "Canllawiau"),
                  ("/cy/cysylltu/", "Cysylltu")],
         visit_label="Ymweld a Chysylltu",
         address=("Llanelwy (St Asaph)", "Sir Ddinbych, Gogledd Cymru"),
         legal={
             "plain": "&copy; 2026 Clwydian Academy CBC — cwmni budd cymunedol, wedi&rsquo;i gyfansoddi fel Cwmni Buddiannau Cymunedol.",
-            "registered": "&copy; 2026 Clwydian Academy CBC (Cwmni Buddiant Cymunedol) &middot; Rhif cwmni 17330962 &middot; Swyddfa gofrestredig: 2 Bod Hyfryd, Rhes-y-Cae, Treffynnon CH8 8JG.",
+            "registered": "&copy; 2026 Clwydian Academy CBC (Cwmni Buddiant Cymunedol) &middot; Rhif cwmni " + SITE["company_number"] + " &middot; Swyddfa gofrestredig: " + SITE["registered_office"]["cy"] + ".",
         },
         privacy=("/cy/preifatrwydd/", "Preifatrwydd"),
     ),
@@ -185,6 +179,8 @@ def head(page, loc, jsonld):
         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
         f'<link href="{FONTS}" rel="stylesheet">',
         '<link rel="stylesheet" href="/assets/css/main.css">',
+        # without JavaScript the menu button cannot open the menu: show the links instead
+        '<noscript><link rel="stylesheet" href="/assets/css/nojs.css"></noscript>',
         ld(ORG),
     ]
     lines += [ld(block) for block in jsonld]
@@ -260,8 +256,7 @@ def footer(page, loc):
         <address>
           {c["address"][0]}<br>
           {c["address"][1]}<br>
-          <a href="mailto:markp@charlotteeleanorgroup.uk">markp@charlotteeleanorgroup.uk</a><br>
-          <a href="tel:+447714198743">07714 198743</a>
+          <a href="mailto:{SITE["email"]}">{SITE["email"]}</a>
         </address>
       </div>
     </div>
@@ -298,8 +293,38 @@ def read(*parts):
 def write(rel, text):
     path = os.path.join(OUT, rel)
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
+    with open(path, "w", encoding="utf-8", newline="\n") as f:   # LF on every OS
         f.write(text)
+
+def redirects(pages):
+    """_data/redirects.json -> vercel.json in the deployed folder: one permanent 301 per retired URL.
+
+    Each URL is listed with and without its trailing slash, so both forms redirect whatever
+    Vercel's trailing-slash setting is. A redirect whose target is not a built page, or whose
+    source is still a page in the registry, fails the build. A built page left behind at a
+    retired URL is deleted, so a retired page cannot linger in the deployed folder."""
+    with open(os.path.join(REPO, "_data", "redirects.json"), encoding="utf-8") as f:
+        wanted = json.load(f)["redirects"]
+    live = {p[loc]["path"] for p in pages for loc in LOCALES if p.get(loc)}
+    rules = []
+    for r in wanted:
+        src, dst = r["from"], r["to"]
+        if not (src.startswith("/") and src.endswith("/") and len(src) > 1):
+            sys.exit(f"build: redirects.json: 'from' must look like /old-page/ — got {src!r}")
+        if src in live:
+            sys.exit(f"build: redirects.json: {src} is still a page in pages.json — remove the page or the redirect")
+        if dst not in live:
+            sys.exit(f"build: redirects.json: {src} redirects to {dst}, which is not a built page")
+        for form in (src.rstrip("/"), src):
+            rules.append({"source": form, "destination": dst, "statusCode": 301})
+        stale = os.path.join(OUT, out_path(src))
+        if os.path.exists(stale):
+            os.remove(stale)
+            try: os.rmdir(os.path.dirname(stale))
+            except OSError: pass
+            print("removed retired page", out_path(src))
+    write("vercel.json", json.dumps({"redirects": rules}, indent=2) + "\n")
+    return len(wanted)
 
 def build():
     if not os.path.isdir(OUT):
@@ -347,7 +372,8 @@ def build():
     write("sitemap.xml", "\n".join(sm) + "\n")
     write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {DOMAIN}/sitemap.xml\n")
     n = sum(len(v) for v in urls.values())
-    print(f"built sitemap.xml ({n} urls), robots.txt")
+    r = redirects(pages)
+    print(f"built sitemap.xml ({n} urls), robots.txt, vercel.json ({r} redirected urls)")
 
 if __name__ == "__main__":
     build()

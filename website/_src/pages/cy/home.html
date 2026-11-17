@@ -1,14 +1,16 @@
 <!-- ============ HERO ============ -->
 <section class="hero hero--dark hero--photo">
   <picture>
-    <source media="(max-width: 700px)" srcset="/assets/img/hero-training-mobile.jpg">
-    <img class="hero-photo" src="/assets/img/hero-training.jpg" alt="Myfyrwyr Clwydian Academy yn torri, lliwio a gorffen i fodelau byw ar y llawr hyfforddi" fetchpriority="high">
+    <source media="(max-width: 700px)" type="image/webp" sizes="100vw" width="1160" height="1450" srcset="/assets/img/hero-training-mobile-480.webp 480w, /assets/img/hero-training-mobile-800.webp 800w, /assets/img/hero-training-mobile-1160.webp 1160w">
+    <source media="(max-width: 700px)" sizes="100vw" width="1160" height="1450" srcset="/assets/img/hero-training-mobile-480.jpg 480w, /assets/img/hero-training-mobile-800.jpg 800w, /assets/img/hero-training-mobile-1160.jpg 1160w">
+    <source type="image/webp" sizes="100vw" width="1920" height="1280" srcset="/assets/img/hero-training-960.webp 960w, /assets/img/hero-training-1440.webp 1440w, /assets/img/hero-training-1920.webp 1920w, /assets/img/hero-training-2560.webp 2560w">
+    <img class="hero-photo" src="/assets/img/hero-training-1440.jpg" srcset="/assets/img/hero-training-960.jpg 960w, /assets/img/hero-training-1440.jpg 1440w, /assets/img/hero-training-1920.jpg 1920w, /assets/img/hero-training-2560.jpg 2560w" sizes="100vw" width="1920" height="1280" alt="" fetchpriority="high" decoding="async">
   </picture>
   <div class="hero-scrim" aria-hidden="true"></div>
   <div class="wrap">
     <div class="hero-content">
       <p class="eyebrow reveal">Llanelwy &middot; Gogledd Cymru &middot; Sefydlwyd 2026</p>
-      <h1 class="reveal" style="--d:.08s">Trinwyr gwallt cymwysedig mewn chwe mis, <em>nid dwy flynedd.</em></h1>
+      <h1 class="reveal" style="--d:.08s">Trinwyr gwallt cymwysedig mewn {{fee:monthsWordN}} mis, <em>nid dwy flynedd.</em></h1>
       <p class="lede reveal" style="--d:.16s">Academi alwedigaethol garlam i oedolion yw Clwydian Academy. Mae hyfforddiant dwys gyda modelau byw yn Llanelwy yn mynd &acirc; chi o ddechreuwr i gymhwyster NVQ safon VTCT — gyda&rsquo;r sgiliau busnes i ennill ohono o&rsquo;r diwrnod cyntaf.</p>
       <div class="hero-actions reveal" style="--d:.24s">
         <a class="btn btn-primary" href="/cy/cyrsiau/">Gweld y cyrsiau <span class="arr">&rarr;</span></a>
@@ -25,7 +27,7 @@
     <div class="stat reveal"><b>6&nbsp;mis</b><span>O ddechreuwr i gymwysedig</span></div>
     <div class="stat reveal" style="--d:.08s"><b>2&nbsp;ddiwrnod</b><span>Yn yr academi, bob pythefnos</span></div>
     <div class="stat reveal" style="--d:.16s"><b>10</b><span>Dysgwr ym mhob carfan</span></div>
-    <div class="stat reveal" style="--d:.24s"><b>&pound;0</b><span>Ar lwybrau wedi&rsquo;u hariannu a phrentisiaethau</span></div>
+    <div class="stat reveal" style="--d:.24s"><b>{{fee:funded}}</b><span>Ar lwybrau wedi&rsquo;u hariannu a phrentisiaethau</span></div>
   </div>
 </section>
 
@@ -46,7 +48,7 @@
       <article class="card reveal" style="--d:.1s">
         <div class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7.5" r="3.5"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M15.5 4.1a3.5 3.5 0 0 1 0 6.8"/></svg></div>
         <h3>I oedolion sy&rsquo;n gweithio</h3>
-        <p>Dau ddiwrnod academi yn olynol bob pythefnos, dysgu o bell rhyngddynt, chwe mis o&rsquo;r dechrau i&rsquo;r diwedd. Ailhyfforddwch o amgylch swydd, teulu neu r&ocirc;l ofalu — heb ildio incwm am flynyddoedd wrth gymhwyso.</p>
+        <p>Dau ddiwrnod academi yn olynol bob pythefnos, dysgu o bell rhyngddynt, {{fee:monthsWordN}} mis o&rsquo;r dechrau i&rsquo;r diwedd. Ailhyfforddwch o amgylch swydd, teulu neu r&ocirc;l ofalu — heb ildio incwm am flynyddoedd wrth gymhwyso.</p>
       </article>
       <article class="card reveal" style="--d:.2s">
         <div class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 4 8-8"/><path d="M14 8h6v6"/></svg></div>
@@ -66,13 +68,13 @@
     </div>
     <div class="grid grid-3">
       <a class="card reveal" href="/cy/cyrsiau/trin-gwallt-nvq-lefel-2/">
-        <span class="card-kicker">Dechreuwyr &middot; 6 mis</span>
+        <span class="card-kicker">Dechreuwyr &middot; {{fee:months}} mis</span>
         <h3>Trin Gwallt NVQ Lefel 2</h3>
         <p>Y diploma sylfaen carlam: torri, lliwio, steilio a gofal cleientiaid, o ddim profiad i gymwysedig.</p>
         <span class="card-cta">Manylion y cwrs <span class="arr">&rarr;</span></span>
       </a>
       <a class="card reveal" style="--d:.1s" href="/cy/cyrsiau/barbro-nvq-lefel-2/">
-        <span class="card-kicker">Dechreuwyr neu groesfapio &middot; 32 wythnos, un noson yr wythnos</span>
+        <span class="card-kicker">Dechreuwyr neu groesfapio &middot; {{fee:barberingWeeks}} wythnos, un noson yr wythnos</span>
         <h3>Barbro NVQ Lefel 2</h3>
         <p>Ffeidiau, cynllunio barfau ac ymbincio moethus — gyda chroesfapio sy&rsquo;n cyflymu trinwyr gwallt cymwysedig at y gadair.</p>
         <span class="card-cta">Manylion y cwrs <span class="arr">&rarr;</span></span>
@@ -113,7 +115,7 @@
       <span class="chip">Cymeradwyaeth canolfan VTCT ar y gweill</span>
       <span class="chip">Prentisiaethau a ariennir yn llawn</span>
       <span class="chip">Dwyieithog &mdash; Cymraeg a Saesneg</span>
-      <span class="chip">Cymorth ReAct+ hyd at &pound;1,500</span>
+      <span class="chip">Cymorth ReAct+ hyd at {{fee:react}}</span>
       <span class="chip">Campws Sero-Net</span>
     </div>
   </div>
@@ -131,7 +133,7 @@
       <p class="eyebrow">Yr enw</p>
       <h2>Wedi&rsquo;n henwi ar &ocirc;l y grib ar ein gorwel.</h2>
       <p class="lede">Mae Bryniau Clwyd yn codi ar orwel dwyreiniol ein cartref yn Nyffryn Clwyd — y bryniau grugog sydd wedi gwylio dros Lanelwy ers canrifoedd.</p>
-      <p>Mae ein s&ecirc;l yn darllen y grib honno mewn ail ffordd: fel llif o wallt, wedi&rsquo;i thynnu mewn un ystum llyfn. Un llinell, dau ystyr — lle, a chrefft. Addewid tawel yw hi fod yr academi hon yn perthyn i Ogledd Cymru, ac mai meistroli sydd wrth wraidd yr hyn a ddysgir yma, nid rhuthro. Hyd yn oed ar chwe mis, does dim byd brysiog am y safon.</p>
+      <p>Mae ein s&ecirc;l yn darllen y grib honno mewn ail ffordd: fel llif o wallt, wedi&rsquo;i thynnu mewn un ystum llyfn. Un llinell, dau ystyr — lle, a chrefft. Addewid tawel yw hi fod yr academi hon yn perthyn i Ogledd Cymru, ac mai meistroli sydd wrth wraidd yr hyn a ddysgir yma, nid rhuthro. Hyd yn oed ar {{fee:monthsWordN}} mis, does dim byd brysiog am y safon.</p>
       <hr class="gold-rule">
       <p><strong>Clwydian Academy</strong> — trin gwallt yn gyntaf, ac ymhen amser y sgiliau crefft a menter ehangach y mae&rsquo;r rhanbarth hwn yn gofyn amdanynt.</p>
     </div>
@@ -156,7 +158,7 @@
       </div>
       <div class="step reveal">
         <h3>Carfan Un yn dechrau — dechrau 2027</h3>
-        <p>Chwe mis o flociau ymarferol dwys yn academi Llanelwy, theori ar-lein, a modelau byw o&rsquo;r wythnosau cyntaf.</p>
+        <p>{{fee:MonthsWordN}} mis o flociau ymarferol dwys yn academi Llanelwy, theori ar-lein, a modelau byw o&rsquo;r wythnosau cyntaf.</p>
       </div>
       <div class="step reveal">
         <h3>Cymwysedig — ac yn ennill</h3>

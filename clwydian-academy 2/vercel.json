@@ -1,0 +1,24 @@
+{
+  "redirects": [
+    {
+      "source": "/funders",
+      "destination": "/about/",
+      "statusCode": 301
+    },
+    {
+      "source": "/funders/",
+      "destination": "/about/",
+      "statusCode": 301
+    },
+    {
+      "source": "/cy/cyllidwyr",
+      "destination": "/cy/amdanom/",
+      "statusCode": 301
+    },
+    {
+      "source": "/cy/cyllidwyr/",
+      "destination": "/cy/amdanom/",
+      "statusCode": 301
+    }
+  ]
+}

@@ -24,7 +24,7 @@ DOMAIN = "https://www.clwydianacademy.co.uk"   # canonical host; the apex 301s h
 
 # Registry order = the order the deployed sitemap listed the English pages, then 404.
 ORDER = ["/", "/courses/", "/courses/nvq-level-2-hairdressing/", "/courses/nvq-level-3-hairdressing/",
-         "/courses/cpd-courses/", "/funding/", "/for-salons/", "/about/", "/funders/", "/contact/",
+         "/courses/cpd-courses/", "/funding/", "/for-salons/", "/about/", "/contact/",
          "/privacy/", "/courses/nvq-level-2-barbering/", "/courses/hair-extensions-course/",
          "/courses/perming-course/", "/courses/hair-relaxing-course/", "/courses/consultation-retail-cpd/",
          "/courses/salon-business-course/", "/courses/skin-cancer-awareness/", "/apprenticeships/",
@@ -116,7 +116,7 @@ def main():
 
 def write(path, text):
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
+    with open(path, "w", encoding="utf-8", newline="\n") as f:   # LF on every OS
         f.write(text)
 
 if __name__ == "__main__":

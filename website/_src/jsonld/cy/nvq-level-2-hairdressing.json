@@ -5,7 +5,7 @@
     "@id": "https://www.clwydianacademy.co.uk/cy/cyrsiau/trin-gwallt-nvq-lefel-2/#course",
     "name": "Diploma NVQ Lefel 2 mewn Trin Gwallt — Carlam",
     "inLanguage": "cy",
-    "description": "Cwrs trin gwallt carlam chwe mis dwys i oedolion: dau ddiwrnod academi yn olynol bob pythefnos yn Llanelwy, a dysgu o bell dan arweiniad, yn arwain at gymhwyster VTCT NVQ Lefel 2.",
+    "description": "Cwrs trin gwallt carlam {{fee:monthsWordN}} mis dwys i oedolion: dau ddiwrnod academi yn olynol bob pythefnos yn Llanelwy, a dysgu o bell dan arweiniad, yn arwain at gymhwyster VTCT NVQ Lefel 2.",
     "provider": {
       "@id": "https://www.clwydianacademy.co.uk/#organization"
     },
@@ -16,14 +16,14 @@
       {
         "@type": "Offer",
         "category": "Paid",
-        "price": "4500",
+        "price": "{{fee:nvqRaw}}",
         "priceCurrency": "GBP",
         "description": "Lle hunan-ariannu"
       },
       {
         "@type": "Offer",
         "category": "Free",
-        "price": "0",
+        "price": "{{fee:fundedRaw}}",
         "priceCurrency": "GBP",
         "description": "Wedi'i ariannu'n llawn i ddysgwyr cymwys drwy lwybrau Llywodraeth Cymru, gan gynnwys prentisiaethau"
       }

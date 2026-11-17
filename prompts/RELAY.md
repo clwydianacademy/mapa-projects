@@ -2507,3 +2507,352 @@ sources for the retired statistics.
 
 Thank you — this has been an unusually clean build. Three of the defects that mattered were caught
 by you challenging the brief rather than following it.
+
+---
+
+## REPORT — AUDIT PHASE 1 (fix only)
+
+**Coder, 17 November 2026.** Instruction from Mark directly, after the audit of
+`backup/site-rebuild-mac`: fix nine named defects on a new branch `fix/audit-phase-1`; no rebuild;
+leave `check_claims`, `CLAUDE.md`, folder names, fee tokens, personal details and the Welsh text
+alone. `main` is still `40723c9` and was not touched. Nothing is merged. Draft PR into
+`backup/site-rebuild-mac`.
+
+| SHA | Step |
+|---|---|
+| `854ca8f` | 1/10 `.gitattributes` (LF); `preview.py` relative paths + UTF-8; `build.py` writes LF on every OS |
+| `addd319` | 2/10 `api/enquiry.js`: origin check, `ts` required, confirmation repeats nothing typed, form re-served refilled; `scripts/test_enquiry.js` |
+| `7ce0331` | 3/10 `main.js` posts urlencoded (the JavaScript-on fix); rejected fields highlighted |
+| `8f44b02` | 4/10 `.reveal` visible without JavaScript |
+| `29e8d3d` | 5/10 contrast to WCAG AA |
+| `03fe405` | 6/10 header navigation: no wrapping, menu button below 1300px, `nojs.css` |
+| `48602be` | 7/10 no horizontal overflow at any width |
+| `4a3e2df` | 8/10 responsive hero photograph |
+| `7b34cf0` | 9/10 build output |
+| *(this)* | 10/10 this report |
+
+### What was wrong, in one line each
+1. **Form, JavaScript on.** `main.js` posted `FormData` (multipart); Vercel does not parse it; the
+   function saw an empty body. Every JavaScript submission failed. Now urlencoded.
+2. **Welsh header.** Ten items do not fit one row below ~1300px in Welsh — and English was
+   wrapping at the same widths. One breakpoint for both languages: menu button below 1300px.
+3. **Contrast.** Header button 1.4:1 (a specificity bug), gold text 3.3:1, navy-panel text down to
+   1.2:1, footer legal line 4.46:1. All ≥ 4.5:1 now.
+4. **`.reveal`.** Hidden by CSS until `main.js` ran. Now visible by default.
+5. **Failed no-JavaScript submit.** Redirected to an empty form. The function now answers with
+   the form refilled and the bad fields marked.
+6. **Windows.** No `.gitattributes`; `preview.py` pointed at `/sessions/…` and read files in the
+   platform encoding.
+7. **`/contact/` overflow.** A grid child cannot shrink below its longest string — the email
+   address. Fixed at the cause, which also fixed phones.
+8. **Hero.** One 673 KB file for every screen, no dimensions. Now 18–130 KB by screen.
+9. **Form abuse.** Confirmation echoed the typed name and message to any address; `ts` could be
+   omitted; no origin check. All three closed.
+
+### Guards watched failing (CLAUDE.md "Build discipline")
+`scripts/test_enquiry.js` is new. Run against the previous `enquiry.js` it fails 12 of 18 — the
+multipart case, the echo, the subject line break, the origin check, every `ts` case, the refilled
+form, the inherited-property enquiry type. Against the new function: 18 of 18.
+
+### Evidence, on the output of `7b34cf0`
+- `build.py` clean; a second build is a no-op.
+- `check_dates` 0 problems · `check_links` 2534 references, 0 broken · `check_locale` 59 pages
+  clean · `check_forms` clean · `check_claims` red on the address rule only (59, unchanged).
+- Browser (Chromium), every page: 0 console errors, 0 failed requests.
+- axe-core WCAG 2 A/AA, 59 pages × 1280px and 375px: 0 contrast failures (was 118 page-views
+  with failures). `heading-order` remains on 57 pages — not in this brief.
+- Overflow: 59 pages × 14 widths (320–1920px) = 826 page-views, 0 overflow.
+- Header: 59 pages × 9 widths (1100–1920px) = 531 page-views, 0 wrapped labels, 0 collisions.
+- Form, in a browser against a local stand-in for Vercel that does not parse multipart:
+  JavaScript on → urlencoded, 2 emails, thank-you inline. JavaScript off → first press returns
+  the form refilled, second press sends and lands on `/contact/thanks/`. Invalid, no JavaScript →
+  400, Welsh page in Welsh, `name` and `email` marked, focus on `name`, every value kept.
+
+### Not verified
+- **Nothing was tested on Vercel or against Resend.** The session cannot reach the live site. The
+  multipart behaviour is Vercel's documented behaviour, reproduced locally. Test on a preview
+  deployment before this goes anywhere near `main`.
+- Safari and Firefox were not run; Chromium only.
+
+### Changed behaviour to know about
+- **Without JavaScript the form takes two presses of send.** `ts` is required and only JavaScript
+  or the function can set it, so the first press returns the form (filled) with a stamp.
+- **Between 921px and 1299px the navigation is now behind the menu button**, in both languages.
+- The confirmation email no longer says "Hello <name>" or repeats the message.
+
+### WELSH FOR REVIEW
+One new machine-written sentence, in two files (`api/enquiry.js` `TEXT.cy.msg.confirm`,
+`assets/js/main.js` `messages.confirm`):
+
+> Bron yno — gwiriwch eich manylion a phwyswch anfon unwaith eto i gadarnhau.
+> (*Nearly there — please check your details and press send once more to confirm.*)
+
+Two existing Welsh strings were shortened by deletion only, in the confirmation email: "Helo
+<enw>," is now "Helo," and the block "Yr hyn a ddywedoch wrthym: …" is removed. The re-served
+form reuses the labels already on `/cy/cysylltu/`. No page copy and no navigation label changed.
+
+### NEEDS A HUMAN
+1. **The form note is now slightly wrong.** `/contact/` and `/cy/cysylltu/` say what you send "is
+   emailed to us and to you". It is emailed to us; you get a confirmation without it. Copy and
+   Welsh — not changed.
+2. **The pull quote on `/contact/` is signed "Charlotte & Mark Parker".** `check_claims` bans
+   "Charlotte Parker"; this reads as the same claim and the regex does not see it. Not changed.
+3. **The hero alt text** says "Clwydian Academy students" of what looks like a stock photograph,
+   before the first cohort. Not changed.
+4. **Navigation at 1280px.** If the full row is wanted on 1280px laptops, something has to give:
+   shorter Welsh labels, or one fewer item. A content decision.
+5. Everything the instruction set aside: `check_claims` and the address rule, `CLAUDE.md`, the
+   folder names, the hardcoded £4,500 and 32-week figures, personal details in the repo, the
+   Welsh review.
+
+---
+
+## REPORT — AUDIT PHASE 1b (PM decisions, privacy first)
+
+**Coder, 17 November 2026.** PM decisions relayed by Mark, same branch (`fix/audit-phase-1`), same
+draft PR. `main` is still `40723c9`, untouched. Nothing merged.
+
+| SHA | Step |
+|---|---|
+| `8ecf6eb` | 1/7 every fee and course length from `_data/fees.json` |
+| `38de4be` | 2/7 `check_claims`: mailbox rule retired, privacy rules in |
+| `f907402` | 3/7 privacy: no phone, no names, one address; `_data/site.json`; registered office in one place |
+| `08ffb04` | 4/7 `api/enquiry.js` delivers to and sends from the new address |
+| `878fd40` | 5/7 hero `alt=""` |
+| `4f07b76` | 6/7 build output — all five guards green |
+| *(this)* | 7/7 this report |
+
+### The live site is unchanged
+This branch is not deployed. **The phone number, the names and the old address stay on
+`www.clwydianacademy.co.uk` until this reaches `main`** — which is Mark's call, not the coder's.
+
+### What changed
+1. **Phone:** gone from the footer of every page, the JSON-LD, `/contact/` and `/funders/`.
+2. **Names:** the `founder` array and personal profile link are out of the JSON-LD; `/about/`
+   cards are headed by role; the `/contact/` pull quote is deleted; `/funders/` signs off by role.
+3. **Email:** `hello@clwydianacademy.co.uk` everywhere — 194 uses in the built site, 0 of the old
+   one. One value, `_data/site.json`; the function repeats it and a test fails if they differ.
+4. **Registered office:** unchanged. One entry in `_data/site.json` (English and Welsh forms).
+5. **Hero:** `alt=""`.
+6. **Welsh:** not reviewed, not changed, except where a name had to come out (below).
+7. **Fees:** every figure is a `{{fee:…}}` token. The rebuilt pages are identical except one
+   correction (below) and `&pound;` for `£` in ten meta descriptions.
+8. **`check_claims`:** green for the first time. The mailbox rule is retired; the old address,
+   the number, the names, `Person`/`founder`, `tel:` and personal profile links now fail the build.
+
+### Guards watched failing
+The new `check_claims` rules, run against the phase 1 output before any fix: 16 distinct hits
+(address 60, each of nine patterns on all 59 pages, six one-off name phrases). After: clean.
+
+### Evidence, on the output of `4f07b76`
+- `build.py` clean, second build a no-op.
+- `check_claims` clean (62 files) · `check_dates` 0 · `check_links` 2534/0 · `check_locale` clean ·
+  `check_forms` clean · `test_enquiry.js` 20/20.
+- Independent `grep` of the built tree: 0 files with the old domain, the number, `tel:`,
+  `telephone`, either surname, either first name, `linkedin`, `"Person"`, `founder`, or an
+  unrendered `{{`. Image metadata checked: none.
+- Chromium, 59 pages × 1280px and 375px: 0 console errors, 0 failed requests, 0 contrast failures.
+- Overflow: 59 pages × 8 widths, 0. Form: same results as phase 1, both paths.
+
+### A correction made on the way
+`/courses/hair-relaxing-course/` and its Welsh mirror called UHB205 a "six-Monday" course in the
+meta description. The data and `CLAUDE.md` say eight. It now reads the data. `check_claims` only
+reads digits, so it never saw the word.
+
+### FEE VALUES FOR PM REVIEW (`_data/fees.json`)
+| Key | Value | Where it shows | Query |
+|---|---|---|---|
+| `nvq` | £4,500 | courses, three NVQ pages, funding, retraining guide; 63 uses | |
+| `deposit` | £500 | funding, NVQ pages, retraining guide | |
+| `instalment` × `instalments` | £500 × 8 | same | 500 + 8 × 500 = 4,500 ✓ |
+| `funded` | £0 | apprenticeships, funding, home, NVQ pages | |
+| `react_support` | £1,500 | funding, home, retraining guide | |
+| *derived* remainder | £3,000 | funding | 4,500 − 1,500 |
+| *derived* instalments | five | funding | (3,000 − 500) ÷ 500 |
+| `employer_sponsored` | £3,950 | funding, "Route three" | **£550 less than the NVQ fee — intended?** |
+| `bundle_l2_l3` | £7,900 | funding | **Level 2 + Level 3 for £1,100 less than two fees — intended?** |
+| `cpd_day_min`–`cpd_day_max` | £150–£295 a day | funding | **Does not come from the CPD tariff (units are £195–£835). Source?** |
+| `relaxing_per_week_under` | £90 | relaxing course | £695 ÷ 8 = £86.88 ✓ — but typed, not calculated |
+| `market_saving_min`–`max` | £5,000–£13,000 | funding (×5) | **Comparison with London academies. Source?** |
+| `market_day_min`–`max` | £175–£335 | what-it-costs | **Local attendance-course prices. Source?** |
+| `months` | 6 | home, courses, funding, funders, L2/L3 pages; 58 uses | |
+| `barbering_weeks` | 32 | home, courses, barbering, retraining guide | |
+| `seats` | 10 | NVQ pages | CPD seats come from `cpd-2027.json` (also 10) |
+
+CPD unit prices are not in this file: they come from the tariff in `_data/cpd-2027.json`.
+Not tokens, on purpose: "made redundant in the last six months" (a ReAct+ rule), "two years",
+"15–18 months per level", "24 months" retention, and the Welsh "a phum rhandaliad".
+
+### WELSH FOR REVIEW
+- `/cy/amdanom/`: "Charlotte sy'n cyfarwyddo'r cwricwlwm" → "Yn cyfarwyddo'r cwricwlwm";
+  "Mark sy'n cyfarwyddo llywodraethu" → "Yn cyfarwyddo llywodraethu". Card headings are the role
+  strings that were already there.
+- `/cy/cyrsiau/cwrs-llacio-gwallt/` meta description: "chwe dydd Llun" → "wyth dydd Llun".
+- Deletions only: the pull quote, the phone row, the Welsh hero alt text.
+- Pre-existing, seen while working, **not changed**: "mewn chwech mis" on `/cy/ffioedd-a-chyllid/`
+  and the retraining guide (the before-noun form is "chwe").
+
+### NEEDS A HUMAN
+1. **Does `hello@clwydianacademy.co.uk` receive mail?** If the mailbox does not exist, every
+   enquiry is lost and the visitor is still told it arrived.
+2. **Resend:** the sender is now `hello@` (was `enquiries@`). The domain must be verified there.
+3. **Vercel:** if `ENQUIRY_TO` or `ENQUIRY_FROM` is set in the project, it overrides the code and
+   may still point at the old address. Not visible from the repository; not the coder's to change.
+4. **The repository still holds the old details:** this file, `CLAUDE.md`, the stale
+   `clwydian-academy/` folder, `check_claims.py` (as patterns) and all of git history. If the
+   repository is public, that matters.
+5. **`CLAUDE.md` is now behind the decisions** ("People: Mark Parker…", the address). Left alone
+   as instructed; the guard, not the file, is what enforces the new rule.
+6. The fee queries in the table above.
+7. `/contact/` still says the enquiry "is emailed to us and to you", and "reaches the same person".
+
+---
+
+## REPORT — AUDIT PHASE 1c (the business plan is not public)
+
+**Coder, 17 November 2026.** PM decision relayed by Mark. Same branch, same draft PR. `main` is
+still `40723c9`, untouched. Nothing merged, nothing deployed.
+
+| SHA | Step |
+|---|---|
+| `8e436fa` | 1/5 funders page retired in both languages; every link removed; `_data/redirects.json`; `build.py` writes `vercel.json` |
+| `6253d10` | 2/5 `check_links` also checks the redirects |
+| `c1c3c9b` | 3/5 menu-button breakpoint 1300px → 1240px (seven nav items fit) |
+| `65d8ad3` | 4/5 build output |
+| *(this)* | 5/5 this report |
+
+### The live site is unchanged
+`/funders/` and `/cy/cyllidwyr/` — with the plan text — are still served from `main` until this
+branch is deployed. The text also remains in the repository: on `main`, in the stale
+`clwydian-academy/` folder (`funders/`, `about/`, `cy/`, `README.md`), in this file, and in history.
+
+### What changed
+1. **Deleted:** both pages — fragments, JSON-LD, registry entry (so: sitemap entries and the
+   hreflang pair), the nav item and footer link in both languages, the button and the "request
+   the full business plan" sentence on `/about/`, the Funders row on `/contact/`. 57 pages, 54
+   sitemap URLs.
+2. **Redirects:** `_data/redirects.json` → `clwydian-academy 2/vercel.json`, written by the build.
+   301, each URL with and without its trailing slash. One line per retired URL.
+3. **Kept:** the "Funder or partner enquiry" option on the form.
+4. **Not asked for, done because it follows:** with seven nav items the full row fits from
+   1240px, so the menu-button breakpoint moved down. 1280px laptops get the full row again.
+
+### Guards watched failing
+`check_links` redirect checks, on a copy of the output with four planted faults (missing target,
+308, a page left at `/funders/`, a link to `/cy/cyllidwyr/`): 5 problems, each naming its file.
+`build.py` with a redirect to `/abuot/`: refused.
+
+### Evidence, on the output of `65d8ad3`
+- `build.py` clean; second build a no-op.
+- `check_claims` clean · `check_dates` 0 · `check_links` 2340 references, 0 broken, 4 redirect
+  rules all to built pages · `check_locale` 57 pages clean · `check_forms` clean ·
+  `test_enquiry.js` 20/20.
+- Built tree: 0 files link to either URL; 0 mention "business plan" / "cynllun busnes"; the only
+  file naming the old URLs is `vercel.json`.
+- Redirects in a browser, against a local stand-in that applies `vercel.json`: all four forms
+  answer 301 and land on the About page in the matching language.
+- Chromium, 57 pages × 1280px and 375px: 0 console errors, 0 failed requests, 0 contrast failures.
+- Overflow: 57 pages × 9 widths (320–1920px) = 513 page-views, 0.
+- Header: 57 pages × 8 widths (1100–1920px) = 456 page-views, 0 wrapped labels, 0 collisions.
+  Welsh spare room at 1240px: 40px. Menu button at 1200px, full row at 1280px.
+- Form: unchanged from 1b, both paths.
+
+### Not verified
+`vercel.json` has never been deployed. The redirect syntax is Vercel's documented one and the
+file is new to this project: check the two old URLs on a preview deployment.
+
+### FINANCIAL / BUSINESS-PLAN CONTENT ON THE REMAINING PAGES — for PM decision (nothing changed)
+Searched all 57 pages, meta descriptions and JSON-LD for: business plan, cash model, stress test,
+income shock, grants, Development Bank of Wales, standby, capital, unit economics, revenue,
+surplus, reserves, lender, equity, forecast, investment, bank, signatories. **No cash model,
+stress test, income shock, Development Bank standby, capital stack, unit economics or revenue
+figure remains anywhere.** What does remain:
+
+| # | Page (and Welsh mirror) | Sentence | Recommendation |
+|---|---|---|---|
+| 1 | `/about/` | "Our community purpose is regulated externally and **audited by our grant funders**, with dual unrelated signatories on the academy's accounts." | **Reword.** States that grant funders exist and audit; names banking controls. Suggest: "…regulated externally by the CIC Regulator." |
+| 2 | `/about/` | "…**no grant income reaches any related company**, and an unrelated independent director sits on the board and **the bank mandate**." | **Reword.** Keep the independence point (it is the funding-eligibility case); drop "grant income" and "bank mandate". |
+| 3 | `/about/` | "Where the founders hold separate commercial interests, the relationship is governed by documented conflict-of-interest protocols and written arm's-length terms…" | **Keep.** Governance, not finance; `CLAUDE.md` wants the arm's-length point made. |
+| 4 | `/about/` | "Directs governance, **capital structuring, funding applications** and enterprise risk." (CEO card) | **Reword.** Suggest "Directs governance, finance and enterprise risk." |
+| 5 | `/about/` | "Our constitution carries a formal asset lock: capital cannot be extracted for private gain, and surpluses are reinvested into the social mission." | **Keep.** A statutory fact about every CIC. |
+| 6 | `/about/` | "…its constitution locks every asset and every surplus to one purpose…" / "Asset-locked" / "Surpluses reinvested" | **Keep.** Same. |
+| 7 | `/about/` | "Learners, salons, **funders**, partners — the door at St Asaph is open." | **Keep.** |
+| 8 | `/contact/` | "Learner, salon owner, **funder** or future partner — tell us who you are…" and the form option "Funder or partner enquiry" | **Keep** — it is now the only route for a funder. |
+| 9 | `/apprenticeships/`, `/for-salons/take-an-apprentice/` | "…documented for employers and **funders**" | **Keep.** |
+| 10 | `/funding/` | "…interest-free, in-house, **no third-party lender**, no credit checks." (twice) | **Keep.** About the learner's payment plan, not the academy's finances. |
+| 11 | `/funding/` | "…the same as the most credible VTCT fast-track provider in the North West, and £5,000–£13,000 under comparable London academies." | **PM to decide** — a market comparison, already queried in the fee list. |
+| 12 | Course pages | "revenue engine", "highest-margin services", "untapped revenue", "margins, rebooking economics" | **Keep.** These describe what a learner's salon earns, not the academy. |
+
+### WELSH
+Deletions only.
+
+### NEEDS A HUMAN
+1. The 12 rows above.
+2. The plan text on `main`, in `clwydian-academy/` and in history — see the top of this report.
+3. `vercel.json` on a preview deployment.
+
+---
+
+## REPORT — AUDIT PHASE 1d (go-live preparation)
+
+**Coder, 17 November 2026.** PM has approved going live; instruction relayed by Mark. `main` is
+still `40723c9` and is **not** merged into by the coder: PR 1 is merged into
+`backup/site-rebuild-mac`, and a second PR into `main` is opened for Mark to merge after he has
+tested a Vercel preview.
+
+| SHA | Step |
+|---|---|
+| `66b4335` | 1/4 `/about/` — three sentences reworded |
+| `931e94b` | 2/4 form failure: clear message, `hello@` fallback, input kept |
+| `5acd8a8` | 3/4 build output |
+| *(this)* | 4/4 this report |
+
+### What changed
+1. **`/about/` and `/cy/amdanom/`.** "…regulated externally and audited by our grant funders,
+   with dual unrelated signatories…" → "…regulated externally." · "…no grant income reaches any
+   related company, and … the board and the bank mandate." → "…and an unrelated independent
+   director sits on the board." · "…capital structuring, funding applications and enterprise
+   risk." → "…finance and enterprise risk." The first two are deletions, so nothing new is claimed.
+2. **When the form cannot send.** Missing key, Resend refusing, a platform error page, or the
+   network dropping: the visitor stays on the page, is told it was not sent, is given
+   `hello@clwydianacademy.co.uk` as a link, and every field keeps what they typed — with and
+   without JavaScript, in both languages. `main.js` no longer calls `form.submit()` on failure.
+3. **A failed confirmation is no longer a failed enquiry.** If the academy's copy is delivered
+   and only the visitor's confirmation fails, the visitor sees the thank-you.
+
+### Deployment facts checked in the repository
+- `clwydian-academy 2/vercel.json` and `clwydian-academy 2/api/enquiry.js` are both inside the
+  Vercel root directory. There is no other `vercel.json`, `api/` folder or `package.json`.
+- `api/enquiry.js` has no dependencies and reads three environment variables: `RESEND_API_KEY`
+  (required), `ENQUIRY_TO` and `ENQUIRY_FROM` (optional; leave unset).
+- It sends from and delivers to `hello@clwydianacademy.co.uk`, so the domain being verified in
+  Resend is the right one.
+- `main` is an ancestor of this branch: the go-live PR has no conflicts.
+
+### Evidence, on the output of `5acd8a8`
+- `build.py` clean; second build a no-op.
+- `check_claims` clean · `check_dates` 0 · `check_links` 2340 references, 0 broken, 4 redirect
+  rules · `check_locale` 57 pages clean · `check_forms` clean · `test_enquiry.js` 23/23.
+- The 4 new tests fail against the code before `931e94b`.
+- Chromium, 57 pages × 1280px and 375px: 0 console errors, 0 failed requests, 0 contrast failures.
+  Overflow, 57 pages × 7 widths: 0.
+- Failure paths in a browser, both languages: key missing (JS on and off), Resend refusing (JS on
+  and off), error page instead of JSON (JS on), network dropped (JS on). In all 12 runs: message
+  shown, `mailto:` link present, name and message kept, 0 emails sent.
+- The working paths are unchanged.
+
+### Not verified
+Nothing has run on Vercel or against Resend. That is what the preview is for.
+
+### WELSH FOR REVIEW
+- `/cy/amdanom/`: "Yn cyfarwyddo llywodraethu, cyllid a risg menter." (one new word, *cyllid*).
+- The two failure messages now end ": hello@clwydianacademy.co.uk." (punctuation and the address).
+
+### NEEDS A HUMAN — the preview test, before merging into `main`
+1. Add `RESEND_API_KEY` in Vercel for **Preview and Production**. Without it the preview shows
+   the "form is not working" message — which is itself worth seeing once.
+2. On the preview: send the form from `/contact/` and `/cy/cysylltu/`; confirm the enquiry
+   arrives at `hello@` and the confirmation arrives at the sender.
+3. Open `/funders/` and `/cy/cyllidwyr/`: both should land on the About page.
+4. `https://<preview>/api/enquiry` in a browser should say "Method not allowed" — that proves the
+   function deployed.

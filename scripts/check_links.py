@@ -7,8 +7,12 @@ check_links.py — every root-relative href / src / srcset in the built tree res
 Exit 0 = clean. Exit 1 = broken references (listed, with the page they are on). Exit 2 = no dir.
 Fragments (#…) and query strings are ignored; a directory URL must contain index.html;
 protocol-relative and absolute URLs are not checked (that is the PM's live check, not ours).
+
+Also checks the redirects in <root>/vercel.json (written by build.py from _data/redirects.json):
+every redirect must be a 301 to a page that exists, and no built page may still sit at a
+redirected URL. A link to a retired URL is already a broken reference, so it is caught above.
 """
-import os, re, sys
+import json, os, re, sys
 
 REF_RE = re.compile(r'\b(?:href|src|poster|data)="([^"]+)"')
 SRCSET_RE = re.compile(r'\bsrcset="([^"]+)"')
@@ -39,13 +43,33 @@ def check(root):
                     broken.append((page, u))
     return sorted(set(broken)), refs
 
+def check_redirects(root):
+    path = os.path.join(root, "vercel.json")
+    if not os.path.exists(path):
+        return [], 0
+    problems = []
+    with open(path, encoding="utf-8") as f:
+        rules = json.load(f).get("redirects", [])
+    for r in rules:
+        src, dst = r.get("source", ""), r.get("destination", "")
+        if r.get("statusCode") != 301:
+            problems.append(("vercel.json", f"{src}: statusCode is {r.get('statusCode')}, expected 301"))
+        if not dst.startswith("/") or not resolve(root, dst):
+            problems.append(("vercel.json", f"{src} redirects to {dst}, which is not a built page"))
+        built = os.path.join(root, src.strip("/"), "index.html")
+        if src.strip("/") and os.path.exists(built):
+            problems.append(("vercel.json", f"{src} is redirected, but a built page is still there: {os.path.relpath(built, root)}"))
+    return problems, len(rules)
+
 def main():
     root = sys.argv[1] if len(sys.argv) > 1 else "clwydian-academy 2"
     if not os.path.isdir(root):
         print(f"check_links: no such directory: {root}"); return 2
     broken, refs = check(root)
+    bad_redirects, n_redirects = check_redirects(root)
+    broken = broken + bad_redirects
     if not broken:
-        print(f"check_links: {refs} internal references checked — 0 broken."); return 0
+        print(f"check_links: {refs} internal references checked — 0 broken; {n_redirects} redirect rules, all to built pages."); return 0
     print(f"check_links: {refs} internal references checked — {len(broken)} broken\n")
     for page, u in broken:
         print(f"  {page}  ->  {u}")

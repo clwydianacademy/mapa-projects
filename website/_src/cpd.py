@@ -352,6 +352,7 @@ def token(name, loc, data):
     if arg and arg.upper() in {c["unit"] for c in data["cohorts"]}:
         cs = _unit_cohorts(data, arg.upper()); c = cs[0]; st = strands[c["strand"]]
         if key == "price": return out(_pound(c["price"]))
+        if key == "priceRaw": return out(c["price"])          # bare number, for JSON-LD
         if key == "level": return out(c["level"])
         if key == "glh": return out(c["glh"])
         if key == "ndays": return out(c["days"])
@@ -416,25 +417,65 @@ TOKEN_RE = re.compile(r"\{\{cpd:([A-Za-z0-9:_-]+)\}\}")
 FEE_RE = re.compile(r"\{\{fee:([A-Za-z0-9_-]+)\}\}")
 FEES_PATH = os.path.join(REPO, "_data", "fees.json")
 
+# Figures in _data/fees.json that are sums of money (rendered as "&pound;4,500"); the rest are counts.
+FEE_MONEY = {"nvq", "deposit", "instalment", "funded", "bundle_l2_l3", "employer_sponsored", "react_support",
+             "react_remainder", "cpd_day_min", "cpd_day_max", "relaxing_per_week_under",
+             "market_saving_min", "market_saving_max", "market_day_min", "market_day_max"}
+FEE_ALIAS = {"fee": "nvq", "react": "react_support"}
+
+def fee_value(key, fees):
+    """One figure by its _data/fees.json key, or one of the two derived figures."""
+    if key == "react_remainder":                       # what a learner still pays after ReAct+ support
+        return fees["nvq"] - fees["react_support"]
+    if key == "react_instalments":                     # ...and in how many instalments, after the deposit
+        n, rest = divmod(fee_value("react_remainder", fees) - fees["deposit"], fees["instalment"])
+        if rest or n < 1:
+            raise ValueError("fees.json: (nvq - react_support - deposit) is not a whole number of instalments — "
+                             "the ReAct+ sentences on /funding/ no longer add up; change the figures or the copy")
+        return n
+    if key.startswith("_") or key not in fees:
+        raise KeyError(f"fee token: {key!r} is not in _data/fees.json")
+    return fees[key]
+
 def fee_token(name, loc):
-    """{{fee:...}} — the NVQ figures from _data/fees.json (fee, deposit, instalment, instalments,
-    months, seats, barberingWeeks; -Word variants spell the number; a capital initial capitalises)."""
+    """{{fee:<name>}} — a figure from _data/fees.json. <name> is the JSON key in camelCase
+    (barberingWeeks -> barbering_weeks; `fee` and `react` are short for nvq and react_support),
+    plus reactRemainder and reactInstalments, which are derived. Suffixes:
+        (none)  money as &pound;4,500, counts as 8        Raw    4500 (for JSON-LD prices)
+        Word    the number spelled out: eight / wyth      WordN  spelled out as it stands before a
+                                                                 noun in Welsh: chwe mis, pum rhandaliad
+    A capital initial capitalises the result. An unknown name fails the build."""
     with open(FEES_PATH, encoding="utf-8") as f:
         fees = json.load(f)
-    cap = name[:1].isupper(); key = name[0].lower() + name[1:]
-    word = key.endswith("Word"); base = key[:-4] if word else key
-    field = {"nvq": "nvq", "fee": "nvq", "deposit": "deposit", "instalment": "instalment", "instalments": "instalments",
-             "months": "months", "seats": "seats", "barberingWeeks": "barbering_weeks"}.get(base)
-    if field is None:
+    cap = name[:1].isupper(); base = name[0].lower() + name[1:]
+    form = next((s for s in ("WordN", "Word", "Raw") if base.endswith(s)), "")
+    if form: base = base[:-len(form)]
+    key = FEE_ALIAS.get(base) or re.sub(r"(?<=[a-z0-9])([A-Z])", lambda m: "_" + m.group(1).lower(), base)
+    key = {"bundle_l2l3": "bundle_l2_l3"}.get(key, key)
+    try:
+        v = fee_value(key, fees)
+    except KeyError:
         raise KeyError(f"fee token {name!r} is not defined")
-    v = fees[field]
-    if word:
-        out = number_word(v, loc)
-    elif field in ("nvq", "deposit", "instalment"):
-        out = _pound(v)
-    else:
-        out = str(v)
+    if form == "Word": out = number_word(v, loc)
+    elif form == "WordN": out = number_word(v, loc, before_noun=True)
+    elif form == "Raw": out = str(v)
+    else: out = _pound(v) if key in FEE_MONEY else str(v)
     return (out[:1].upper() + out[1:]) if cap else out
+
+SITE_RE = re.compile(r"\{\{site:([A-Za-z_]+)\}\}")
+SITE_PATH = os.path.join(REPO, "_data", "site.json")
+
+def site():
+    with open(SITE_PATH, encoding="utf-8") as f:
+        return json.load(f)
+
+def site_token(name, loc):
+    """{{site:email}}, {{site:companyNumber}}, {{site:registeredOffice}} — from _data/site.json."""
+    s = site()
+    if name == "email": return s["email"]
+    if name == "companyNumber": return s["company_number"]
+    if name == "registeredOffice": return s["registered_office"][loc]
+    raise KeyError(f"site token {name!r} is not defined")
 
 STAT_RE = re.compile(r"\{\{stat:([a-z_]+):([A-Za-z]+)\}\}")
 STATS_PATH = os.path.join(REPO, "_data", "statistics.json")
@@ -461,6 +502,8 @@ def render(text, loc):
     if "{{cpd:" in text:
         data = load()
         text = TOKEN_RE.sub(lambda m: token(m.group(1), loc, data), text)
+    if "{{site:" in text:
+        text = SITE_RE.sub(lambda m: site_token(m.group(1), loc), text)
     if "{{fee:" in text:
         text = FEE_RE.sub(lambda m: fee_token(m.group(1), loc), text)
     return text

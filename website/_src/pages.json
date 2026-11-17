@@ -8,12 +8,12 @@
     "en": {
       "path": "/",
       "title": "Hairdressing Training in St Asaph | Clwydian Academy",
-      "desc": "Qualified in six months, not two years. Fast-track NVQ hairdressing, barbering and apprenticeships in St Asaph — with fully funded routes for eligible learners."
+      "desc": "Qualified in {{fee:monthsWord}} months, not two years. Fast-track NVQ hairdressing, barbering and apprenticeships in St Asaph — with fully funded routes for eligible learners."
     },
     "cy": {
       "path": "/cy/",
       "title": "Clwydian Academy | Hyfforddiant Trin Gwallt, Llanelwy",
-      "desc": "Cymwysedig mewn chwe mis, nid dwy flynedd. Cyrsiau NVQ trin gwallt a barbro carlam a phrentisiaethau yn Llanelwy — gyda llwybrau wedi'u hariannu'n llawn i ddysgwyr cymwys."
+      "desc": "Cymwysedig mewn {{fee:monthsWordN}} mis, nid dwy flynedd. Cyrsiau NVQ trin gwallt a barbro carlam a phrentisiaethau yn Llanelwy — gyda llwybrau wedi'u hariannu'n llawn i ddysgwyr cymwys."
     }
   },
   {
@@ -25,12 +25,12 @@
     "en": {
       "path": "/courses/",
       "title": "Hairdressing Courses in North Wales | Clwydian Academy",
-      "desc": "Fast-track NVQ Level 2 & 3 hairdressing diplomas plus CPD in barbering, colour and extensions. Six-month adult courses in St Asaph, North Wales."
+      "desc": "Fast-track NVQ Level 2 & 3 hairdressing diplomas plus CPD in barbering, colour and extensions. {{fee:MonthsWord}}-month adult courses in St Asaph, North Wales."
     },
     "cy": {
       "path": "/cy/cyrsiau/",
       "title": "Cyrsiau Trin Gwallt yng Ngogledd Cymru | Clwydian Academy",
-      "desc": "Diplomâu trin gwallt NVQ Lefel 2 a 3 carlam, a DPP mewn barbro, lliwio ac estyniadau. Cyrsiau chwe mis i oedolion yn Llanelwy, Gogledd Cymru."
+      "desc": "Diplomâu trin gwallt NVQ Lefel 2 a 3 carlam, a DPP mewn barbro, lliwio ac estyniadau. Cyrsiau {{fee:monthsWordN}} mis i oedolion yn Llanelwy, Gogledd Cymru."
     }
   },
   {
@@ -42,12 +42,12 @@
     "en": {
       "path": "/courses/nvq-level-2-hairdressing/",
       "title": "Fast-Track NVQ Level 2 Hairdressing | Clwydian Academy",
-      "desc": "Beginner to qualified hairdresser in six months. VTCT-standard NVQ Level 2 diploma in St Asaph — £4,500, with fully funded routes including apprenticeships."
+      "desc": "Beginner to qualified hairdresser in {{fee:monthsWord}} months. VTCT-standard NVQ Level 2 diploma in St Asaph — {{fee:nvq}}, with fully funded routes including apprenticeships."
     },
     "cy": {
       "path": "/cy/cyrsiau/trin-gwallt-nvq-lefel-2/",
       "title": "Cwrs Trin Gwallt NVQ Lefel 2 Carlam | Clwydian Academy",
-      "desc": "O ddechreuwr i driniwr gwallt cymwysedig mewn chwe mis. Diploma NVQ Lefel 2 safon VTCT yn Llanelwy — £4,500, gyda llwybrau wedi'u hariannu'n llawn gan gynnwys prentisiaethau."
+      "desc": "O ddechreuwr i driniwr gwallt cymwysedig mewn {{fee:monthsWordN}} mis. Diploma NVQ Lefel 2 safon VTCT yn Llanelwy — {{fee:nvq}}, gyda llwybrau wedi'u hariannu'n llawn gan gynnwys prentisiaethau."
     }
   },
   {
@@ -59,12 +59,12 @@
     "en": {
       "path": "/courses/nvq-level-3-hairdressing/",
       "title": "NVQ Level 3 Hairdressing, St Asaph | Clwydian Academy",
-      "desc": "Step up to senior stylist: fast-track NVQ Level 3 hairdressing in St Asaph — advanced colour, cutting and client leadership. £4,500, with fully funded routes available."
+      "desc": "Step up to senior stylist: fast-track NVQ Level 3 hairdressing in St Asaph — advanced colour, cutting and client leadership. {{fee:nvq}}, with fully funded routes available."
     },
     "cy": {
       "path": "/cy/cyrsiau/trin-gwallt-nvq-lefel-3/",
       "title": "Trin Gwallt NVQ Lefel 3, Llanelwy | Clwydian Academy",
-      "desc": "Camwch ymlaen yn uwch-steilydd: NVQ Lefel 3 carlam yn Llanelwy — lliwio uwch, torri creadigol ac arwain cleientiaid. £4,500, gyda llwybrau wedi'u hariannu'n llawn ar gael."
+      "desc": "Camwch ymlaen yn uwch-steilydd: NVQ Lefel 3 carlam yn Llanelwy — lliwio uwch, torri creadigol ac arwain cleientiaid. {{fee:nvq}}, gyda llwybrau wedi'u hariannu'n llawn ar gael."
     }
   },
   {
@@ -111,12 +111,12 @@
     "en": {
       "path": "/funding/",
       "title": "Course Fees &amp; Funding in North Wales | Clwydian Academy",
-      "desc": "Clear prices, real funding routes: fully funded apprenticeships, ReAct+ support of up to £1,500, employer sponsorship and interest-free instalments. Fast-track NVQ £4,500 all-in."
+      "desc": "Clear prices, real funding routes: fully funded apprenticeships, ReAct+ support of up to {{fee:react}}, employer sponsorship and interest-free instalments. Fast-track NVQ {{fee:nvq}} all-in."
     },
     "cy": {
       "path": "/cy/ffioedd-a-chyllid/",
       "title": "Ffioedd a Chyllid Cyrsiau Trin Gwallt | Clwydian Academy",
-      "desc": "Prisiau clir a llwybrau cyllido go iawn: prentisiaethau wedi'u hariannu'n llawn, cymorth ReAct+ hyd at £1,500, nawdd cyflogwr a rhandaliadau di-log. NVQ carlam £4,500 yn cynnwys popeth."
+      "desc": "Prisiau clir a llwybrau cyllido go iawn: prentisiaethau wedi'u hariannu'n llawn, cymorth ReAct+ hyd at {{fee:react}}, nawdd cyflogwr a rhandaliadau di-log. NVQ carlam {{fee:nvq}} yn cynnwys popeth."
     }
   },
   {
@@ -273,23 +273,6 @@
     }
   },
   {
-    "key": "funders",
-    "nav": "/funders/",
-    "noindex": false,
-    "priority": "0.6",
-    "legal": "plain",
-    "en": {
-      "path": "/funders/",
-      "title": "Funders & Partners — Business Plan | Clwydian Academy",
-      "desc": "For grant assessors, lenders and partners: the governance, investment case and social-impact model behind Clwydian Academy — full business plan available on request."
-    },
-    "cy": {
-      "path": "/cy/cyllidwyr/",
-      "title": "Cyllidwyr a Phartneriaid — Cynllun Busnes | Clwydian Academy",
-      "desc": "I aseswyr grantiau, benthycwyr a phartneriaid: llywodraethu, achos buddsoddi a model effaith gymdeithasol Clwydian Academy — y cynllun busnes llawn ar gael ar gais."
-    }
-  },
-  {
     "key": "contact",
     "nav": "/contact/",
     "noindex": false,
@@ -349,12 +332,12 @@
     "en": {
       "path": "/courses/nvq-level-2-barbering/",
       "title": "NVQ Level 2 Barbering, St Asaph | Clwydian Academy",
-      "desc": "Qualified barber in 32 weeks, one Tuesday evening a week. VTCT-standard Level 2 barbering diploma in St Asaph — fades, beard design and luxury shaving. £4,500, with fully funded routes including apprenticeships."
+      "desc": "Qualified barber in {{fee:barberingWeeks}} weeks, one Tuesday evening a week. VTCT-standard Level 2 barbering diploma in St Asaph — fades, beard design and luxury shaving. {{fee:nvq}}, with fully funded routes including apprenticeships."
     },
     "cy": {
       "path": "/cy/cyrsiau/barbro-nvq-lefel-2/",
       "title": "Barbro NVQ Lefel 2, Llanelwy | Clwydian Academy",
-      "desc": "Barbwr cymwysedig mewn 32 wythnos, un nos Fawrth yr wythnos. Diploma barbro Lefel 2 safon VTCT yn Llanelwy — ffeidiau, cynllunio barfau ac eillio moethus. £4,500, gyda llwybrau wedi'u hariannu'n llawn gan gynnwys prentisiaethau."
+      "desc": "Barbwr cymwysedig mewn {{fee:barberingWeeks}} wythnos, un nos Fawrth yr wythnos. Diploma barbro Lefel 2 safon VTCT yn Llanelwy — ffeidiau, cynllunio barfau ac eillio moethus. {{fee:nvq}}, gyda llwybrau wedi'u hariannu'n llawn gan gynnwys prentisiaethau."
     }
   },
   {
@@ -402,12 +385,12 @@
     "en": {
       "path": "/courses/hair-relaxing-course/",
       "title": "Relaxing &amp; Smoothing — VTCT UHB205 | Clwydian Academy",
-      "desc": "Become a textured-hair specialist: six-Monday chemical relaxing, straightening and smoothing masterclass in St Asaph — regulated VTCT Level 2 unit UHB205, £695."
+      "desc": "Become a textured-hair specialist: {{cpd:ndaysWord:UHB205}}-Monday chemical relaxing, straightening and smoothing masterclass in St Asaph — regulated VTCT Level 2 unit UHB205, {{cpd:price:UHB205}}."
     },
     "cy": {
       "path": "/cy/cyrsiau/cwrs-llacio-gwallt/",
       "title": "Llacio a Llyfnhau — VTCT UHB205 | Clwydian Academy",
-      "desc": "Dewch yn arbenigwr gwallt gweadog: dosbarth meistr llacio, sythu a llyfnhau cemegol dros chwe dydd Llun yn Llanelwy — uned VTCT Lefel 2 UHB205 reoledig, £695."
+      "desc": "Dewch yn arbenigwr gwallt gweadog: dosbarth meistr llacio, sythu a llyfnhau cemegol dros {{cpd:daysWord:UHB205}} yn Llanelwy — uned VTCT Lefel 2 UHB205 reoledig, {{cpd:price:UHB205}}."
     },
     "cpd_unit": "UHB205"
   },
@@ -456,12 +439,12 @@
     "en": {
       "path": "/courses/skin-cancer-awareness/",
       "title": "Skin Cancer Awareness Course | Clwydian Academy",
-      "desc": "One-day VTCT Level 2 Award in Skin Cancer Awareness at St Asaph for hairdressers, barbers, therapists and fitness professionals. £195, no prerequisites, team discounts."
+      "desc": "One-day VTCT Level 2 Award in Skin Cancer Awareness at St Asaph for hairdressers, barbers, therapists and fitness professionals. {{cpd:price:UV21577}}, no prerequisites, team discounts."
     },
     "cy": {
       "path": "/cy/cyrsiau/ymwybyddiaeth-canser-y-croen/",
       "title": "Cwrs Ymwybyddiaeth Canser y Croen | Clwydian Academy",
-      "desc": "Dyfarniad VTCT Lefel 2 undydd mewn Ymwybyddiaeth Canser y Croen yn Llanelwy i drinwyr gwallt, barbwyr a therapyddion. £195, dim rhagofynion, gostyngiadau tîm."
+      "desc": "Dyfarniad VTCT Lefel 2 undydd mewn Ymwybyddiaeth Canser y Croen yn Llanelwy i drinwyr gwallt, barbwyr a therapyddion. {{cpd:price:UV21577}}, dim rhagofynion, gostyngiadau tîm."
     },
     "cpd_unit": "UV21577"
   },

@@ -5,7 +5,7 @@
     "@id": "https://www.clwydianacademy.co.uk/cy/cyrsiau/trin-gwallt-nvq-lefel-3/#course",
     "name": "Diploma NVQ Lefel 3 mewn Trin Gwallt — Carlam",
     "inLanguage": "cy",
-    "description": "Rhaglen trin gwallt uwch chwe mis i steilyddion cymwysedig: torri creadigol, cywiro lliw, gwasanaethau technegol ac arwain cleientiaid yn fasnachol, yn arwain at gymhwyster VTCT NVQ Lefel 3.",
+    "description": "Rhaglen trin gwallt uwch {{fee:monthsWordN}} mis i steilyddion cymwysedig: torri creadigol, cywiro lliw, gwasanaethau technegol ac arwain cleientiaid yn fasnachol, yn arwain at gymhwyster VTCT NVQ Lefel 3.",
     "provider": {
       "@id": "https://www.clwydianacademy.co.uk/#organization"
     },
@@ -16,14 +16,14 @@
       {
         "@type": "Offer",
         "category": "Paid",
-        "price": "4500",
+        "price": "{{fee:nvqRaw}}",
         "priceCurrency": "GBP",
         "description": "Lle hunan-ariannu"
       },
       {
         "@type": "Offer",
         "category": "Free",
-        "price": "0",
+        "price": "{{fee:fundedRaw}}",
         "priceCurrency": "GBP",
         "description": "Wedi'i ariannu'n llawn i ddysgwyr cymwys drwy lwybrau Llywodraeth Cymru, gan gynnwys prentisiaethau"
       }
