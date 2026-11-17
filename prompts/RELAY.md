@@ -2705,3 +2705,88 @@ Not tokens, on purpose: "made redundant in the last six months" (a ReAct+ rule),
    as instructed; the guard, not the file, is what enforces the new rule.
 6. The fee queries in the table above.
 7. `/contact/` still says the enquiry "is emailed to us and to you", and "reaches the same person".
+
+---
+
+## REPORT — AUDIT PHASE 1c (the business plan is not public)
+
+**Coder, 17 November 2026.** PM decision relayed by Mark. Same branch, same draft PR. `main` is
+still `40723c9`, untouched. Nothing merged, nothing deployed.
+
+| SHA | Step |
+|---|---|
+| `8e436fa` | 1/5 funders page retired in both languages; every link removed; `_data/redirects.json`; `build.py` writes `vercel.json` |
+| `6253d10` | 2/5 `check_links` also checks the redirects |
+| `c1c3c9b` | 3/5 menu-button breakpoint 1300px → 1240px (seven nav items fit) |
+| `65d8ad3` | 4/5 build output |
+| *(this)* | 5/5 this report |
+
+### The live site is unchanged
+`/funders/` and `/cy/cyllidwyr/` — with the plan text — are still served from `main` until this
+branch is deployed. The text also remains in the repository: on `main`, in the stale
+`clwydian-academy/` folder (`funders/`, `about/`, `cy/`, `README.md`), in this file, and in history.
+
+### What changed
+1. **Deleted:** both pages — fragments, JSON-LD, registry entry (so: sitemap entries and the
+   hreflang pair), the nav item and footer link in both languages, the button and the "request
+   the full business plan" sentence on `/about/`, the Funders row on `/contact/`. 57 pages, 54
+   sitemap URLs.
+2. **Redirects:** `_data/redirects.json` → `clwydian-academy 2/vercel.json`, written by the build.
+   301, each URL with and without its trailing slash. One line per retired URL.
+3. **Kept:** the "Funder or partner enquiry" option on the form.
+4. **Not asked for, done because it follows:** with seven nav items the full row fits from
+   1240px, so the menu-button breakpoint moved down. 1280px laptops get the full row again.
+
+### Guards watched failing
+`check_links` redirect checks, on a copy of the output with four planted faults (missing target,
+308, a page left at `/funders/`, a link to `/cy/cyllidwyr/`): 5 problems, each naming its file.
+`build.py` with a redirect to `/abuot/`: refused.
+
+### Evidence, on the output of `65d8ad3`
+- `build.py` clean; second build a no-op.
+- `check_claims` clean · `check_dates` 0 · `check_links` 2340 references, 0 broken, 4 redirect
+  rules all to built pages · `check_locale` 57 pages clean · `check_forms` clean ·
+  `test_enquiry.js` 20/20.
+- Built tree: 0 files link to either URL; 0 mention "business plan" / "cynllun busnes"; the only
+  file naming the old URLs is `vercel.json`.
+- Redirects in a browser, against a local stand-in that applies `vercel.json`: all four forms
+  answer 301 and land on the About page in the matching language.
+- Chromium, 57 pages × 1280px and 375px: 0 console errors, 0 failed requests, 0 contrast failures.
+- Overflow: 57 pages × 9 widths (320–1920px) = 513 page-views, 0.
+- Header: 57 pages × 8 widths (1100–1920px) = 456 page-views, 0 wrapped labels, 0 collisions.
+  Welsh spare room at 1240px: 40px. Menu button at 1200px, full row at 1280px.
+- Form: unchanged from 1b, both paths.
+
+### Not verified
+`vercel.json` has never been deployed. The redirect syntax is Vercel's documented one and the
+file is new to this project: check the two old URLs on a preview deployment.
+
+### FINANCIAL / BUSINESS-PLAN CONTENT ON THE REMAINING PAGES — for PM decision (nothing changed)
+Searched all 57 pages, meta descriptions and JSON-LD for: business plan, cash model, stress test,
+income shock, grants, Development Bank of Wales, standby, capital, unit economics, revenue,
+surplus, reserves, lender, equity, forecast, investment, bank, signatories. **No cash model,
+stress test, income shock, Development Bank standby, capital stack, unit economics or revenue
+figure remains anywhere.** What does remain:
+
+| # | Page (and Welsh mirror) | Sentence | Recommendation |
+|---|---|---|---|
+| 1 | `/about/` | "Our community purpose is regulated externally and **audited by our grant funders**, with dual unrelated signatories on the academy's accounts." | **Reword.** States that grant funders exist and audit; names banking controls. Suggest: "…regulated externally by the CIC Regulator." |
+| 2 | `/about/` | "…**no grant income reaches any related company**, and an unrelated independent director sits on the board and **the bank mandate**." | **Reword.** Keep the independence point (it is the funding-eligibility case); drop "grant income" and "bank mandate". |
+| 3 | `/about/` | "Where the founders hold separate commercial interests, the relationship is governed by documented conflict-of-interest protocols and written arm's-length terms…" | **Keep.** Governance, not finance; `CLAUDE.md` wants the arm's-length point made. |
+| 4 | `/about/` | "Directs governance, **capital structuring, funding applications** and enterprise risk." (CEO card) | **Reword.** Suggest "Directs governance, finance and enterprise risk." |
+| 5 | `/about/` | "Our constitution carries a formal asset lock: capital cannot be extracted for private gain, and surpluses are reinvested into the social mission." | **Keep.** A statutory fact about every CIC. |
+| 6 | `/about/` | "…its constitution locks every asset and every surplus to one purpose…" / "Asset-locked" / "Surpluses reinvested" | **Keep.** Same. |
+| 7 | `/about/` | "Learners, salons, **funders**, partners — the door at St Asaph is open." | **Keep.** |
+| 8 | `/contact/` | "Learner, salon owner, **funder** or future partner — tell us who you are…" and the form option "Funder or partner enquiry" | **Keep** — it is now the only route for a funder. |
+| 9 | `/apprenticeships/`, `/for-salons/take-an-apprentice/` | "…documented for employers and **funders**" | **Keep.** |
+| 10 | `/funding/` | "…interest-free, in-house, **no third-party lender**, no credit checks." (twice) | **Keep.** About the learner's payment plan, not the academy's finances. |
+| 11 | `/funding/` | "…the same as the most credible VTCT fast-track provider in the North West, and £5,000–£13,000 under comparable London academies." | **PM to decide** — a market comparison, already queried in the fee list. |
+| 12 | Course pages | "revenue engine", "highest-margin services", "untapped revenue", "margins, rebooking economics" | **Keep.** These describe what a learner's salon earns, not the academy. |
+
+### WELSH
+Deletions only.
+
+### NEEDS A HUMAN
+1. The 12 rows above.
+2. The plan text on `main`, in `clwydian-academy/` and in history — see the top of this report.
+3. `vercel.json` on a preview deployment.
