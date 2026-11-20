@@ -17,6 +17,7 @@ import html as html_mod
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import cpd   # everything rendered from _data/cpd-2027.json
+import salon # the training salon's pages, rendered from _data/salon/policy.json
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
@@ -59,6 +60,16 @@ NAV = [
     {"en": ("/guides/", "Guides"),                 "cy": ("/cy/canllawiau/", "Canllawiau")},
     {"en": ("/contact/", "Contact"),               "cy": ("/cy/cysylltu/", "Cysylltu")},
 ]
+
+# The training salon's nav item. Added to NAV only while the salon is public — see salon.is_public().
+SALON_NAV = {"en": ("/salon/", "Our Salon"), "cy": ("/cy/salon/", "Ein Salon")}
+SALON_ON = salon.is_public()      # build() may force this on for a preview build in a scratch folder
+
+def nav_items():
+    if not SALON_ON:
+        return NAV
+    at = next(i for i, item in enumerate(NAV) if item["en"][0] == "/for-salons/") + 1
+    return NAV[:at] + [SALON_NAV] + NAV[at:]
 
 # Every locale-specific string in the chrome. Welsh strings are machine-written and
 # unreviewed (CLAUDE.md "Bilingual") — any change here goes under WELSH FOR REVIEW.
@@ -135,6 +146,14 @@ def other(loc):
 def out_path(path):
     return path.lstrip("/") if path.endswith(".html") else path.strip("/") + "/index.html" if path != "/" else "index.html"
 
+def is_salon(page):
+    return str(page.get("generated") or "").startswith("salon")
+
+def hidden(page):
+    """Not to be indexed: a page marked noindex, and EVERY salon page while any value in
+    _data/salon/policy.json is still a placeholder — nothing unconfirmed goes out to a search engine."""
+    return bool(page.get("noindex")) or (is_salon(page) and not salon.confirmed())
+
 def head(page, loc, jsonld):
     c, me = CHROME[loc], page[loc]
     url = DOMAIN + me["path"]
@@ -147,7 +166,7 @@ def head(page, loc, jsonld):
         f"<title>{me['title']}</title>",
         f'<meta name="description" content="{me["desc"]}">',
     ]
-    if page.get("noindex"):
+    if hidden(page):
         lines.append('<meta name="robots" content="noindex, nofollow">')
     lines.append(f'<link rel="canonical" href="{url}">')
     if page.get("cy"):
@@ -181,16 +200,19 @@ def head(page, loc, jsonld):
         '<link rel="stylesheet" href="/assets/css/main.css">',
         # without JavaScript the menu button cannot open the menu: show the links instead
         '<noscript><link rel="stylesheet" href="/assets/css/nojs.css"></noscript>',
-        ld(ORG),
     ]
+    if is_salon(page):
+        lines.append('<link rel="stylesheet" href="/assets/css/salon.css">')
+    lines.append(ld(ORG))
     lines += [ld(block) for block in jsonld]
-    lines += ['<script src="/assets/js/main.js" defer></script>', "</head>"]
+    lines.append('<script src="/assets/js/main.js" defer></script>')
+    lines.append("</head>")
     return "\n".join(lines)
 
 def header(page, loc):
     c = CHROME[loc]
     links = []
-    for item in NAV:
+    for item in nav_items():
         href, label = item[loc]
         cur = ' aria-current="page"' if page.get("nav") == item["en"][0] else ""
         links.append(f'<a href="{href}"{cur}>{label}</a>')
@@ -273,7 +295,9 @@ def footer(page, loc):
 def lastmod(page, loc, fallback):
     """Date of the last commit touching this page's sources; the build date if none.
     Sources are the fragment and JSON-LD, plus the CPD data and cpd.py for pages that render from them."""
-    if page.get("generated"):
+    if is_salon(page):
+        paths = [salon.DATA_PATH, os.path.join(HERE, "salon.py")]
+    elif page.get("generated"):
         paths = [cpd.DATA_PATH, os.path.join(HERE, "cpd.py")]
     else:
         paths = [os.path.join("pages", loc, page["key"] + ".html"), os.path.join("jsonld", loc, page["key"] + ".json")]
@@ -338,13 +362,28 @@ def build():
             if " " in rel:
                 sys.exit(f"build: {rel!r} contains a space — Vercel will refuse to deploy this function")
     pages = json.loads(read("pages.json"))
+    if SALON_ON and not os.path.exists(os.path.join(OUT, "assets", "css", "salon.css")):
+        sys.exit("build: /assets/css/salon.css is missing — the salon pages load it")
     cpd.configure(DOMAIN, next(p for p in pages if p.get("generated") == "cpd-calendar"))
     urls = {"en": [], "cy": []}
     for page in pages:
         for loc in LOCALES:
             if not page.get(loc):
                 continue
-            if page.get("generated") == "cpd-calendar":
+            if is_salon(page) and not SALON_ON:
+                # THE SWITCH IS OFF: the page is not built, and one left over from an earlier
+                # build is removed, so the deployed folder holds no trace of the salon.
+                stale = os.path.join(OUT, out_path(page[loc]["path"]))
+                if os.path.exists(stale):
+                    os.remove(stale)
+                    try: os.removedirs(os.path.dirname(stale))
+                    except OSError: pass
+                    print("removed (salon not public)", out_path(page[loc]["path"]))
+                continue
+            if is_salon(page):
+                body = salon.body(page["generated"], loc, SITE)
+                jsonld = salon.jsonld(page["generated"], loc, DOMAIN, ORG, SITE)
+            elif page.get("generated") == "cpd-calendar":
                 body = cpd.calendar_body(loc, page)
                 jsonld = cpd.calendar_jsonld(loc, page)
             else:
@@ -361,7 +400,7 @@ def build():
             html = head(page, loc, jsonld) + "\n" + header(page, loc) + "\n" + body + footer(page, loc)
             rel = out_path(page[loc]["path"])
             write(rel, html)
-            if not page.get("noindex"):
+            if not hidden(page):
                 urls[loc].append(page)
             print("built", rel)
 
@@ -379,9 +418,27 @@ def build():
     sm.append("</urlset>")
     write("sitemap.xml", "\n".join(sm) + "\n")
     write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {DOMAIN}/sitemap.xml\n")
+    if SALON_ON:
+        todo, draft = salon.todo_paths(salon.raw()), salon.draft_paths(salon.raw())
+        print(f"salon: ON — {len(todo)} placeholder(s) and {len(draft)} draft value(s): salon pages are "
+              + ("noindex and out of the sitemap" if todo or draft else "indexed"))
+    else:
+        print("salon: OFF — no salon page and no nav item built (\"public\" is false in _data/salon/policy.json)")
     n = sum(len(v) for v in urls.values())
     r = redirects(pages)
     print(f"built sitemap.xml ({n} urls), robots.txt, vercel.json ({r} redirected urls)")
 
 if __name__ == "__main__":
+    # `build.py --salon-preview DIR`: copy the deployed folder to DIR and build THERE with the salon
+    # switched on. For looking at the salon pages, and for scripts/test_salon_pages.js, without
+    # putting anything into the folder that is deployed. DIR must not be inside the repository.
+    if len(sys.argv) == 3 and sys.argv[1] == "--salon-preview":
+        import shutil
+        target = os.path.abspath(sys.argv[2])
+        if target == OUT or target.startswith(REPO + os.sep):
+            sys.exit("build: --salon-preview must write outside the repository")
+        shutil.copytree(OUT, target, dirs_exist_ok=True)
+        OUT, SALON_ON = target, True
+    elif len(sys.argv) > 1:
+        sys.exit("usage: build.py [--salon-preview DIR]")
     build()
