@@ -1,0 +1,43 @@
+{
+  "_source": "LEARNER WORK — the gallery at /work/ and /cy/gwaith/. NO LEARNER NAMES, here or on the page. A before-and-after pair is a testimonial in the eyes of the advertising rules (CAP Code 3.47-3.50), so the build REFUSES to publish a pair unless it carries: consentRef (the reference of the signed, dated consent form on file), consentDate (ISO date, not in the future), originalsKept true (the untouched camera files are kept), ownClient true (the person is a client of this salon), hairRetouched false (the hair has not been retouched in either picture) and afterOnlyEdited false (nothing was done to the 'after' that was not done to the 'before'). Photographs go in website/_showcase/work/ as <id>-before.jpg and <id>-after.jpg.",
+  "opens": "2027",
+  "courses": [
+    {
+      "id": "l2-hairdressing",
+      "level": 2,
+      "en": "Level 2 Hairdressing",
+      "cy": "Trin Gwallt Lefel 2"
+    },
+    {
+      "id": "l2-barbering",
+      "level": 2,
+      "en": "Level 2 Barbering",
+      "cy": "Barbro Lefel 2"
+    },
+    {
+      "id": "l3-hairdressing",
+      "level": 3,
+      "en": "Level 3 Hairdressing",
+      "cy": "Trin Gwallt Lefel 3"
+    },
+    {
+      "id": "cpd",
+      "level": null,
+      "en": "CPD masterclasses",
+      "cy": "Dosbarthiadau meistr DPP"
+    }
+  ],
+  "badges": [
+    {
+      "id": "qualification",
+      "en": "Qualification unit",
+      "cy": "Uned gymhwyster"
+    },
+    {
+      "id": "competition",
+      "en": "Competition entry",
+      "cy": "Cais cystadleuaeth"
+    }
+  ],
+  "pairs": []
+}

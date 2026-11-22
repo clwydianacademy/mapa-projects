@@ -484,6 +484,24 @@
     }
   },
   {
+    "key": "work",
+    "nav": "/work/",
+    "noindex": false,
+    "priority": "0.7",
+    "legal": "plain",
+    "generated": "showcase-work",
+    "en": {
+      "path": "/work/",
+      "title": "Learner Work: Before &amp; After Hair | Clwydian Academy, St Asaph",
+      "desc": "Before-and-after hair by the learners of Clwydian Academy in St Asaph, on real clients of the academy salon, by course and level. Opening 2027."
+    },
+    "cy": {
+      "path": "/cy/gwaith/",
+      "title": "Gwaith Dysgwyr: Gwallt Cyn ac Ar &Ocirc;l | Clwydian Academy, Llanelwy",
+      "desc": "Gwallt cyn ac ar &ocirc;l gan ddysgwyr Clwydian Academy yn Llanelwy, ar gleientiaid go iawn salon yr academi, fesul cwrs a lefel. Yn agor yn 2027."
+    }
+  },
+  {
     "key": "salon",
     "nav": "/salon/",
     "noindex": false,

@@ -85,6 +85,7 @@ BLOCK_RE = re.compile(rf"</?(?:{BLOCK})\b[^>]*>", re.I)
 
 SCANNED = (".html", ".md", ".txt", ".json", ".js", ".css", ".svg", ".xml", ".webmanifest")
 NAME_RE = re.compile(r"charlotte[\s._-]*eleanor", re.I)
+PHOTO_NAME_RE = re.compile(r"charlotte|eleanor|(?:^|[-_/])ce[-_]|logo|(?:^|[-_])mark(?:[-_.]|$)|franchise|^(?:hero|hero-mobile|band-|split-|svc-|tile-)", re.I)
 
 def text_of(html):
     """Whole-page text, tags stripped — used for the banned-phrase scan."""
@@ -107,6 +108,16 @@ def check(root):
             if NAME_RE.search(rel):          # every file, whatever its type: an image cannot be read, its name can
                 findings.append((rel, "BANNED", NAME_RE.search(rel).group(0),
                                  "arm's length — a file or folder named after the other business"))
+            # THE IMPORTED PHOTOGRAPHS (Mark, 20 Nov 2026) are allowed under their NEW names only.
+            # A photograph folder may hold nothing named for the other business, none of its
+            # logo or mark files, and none of the names the files had where they came from.
+            if "/assets/img/photos/" in rel or "/assets/img/work/" in rel:
+                m = PHOTO_NAME_RE.search(fn)
+                if m:
+                    findings.append((rel, "BANNED", m.group(0),
+                                     "arm's length — a photograph published under the other business's file name, or one of its logo or mark files"))
+                if fn.lower().endswith((".jpg", ".jpeg")) and b"Exif\x00\x00" in open(path, "rb").read(4096):
+                    findings.append((rel, "BANNED", "EXIF", "privacy — a published photograph still carries EXIF data (camera, date, possibly GPS)"))
             if not fn.endswith(SCANNED):
                 continue
             url = rel.replace("/index.html", "/")
