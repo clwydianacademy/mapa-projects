@@ -462,6 +462,13 @@ def build():
                 showcase.check_ld([ORG] + list(jsonld), page[loc]["path"])
             html = head(page, loc, jsonld) + "\n" + header(page, loc) + "\n" + body + footer(page, loc)
             if SHOWCASE_ON:
+                # Two accessibility faults in the shared chrome, put right with the showcase: the
+                # footer's headings skipped a level (h4 straight after h2; now h2), and the brand link's accessible
+                # name did not contain the words it shows.
+                foot = html.index('<footer class="site-footer">')
+                html = html[:foot] + html[foot:].replace("<h4>", '<h2 class="footer-h">').replace("</h4>", "</h2>")
+                html = html.replace(f'aria-label="{CHROME[loc]["home_label"]}"', 'aria-label="Clwydian Academy &middot; CBC &mdash; ' + ("home" if loc == "en" else "hafan") + '"')
+            if SHOWCASE_ON:
                 built[page[loc]["path"]] = html
             rel = out_path(page[loc]["path"])
             write(rel, html)

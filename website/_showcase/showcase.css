@@ -183,3 +183,6 @@
    The salon pages were given a teal accent of their own. With the showcase on, the salon is
    part of the academy and wears its colours: heather, navy, gold, paper. */
 :root { --salon: var(--heather); --salon-deep: var(--heather-deep); --salon-tint: var(--heather-tint); --salon-line: #8a7996; }
+
+/* The footer's column titles are h2 while the showcase is on (they were h4, skipping a level). */
+.footer-col .footer-h { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.15rem; line-height: 1.4; }
