@@ -3862,3 +3862,209 @@ LEARNER WORK (new /work/ + /cy/ mirror): gallery by course and level, before/aft
 4) Still TODO_PM, leave flagged: barbering prices, L2 treatment discount, durations, deposits, concessions, term dates, hours, address, registered office.
 
 Final report: what's done, test evidence, screenshots description, and anything you need from Mark.
+
+---
+
+## REPORT — highest-spec brief, website side (22 Nov 2026)
+
+Everything below is **behind a switch that is OFF** (`"public": false` in `_data/showcase.json`).
+With it off, `site/` is byte for byte what it was, apart from three lines added to the already
+unused `salon.css`. Look at it with `python3 website/_src/build.py --preview /some/folder`.
+
+### Done
+1. **Home page** (`/`, `/cy/`): a full-bleed hero that splits into three paths — Train with us,
+   Book the salon, See learner work — then the academy, the academy salon (four service tiles),
+   learner work ("Coming 2027" cards), Find us, and the towns served. Heather, paper, navy,
+   gold; Fraunces and Inter from our own origin. Reveals reuse the site's existing ones: visible
+   by default, faded in only once the script is running, off under reduced motion.
+2. **Photographs.** 15 imported from the public repository, renamed (`showcase-hero`,
+   `salon-colour-01` …), re-encoded from pixels alone (no EXIF or GPS), WebP + JPEG at 1x/2x
+   with width and height. I looked at every one: none shows a logo, van, uniform or signage.
+   `band-franchise`, `charlotte-at-work` and every logo and mark file were not imported. They are
+   kept in `website/_showcase/photos/`, **outside `site/`**, and copied in only when the switch
+   is on. Every one is marked `stock`; the build refuses alt text that calls one a learner's,
+   student's or client's work, and the home page says the photographs are illustrative.
+3. **Learner work** (`/work/`, `/cy/gwaith/`): by course and level, "Coming 2027" placeholders,
+   how work is photographed, what the badges mean, portfolios, the honesty rules. The
+   before-and-after slider is an ordinary range input (keyboard, touch, screen reader) and the
+   lightbox is a native dialog; without script a pair is two pictures side by side. **The build
+   refuses a pair** without `consentRef`, a real `consentDate`, `originalsKept`, `ownClient`,
+   `hairRetouched: false`, `afterOnlyEdited: false` — or with anybody's name. No pair exists yet.
+4. **One address**, in `_data/site.json`, feeding the footer, the HairSalon JSON-LD and Find us.
+   The unit and postcode are TODO_PM, so pages show "St Asaph Business Park, St Asaph, LL17" and
+   the JSON-LD carries locality and region only — no placeholder is ever printed.
+5. **HairSalon JSON-LD**: most specific type, no additionalType, no review or aggregateRating
+   (the build stops on any of them); geo, priceRange and term-dated opening hours
+   (validFrom/validThrough per term) are written only once their values are confirmed.
+6. **hreflang** en-GB / cy / x-default from the page registry, with a build check that fails on a
+   missing pair, a one-way pair, a wrong canonical or a shared path.
+7. **FAQs** stay as visible content; FAQPage markup is dropped from the five pages that had it.
+8. **Titles and descriptions** naming St Asaph, Rhyl, Rhuddlan, Bodelwyddan and Denbigh.
+9. **Price page**: "how this is calculated" beside every from-price and consultation price;
+   supervision, level and "total price, no fees at checkout" stated.
+10. **Statutory footer** on every page, EN and CY, from one value. The two values not yet known
+    are left out — and **the build refuses to make the showcase public while they are missing**.
+11. **Storage audit** (`docs/storage-audit.md`): no cookies, no storage, no trackers; with the
+    showcase on, no third-party font request either. No banner needed.
+12. Two accessibility faults in the shared header and footer fixed (showcase on only).
+
+### Gates
+- `scripts/test_showcase.py`: **14 passed** — each guard driven with bad input and seen to stop
+  the build (20 ways a pair is refused).
+- `scripts/test_salon_pages.js` 15 passed · `scripts/test_enquiry.js` 23 passed.
+- On the preview: check_claims clean (81 files), check_links 0 broken, check_locale, check_dates
+  and check_forms clean. On `site/` (switch off): all five clean, and unchanged.
+- Browser: 7 pages x 8 widths (320 to 1920px) — no horizontal overflow, no console errors, no
+  failed requests, no third-party requests.
+- Lighthouse (mobile profile, local preview): home 98 / 100 / 100 / 100, `/cy/` the same,
+  `/work/` 100 / 100 / 100 / 100. The price page scores 69 on SEO only because it is noindex
+  while prices are unconfirmed — deliberate.
+
+### Brief against CLAUDE.md
+- CLAUDE.md says the footer stays as Mark decided on 11 Sep "without a new instruction from
+  Mark". The 20 Nov brief is that instruction; the new footer is built only with the switch on.
+- CLAUDE.md says to take "part of the United Kingdom" verbatim from Companies House and never
+  infer it. The register could not be reached from here, so the value is TODO_PM and blocks the
+  switch. **Not inferred.**
+- `/funding/` on the live site still prints the residential registered office (the 11 Sep
+  decision). With the showcase on it no longer does. With it off, nothing changes.
+
+### NOT DONE
+- Learner portfolios are described, not built: there are no learners and no consent forms yet.
+- No WCAG audit by a person; automated checks only.
+- Lighthouse was run on a local server, not on Vercel.
+- The nav now has nine items; the menu button stays until 1560px wide. A shorter nav is a
+  decision about what to drop.
+
+### NEEDS A HUMAN
+1. **Licence or written permission for the 15 photographs** (TODO_PM in `_data/photos.json`).
+2. **Companies House wording** and **the registered office** — both block the switch.
+3. Unit number, postcode and map pin; parking; the public-transport line (drafted from a map).
+4. Whether the home headline is right: "Train here. Be styled here. See the work."
+
+### WELSH FOR REVIEW
+Machine-written, unreviewed. In `website/_src/showcase.py`, `_data/photos.json`,
+`_data/site.json`, `_data/work.json` and six new entries in `website/_src/salon.py`.
+
+| English | Welsh (machine-written) |
+|---|---|
+| St Asaph &middot; North Wales | Llanelwy &middot; Gogledd Cymru |
+| <span>Train here.</span> <span>Be styled here.</span> <span>See the work.</span> | <span>Hyfforddwch yma.</span> <span>Cewch eich steilio yma.</span> <span>Gwelwch y gwaith.</span> |
+| A hairdressing and barbering academy, the training salon inside it, and the work its learners produce &mdash; under one roof in St Asaph. | Academi trin gwallt a barbro, y salon hyfforddi y tu mewn iddi, a&rsquo;r gwaith y mae ei dysgwyr yn ei gynhyrchu &mdash; dan un to yn Llanelwy. |
+| Three ways in | Tair ffordd i mewn |
+| The academy | Yr academi |
+| Train with us | Hyfforddwch gyda ni |
+| Hairdressing and barbering diplomas, CPD and apprenticeships. | Diplomâu trin gwallt a barbro, DPP a phrentisiaethau. |
+| The academy salon | Salon yr academi |
+| Book the salon | Archebu&rsquo;r salon |
+| Cuts and colour by supervised learners, at learner prices. | Torri a lliwio gan ddysgwyr dan oruchwyliaeth, am brisiau dysgwyr. |
+| Learner work | Gwaith dysgwyr |
+| See learner work | Gweld gwaith dysgwyr |
+| Before and after, by course and by level. Opening 2027. | Cyn ac ar &ocirc;l, fesul cwrs a fesul lefel. Yn agor yn 2027. |
+| The academy | Yr academi |
+| A working salon is the classroom | Salon go iawn yw&rsquo;r ystafell ddosbarth |
+| Learners at Clwydian Academy train on the salon floor from the start: real clients, real appointments, and a qualified educator beside them who checks each stage before the next one begins. | Mae dysgwyr Clwydian Academy yn hyfforddi ar lawr y salon o&rsquo;r cychwyn: cleientiaid go iawn, apwyntiadau go iawn, ac addysgwr cymwysedig wrth eu hymyl sy&rsquo;n gwirio pob cam cyn i&rsquo;r nesaf ddechrau. |
+| We teach NVQ diplomas in hairdressing and barbering, CPD masterclasses for working stylists, and apprenticeships with salons across North Wales. | Rydym yn addysgu diplomâu NVQ mewn trin gwallt a barbro, dosbarthiadau meistr DPP i steilwyr sy&rsquo;n gweithio, a phrentisiaethau gyda salonau ledled Gogledd Cymru. |
+| See the courses | Gweld y cyrsiau |
+| Apprenticeships | Prentisiaethau |
+| The academy salon | Salon yr academi |
+| Good hair, patiently done | Gwallt da, wedi&rsquo;i wneud yn amyneddgar |
+| Every appointment in our salon is carried out by a Level&nbsp;2 or Level&nbsp;3 learner. A qualified educator supervises throughout and checks the work at each stage. | Mae pob apwyntiad yn ein salon yn cael ei gynnal gan ddysgwr Lefel&nbsp;2 neu Lefel&nbsp;3. Mae addysgwr cymwysedig yn goruchwylio drwy gydol yr amser ac yn gwirio&rsquo;r gwaith ar bob cam. |
+| It takes longer than a high-street salon, and it costs less. You choose the level when you book, and you see the price and the time to allow before you confirm. Adults only, in term time. | Mae&rsquo;n cymryd mwy o amser na salon ar y stryd fawr, ac mae&rsquo;n costio llai. Chi sy&rsquo;n dewis y lefel wrth archebu, a byddwch yn gweld y pris a&rsquo;r amser i&rsquo;w ganiat&aacute;u cyn cadarnhau. Oedolion yn unig, yn ystod y tymor. |
+| Prices by learner level | Prisiau fesul lefel dysgwr |
+| About the salon | Am y salon |
+| Cutting and styling | Torri a steilio |
+| Colour | Lliw |
+| Styling and finishing | Steilio a gorffen |
+| Gents and barbering | Dynion a barbro |
+| The photographs on this page are for illustration. They are not the work of academy learners &mdash; that work will appear on the learner work page, with each person&rsquo;s signed consent. | Mae&rsquo;r ffotograffau ar y dudalen hon at ddibenion darlunio. Nid gwaith dysgwyr yr academi ydynt &mdash; bydd y gwaith hwnnw&rsquo;n ymddangos ar dudalen gwaith y dysgwyr, gyda chaniat&acirc;d llofnodedig pob person. |
+| Learner work | Gwaith dysgwyr |
+| The proof is in the before and after | Mae&rsquo;r prawf yn y cyn ac ar &ocirc;l |
+| From 2027 this is where our learners&rsquo; work will be shown: real clients of the academy salon, photographed before and after, unretouched, by course and by level. | O 2027 ymlaen, dyma lle bydd gwaith ein dysgwyr yn cael ei ddangos: cleientiaid go iawn salon yr academi, wedi&rsquo;u tynnu cyn ac ar &ocirc;l, heb eu hatgyffwrdd, fesul cwrs a fesul lefel. |
+| How the gallery will work | Sut bydd yr oriel yn gweithio |
+| Coming 2027 | Yn dod yn 2027 |
+| The first learner work will appear here when the salon opens. | Bydd gwaith cyntaf y dysgwyr yn ymddangos yma pan fydd y salon yn agor. |
+| Find us | Dod o hyd i ni |
+| St Asaph Business Park | Parc Busnes Llanelwy |
+| Contact us | Cysylltu &acirc; ni |
+| By road | Ar y ffordd |
+| Parking | Parcio |
+| Public transport | Trafnidiaeth gyhoeddus |
+| The unit number and full postcode will be added here once they are confirmed. | Bydd rhif yr uned a&rsquo;r cod post llawn yn cael eu hychwanegu yma ar &ocirc;l eu cadarnhau. |
+| Our learners and clients come from St Asaph, Rhyl, Rhuddlan, Bodelwyddan, Denbigh and across North Wales. | Daw ein dysgwyr a&rsquo;n cleientiaid o Lanelwy, y Rhyl, Rhuddlan, Bodelwyddan, Dinbych a ledled Gogledd Cymru. |
+| Learner work | Gwaith dysgwyr |
+| Hair by the learners of Clwydian Academy, on real clients of the academy salon &mdash; shown before and after, by course and by level. | Gwallt gan ddysgwyr Clwydian Academy, ar gleientiaid go iawn salon yr academi &mdash; wedi&rsquo;i ddangos cyn ac ar &ocirc;l, fesul cwrs a fesul lefel. |
+| Learner work | Gwaith dysgwyr |
+| Browse by course | Pori fesul cwrs |
+| All courses | Pob cwrs |
+| Level | Lefel |
+| For working stylists | I steilwyr sy&rsquo;n gweithio |
+| Coming 2027 | Yn dod yn 2027 |
+| Work from this course will appear here once its first learners are in the salon. | Bydd gwaith o&rsquo;r cwrs hwn yn ymddangos yma unwaith y bydd ei ddysgwyr cyntaf yn y salon. |
+| Before | Cyn |
+| After | Ar &ocirc;l |
+| Slide to compare before and after | Llithrwch i gymharu cyn ac ar &ocirc;l |
+| Half before, half after | Hanner cyn, hanner ar &ocirc;l |
+| View larger | Gweld yn fwy |
+| Close | Cau |
+| Before and after, honestly | Cyn ac ar &ocirc;l, yn onest |
+| Every person shown is a client of our own salon who has given signed, dated consent for these photographs to be used. | Mae pob person a ddangosir yn gleient i&rsquo;n salon ni ein hunain sydd wedi rhoi caniat&acirc;d llofnodedig, wedi&rsquo;i ddyddio, i&rsquo;r ffotograffau hyn gael eu defnyddio. |
+| The hair is never retouched &mdash; not in the before, and not in the after. | Nid yw&rsquo;r gwallt byth yn cael ei atgyffwrdd &mdash; nid yn y llun cyn, nac yn y llun ar &ocirc;l. |
+| Nothing is done to the after picture that is not done to the before: same crop, same light correction, or none. | Ni wneir dim i&rsquo;r llun ar &ocirc;l nad yw&rsquo;n cael ei wneud i&rsquo;r llun cyn: yr un tocio, yr un cywiriad golau, neu ddim o gwbl. |
+| We keep the original, untouched files for every picture we publish. | Rydym yn cadw&rsquo;r ffeiliau gwreiddiol, heb eu cyffwrdd, ar gyfer pob llun a gyhoeddwn. |
+| No learner is named. Work is shown by course and level, not by person. | Nid oes unrhyw ddysgwr yn cael ei enwi. Dangosir gwaith fesul cwrs a lefel, nid fesul person. |
+| How the work is photographed | Sut mae&rsquo;r gwaith yn cael ei dynnu |
+| The same chair, the same wall and the same light for both pictures. | Yr un gadair, yr un wal a&rsquo;r un golau ar gyfer y ddau lun. |
+| Dry hair, front, side and back, at eye level. | Gwallt sych, o&rsquo;r tu blaen, o&rsquo;r ochr ac o&rsquo;r cefn, ar lefel y llygad. |
+| The before is taken at the consultation, before anything is done. | Tynnir y llun cyn yn yr ymgynghoriad, cyn i unrhyw beth gael ei wneud. |
+| No filters, no ring-light glare, no smoothing. | Dim hidlwyr, dim llacharedd golau cylch, dim llyfnhau. |
+| What the badges mean | Beth mae&rsquo;r bathodynnau&rsquo;n ei olygu |
+| The work was assessed as part of a qualification unit. | Aseswyd y gwaith fel rhan o uned gymhwyster. |
+| The work was entered in a competition. | Cyflwynwyd y gwaith mewn cystadleuaeth. |
+| A portfolio for every learner | Portffolio i bob dysgwr |
+| Each learner builds a private portfolio of their own work as they train, to take to interviews and into employment. Only work with the client&rsquo;s consent is shown here, and never under the learner&rsquo;s name. | Mae pob dysgwr yn adeiladu portffolio preifat o&rsquo;i waith ei hun wrth hyfforddi, i fynd ag ef i gyfweliadau ac i gyflogaeth. Dim ond gwaith gyda chaniat&acirc;d y cleient a ddangosir yma, a byth dan enw&rsquo;r dysgwr. |
+| Would you like your hair done by a learner? | Hoffech chi i ddysgwr wneud eich gwallt? |
+| Appointments are supervised by a qualified educator and priced by the learner&rsquo;s level. | Mae apwyntiadau dan oruchwyliaeth addysgwr cymwysedig ac wedi&rsquo;u prisio yn &ocirc;l lefel y dysgwr. |
+| Hairdressing Academy &amp; Training Salon in St Asaph / Clwydian Academy | Academi Trin Gwallt a Salon Hyfforddi yn Llanelwy / Clwydian Academy |
+| A hairdressing and barbering academy in St Asaph with its own training salon, for learners and clients from Rhyl, Rhuddlan, Bodelwyddan, Denbigh and across North Wales. | Academi trin gwallt a barbro yn Llanelwy gyda&rsquo;i salon hyfforddi ei hun, i ddysgwyr a chleientiaid o&rsquo;r Rhyl, Rhuddlan, Bodelwyddan, Dinbych a ledled Gogledd Cymru. |
+| Hairdresser &amp; Barber in St Asaph / Clwydian Academy Salon | Triniwr Gwallt a Barbwr yn Llanelwy / Salon Clwydian Academy |
+| Cuts, colour and barbering by supervised learners at learner prices, in term time, at St Asaph Business Park &mdash; a short drive from Rhyl, Rhuddlan, Bodelwyddan and Denbigh. | Torri, lliwio a barbro gan ddysgwyr dan oruchwyliaeth am brisiau dysgwyr, yn ystod y tymor, ym Mharc Busnes Llanelwy &mdash; taith fer o&rsquo;r Rhyl, Rhuddlan, Bodelwyddan a Dinbych. |
+| Hair Salon Prices by Learner Level, St Asaph / Clwydian Academy Salon | Prisiau Salon Gwallt fesul Lefel Dysgwr, Llanelwy / Salon Clwydian Academy |
+| What a cut or colour costs with a Level 2 or Level 3 learner at the Clwydian Academy salon in St Asaph, how long to allow, and how each price is worked out. | Faint mae torri neu liwio&rsquo;n ei gostio gyda dysgwr Lefel 2 neu Lefel 3 yn salon Clwydian Academy yn Llanelwy, faint o amser i&rsquo;w ganiat&aacute;u, a sut y cyfrifir pob pris. |
+| Learner Work: Before &amp; After Hair / Clwydian Academy, St Asaph | Gwaith Dysgwyr: Gwallt Cyn ac Ar &Ocirc;l / Clwydian Academy, Llanelwy |
+| Before-and-after hair by the learners of Clwydian Academy in St Asaph, on real clients of the academy salon, by course and level. Opening 2027. | Gwallt cyn ac ar &ocirc;l gan ddysgwyr Clwydian Academy yn Llanelwy, ar gleientiaid go iawn salon yr academi, fesul cwrs a lefel. Yn agor yn 2027. |
+| A sharp jaw-length bob with a full fringe, in glossy black | Bob miniog at yr ên gyda rhimyn llawn, mewn du sgleiniog |
+| A sharp jaw-length bob with a full fringe, in glossy black | Bob miniog at yr ên gyda rhimyn llawn, mewn du sgleiniog |
+| Four finished looks side by side: long dark curls, a blonde bob, straight copper lengths and tousled platinum waves | Pedwar steil gorffenedig ochr yn ochr: cyrls hir tywyll, bob melyn, hyd syth lliw copr a thonnau platinwm blêr |
+| Long copper-brown hair set in glossy brushed-out waves, seen from behind, with a hairdryer held beside it | Gwallt hir brown-gopr wedi'i osod mewn tonnau sgleiniog, o'r cefn, gyda sychwr gwallt wrth ei ymyl |
+| A man's textured quiff with short tapered sides and a neatly shaped beard | Cwiff gweadog dyn gydag ochrau byr wedi'u tapro a barf wedi'i siapio'n daclus |
+| Long auburn hair in soft, loose curls | Gwallt hir browngoch mewn cyrls meddal, llac |
+| Long blonde hair being lifted and shaken out into loose waves at a styling station | Gwallt hir melyn yn cael ei godi a'i ysgwyd yn donnau llac wrth orsaf steilio |
+| Lightener being brushed onto a fine section of hair laid on foil | Goleuydd yn cael ei frwsio ar ddarn main o wallt wedi'i osod ar ffoil |
+| A section of highlighted hair being wound round a curling wand | Darn o wallt wedi'i oleuo yn cael ei weindio o amgylch ffon gyrlio |
+| Scissors cutting a combed section of hair held between two fingers | Siswrn yn torri darn o wallt wedi'i gribo a'i ddal rhwng dau fys |
+| A scissor-over-comb cut on a man's slicked-back hair, with a trimmed beard | Toriad siswrn-dros-grib ar wallt dyn wedi'i gribo'n ôl, gyda barf wedi'i thrimio |
+| Waist-length copper-brown waves, seen from behind | Tonnau brown-gopr at y canol, o'r cefn |
+| A chin-length bob in cool blonde with a darker root | Bob at yr ên mewn melyn oer gyda gwreiddyn tywyllach |
+| A blunt platinum bob with a heavy fringe, in black and white | Bob platinwm di-fin gyda rhimyn trwm, mewn du a gwyn |
+| Short copper hair in tight, defined curls | Gwallt byr lliw copr mewn cyrls tynn, diffiniedig |
+| a community interest company and a limited company | gwmni buddiant cymunedol ac yn gwmni cyfyngedig |
+| Unit N, St Asaph Business Park, Ffordd Richard Davies, St Asaph, LL17 0LJ | Uned N, Parc Busnes Llanelwy, Ffordd Richard Davies, Llanelwy, LL17 0LJ |
+| St Asaph Business Park, St Asaph, LL17 | Parc Busnes Llanelwy, Llanelwy, LL17 |
+| By road, leave the A55 North Wales Expressway at junction 26, signed for St Asaph Business Park. The park is beside the junction. | Ar y ffordd, gadewch Wibffordd Gogledd Cymru yr A55 wrth gyffordd 26, sydd ag arwyddion i Barc Busnes Llanelwy. Mae’r parc wrth ymyl y gyffordd. |
+| Parking at the unit is to be confirmed. | Mae’r trefniadau parcio wrth yr uned i’w cadarnhau. |
+| The business park is on the edge of St Asaph, around a mile and a half from the city centre, and bus services to it are limited. Please check Traveline Cymru for current times before you rely on a bus. The nearest railway station is Rhyl. | Mae’r parc busnes ar gyrion Llanelwy, tua milltir a hanner o ganol y ddinas, ac mae’r gwasanaethau bws iddo yn gyfyngedig. Gwiriwch Traveline Cymru am yr amseroedd cyfredol cyn dibynnu ar fws. Yr orsaf reilffordd agosaf yw’r Rhyl. |
+| Level 2 Hairdressing | Trin Gwallt Lefel 2 |
+| Level 2 Barbering | Barbro Lefel 2 |
+| Level 3 Hairdressing | Trin Gwallt Lefel 3 |
+| CPD masterclasses | Dosbarthiadau meistr DPP |
+| Qualification unit | Uned gymhwyster |
+| Competition entry | Cais cystadleuaeth |
+| How this is calculated | Sut y cyfrifir hyn |
+| How a price is calculated | Sut y cyfrifir pris |
+| A &ldquo;from&rdquo; price is the lowest price for that service. Your own price depends on the length and thickness of your hair, which you tell us when you book. The exact price for you is shown before you choose a time, and before you pay anything. | Pris &ldquo;o&rdquo; yw&rsquo;r pris isaf am y gwasanaeth hwnnw. Mae eich pris chi&rsquo;n dibynnu ar hyd a thrwch eich gwallt, y byddwch yn dweud wrthym amdanynt wrth archebu. Dangosir yr union bris i chi cyn i chi ddewis amser, a chyn i chi dalu dim. |
+| Where a service starts with a free consultation, an educator looks at your hair first and gives you a fixed price before any work begins. The consultation costs nothing and you are free to say no. | Lle mae gwasanaeth yn dechrau gydag ymgynghoriad am ddim, bydd addysgwr yn edrych ar eich gwallt yn gyntaf ac yn rhoi pris pendant i chi cyn i unrhyw waith ddechrau. Nid yw&rsquo;r ymgynghoriad yn costio dim ac mae croeso i chi wrthod. |
+| Every price here is the total price. There is no booking fee and nothing is added at checkout. The deposit you pay when you book is part of that price, not an extra. | Pob pris yma yw&rsquo;r cyfanswm. Nid oes ffi archebu ac ni ychwanegir dim wrth dalu. Mae&rsquo;r blaendal a dalwch wrth archebu yn rhan o&rsquo;r pris hwnnw, nid yn ychwanegol. |
+| All work is done by learners and supervised by a qualified educator, who checks it at each stage. A Level 2 learner is earlier in training, so the price is lower and the appointment is longer; a Level 3 learner is further on. | Gwneir yr holl waith gan ddysgwyr dan oruchwyliaeth addysgwr cymwysedig, sy&rsquo;n ei wirio ar bob cam. Mae dysgwr Lefel 2 yn gynharach yn ei hyfforddiant, felly mae&rsquo;r pris yn is a&rsquo;r apwyntiad yn hirach; mae dysgwr Lefel 3 ymhellach ymlaen. |
+| Learner Work (nav) | Gwaith Dysgwyr |
+| X is … , registered in Y. Company number N. Registered office: Z. | Mae X yn … , wedi’i gofrestru yn Y. Rhif cwmni N. Swyddfa gofrestredig: Z. |
