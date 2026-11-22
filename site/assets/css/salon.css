@@ -45,3 +45,7 @@
 .salon-na { color: var(--muted); }
 
 .salon-draft { border-style: dashed; }
+
+/* "How this is calculated", beside a from-price or a consultation price. */
+.salon-how { display: block; margin-top: .2rem; }
+.salon-how a { font-weight: 600; }

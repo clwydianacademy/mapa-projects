@@ -155,6 +155,16 @@ T = {'tbc': {'en': 'To be confirmed', 'cy': 'I&rsquo;w gadarnhau'},
              'cy': 'Drafft yw&rsquo;r amseroedd, y blaendaliadau a&rsquo;r consesiwn a ddangosir yma ac nid ydynt wedi&rsquo;u cadarnhau. Gallant newid cyn i&rsquo;r '
                    'salon agor.'},
  'from': {'en': 'from', 'cy': 'o'},
+ 'how_link': {'en': 'How this is calculated', 'cy': 'Sut y cyfrifir hyn'},
+ 'how_h': {'en': 'How a price is calculated', 'cy': 'Sut y cyfrifir pris'},
+ 'how_from': {'en': 'A &ldquo;from&rdquo; price is the lowest price for that service. Your own price depends on the length and thickness of your hair, which you tell us when you book. The exact price for you is shown before you choose a time, and before you pay anything.',
+              'cy': 'Pris &ldquo;o&rdquo; yw&rsquo;r pris isaf am y gwasanaeth hwnnw. Mae eich pris chi&rsquo;n dibynnu ar hyd a thrwch eich gwallt, y byddwch yn dweud wrthym amdanynt wrth archebu. Dangosir yr union bris i chi cyn i chi ddewis amser, a chyn i chi dalu dim.'},
+ 'how_consult': {'en': 'Where a service starts with a free consultation, an educator looks at your hair first and gives you a fixed price before any work begins. The consultation costs nothing and you are free to say no.',
+                 'cy': 'Lle mae gwasanaeth yn dechrau gydag ymgynghoriad am ddim, bydd addysgwr yn edrych ar eich gwallt yn gyntaf ac yn rhoi pris pendant i chi cyn i unrhyw waith ddechrau. Nid yw&rsquo;r ymgynghoriad yn costio dim ac mae croeso i chi wrthod.'},
+ 'how_total': {'en': 'Every price here is the total price. There is no booking fee and nothing is added at checkout. The deposit you pay when you book is part of that price, not an extra.',
+               'cy': 'Pob pris yma yw&rsquo;r cyfanswm. Nid oes ffi archebu ac ni ychwanegir dim wrth dalu. Mae&rsquo;r blaendal a dalwch wrth archebu yn rhan o&rsquo;r pris hwnnw, nid yn ychwanegol.'},
+ 'how_level': {'en': 'All work is done by learners and supervised by a qualified educator, who checks it at each stage. A Level 2 learner is earlier in training, so the price is lower and the appointment is longer; a Level 3 learner is further on.',
+               'cy': 'Gwneir yr holl waith gan ddysgwyr dan oruchwyliaeth addysgwr cymwysedig, sy&rsquo;n ei wirio ar bob cam. Mae dysgwr Lefel 2 yn gynharach yn ei hyfforddiant, felly mae&rsquo;r pris yn is a&rsquo;r apwyntiad yn hirach; mae dysgwr Lefel 3 ymhellach ymlaen.'},
  'time_tbc': {'en': 'time to be confirmed', 'cy': 'amser i&rsquo;w gadarnhau'},
  'consult_note': {'en': 'Free consultation first', 'cy': 'Ymgynghoriad am ddim yn gyntaf'},
  'hair_h': {'en': 'What your hair adds', 'cy': 'Beth mae eich gwallt yn ei ychwanegu'},
@@ -409,6 +419,8 @@ def prices_body(loc, site):
             if s.get("consultation_first"): notes.append(t("consult_note", loc))
             if s.get("patch_test"): notes.append(t("patch_note", loc))
             note = f'<small>{" &middot; ".join(notes)}</small>' if notes else ""
+            # Beside every "from" price and every consultation price: how it is worked out.
+            how = f'<small class="salon-how"><a href="#how">{t("how_link", loc)}</a></small>' if (s.get("price_from") or s.get("consultation_first")) else ""
             priced = printable(s["stylist_price"])
             frm = t("from", loc) + " " if s.get("price_from") else ""
             # Level 2: not offered for a Level 3 service; "to be confirmed" where the price or its rule is undecided
@@ -417,8 +429,8 @@ def prices_body(loc, site):
             elif not priced or s.get("l2_rule_confirmed") is False:
                 c2 = f'<td><b>{t("tbc", loc)}</b></td>'
             else:
-                c2 = f'<td><b>{money(l2_price(p, s))}</b>{time(s, "l2")}</td>'
-            c3 = f'<td><b>{frm}{money(l3_price(s))}</b>{time(s, "l3")}</td>' if priced else f'<td><b>{t("tbc", loc)}</b></td>'
+                c2 = f'<td><b>{frm}{money(l2_price(p, s))}</b>{time(s, "l2")}{how}</td>'
+            c3 = f'<td><b>{frm}{money(l3_price(s))}</b>{time(s, "l3")}{how}</td>' if priced else f'<td><b>{t("tbc", loc)}</b></td>'
             rows.append(f'<tr><th scope="row">{esc(s["name"][loc])}{note}</th>{c2}{c3}</tr>')
         if rows:
             sections.append(f"""<h2 class="salon-h2 mt-3">{esc(gname[loc])}</h2>
@@ -440,6 +452,11 @@ def prices_body(loc, site):
     {notice}
     {draft_notice(loc)}
     {"".join(sections)}
+    <h2 class="salon-h2 mt-3" id="how">{t("how_h", loc)}</h2>
+    <p class="mt-1 measure">{t("how_level", loc)}</p>
+    <p class="mt-1 measure">{t("how_from", loc)}</p>
+    <p class="mt-1 measure">{t("how_consult", loc)}</p>
+    <p class="mt-1 measure">{t("how_total", loc)}</p>
     <h2 class="salon-h2 mt-3">{t("hair_h", loc)}</h2>
     <p class="mt-1 measure">{t("hair_p", loc)}</p>
     <h2 class="salon-h2 mt-3">{t("conc_h", loc)}</h2>

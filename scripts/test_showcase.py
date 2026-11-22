@@ -204,6 +204,22 @@ def t_preview_work():
         assert '<dialog class="sc-lightbox"' in h
     assert "/work/" in read("sitemap.xml") and "/cy/gwaith/" in read("sitemap.xml")
 
+def t_prices():
+    for rel in ("salon/prices/index.html", "cy/salon/prisiau/index.html"):
+        h = read(rel)
+        assert 'id="how"' in h, f"{rel}: no explanation of how a price is calculated"
+        cells = re.findall(r"<td>.*?</td>", h, re.S)
+        froms = [c for c in cells if re.search(r"<b>(?:from|o) &pound;", c)]
+        assert froms, f"{rel}: fixture moved — no from-price on the page"
+        for c in froms:
+            assert 'class="salon-how"><a href="#how">' in c, f"{rel}: a from-price has no 'how this is calculated' beside it: {c[:90]}"
+        for row in re.findall(r"<tr><th scope=\"row\">.*?</tr>", h, re.S):
+            if "consultation first" in row or "Ymgynghoriad am ddim" in row:
+                priced = [c for c in re.findall(r"<td>.*?</td>", row, re.S) if "&pound;" in c]
+                assert all("salon-how" in c for c in priced), f"{rel}: a consultation price has no note beside it"
+        assert re.search(r"supervised by a qualified educator|dan oruchwyliaeth addysgwr cymwysedig", h), f"{rel}: supervision is not stated"
+        assert re.search(r"no booking fee and nothing is added at checkout|Nid oes ffi archebu", h), f"{rel}: the total-price statement is missing"
+
 def t_photos():
     d = os.path.join(PREVIEW, "assets", "img", "photos")
     files = sorted(os.listdir(d))
@@ -244,6 +260,7 @@ for name, fn in [
     ("preview: every page carries the statutory line and no FAQPage, review markup or third-party font", t_preview_every_page),
     ("preview: HairSalon carries only confirmed values; one address feeds footer and JSON-LD", t_preview_salon_ld),
     ("preview: the learner-work page has four courses, placeholders, no pair, and is in the sitemap", t_preview_work),
+    ("prices: every from-price and consultation price has 'how this is calculated' beside it; supervision and total price stated", t_prices),
     ("photographs: 66 files, renamed, no EXIF; the linter fails on an old name and on EXIF", t_photos),
     ("switch off: the deployed folder holds nothing of the showcase", t_off),
 ]:
