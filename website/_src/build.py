@@ -89,6 +89,13 @@ def nav_items():
     at = next(i for i, item in enumerate(NAV) if item["en"][0] == "/for-salons/") + 1
     return NAV[:at] + [SALON_NAV] + NAV[at:]
 
+HEADING_FIX = {
+    "cpd-courses": {"en": "The courses", "cy": "Y cyrsiau"},
+    "guides": {"en": "The guides", "cy": "Y canllawiau"},
+    "train-your-team": {"en": "The units", "cy": "Yr unedau"},
+    "privacy": {"en": "The notice in full", "cy": "Yr hysbysiad yn llawn"},
+}
+
 def is_showcase(page):
     return str(page.get("generated") or "").startswith("showcase")
 
@@ -425,6 +432,7 @@ def build():
             sys.exit("build: the showcase cannot be public: _data/site.json legal." + ", legal.".join(missing)
                      + " is still TODO_PM — the trading disclosure would be incomplete on every page")
         showcase.copy_assets(OUT)
+        pages += showcase.portfolio_pages(preview=PREVIEW)     # /work/<slug>/, one pair of pages per learner portfolio
     else:
         showcase.remove_assets(OUT)
     for page in pages:
@@ -449,8 +457,10 @@ def build():
                     except OSError: pass
                     print("removed (showcase not public)", out_path(page[loc]["path"]))
                 continue
-            if is_showcase(page):
-                body, jsonld = showcase.work_body(loc, SITE), []
+            if page.get("generated") == "showcase-portfolio":
+                body, jsonld = showcase.portfolio_body(page["slug"], loc, SITE, preview=PREVIEW), []
+            elif is_showcase(page):
+                body, jsonld = showcase.work_body(loc, SITE, preview=PREVIEW), []
             elif SHOWCASE_ON and page["key"] == "home":
                 body = showcase.home_body(loc, SITE)
                 jsonld = json.loads(read("jsonld", loc, "home.json"))
@@ -469,6 +479,13 @@ def build():
                 if "{{" in raw_ld:                             # tokens in structured data render as plain text, not entities
                     raw_ld = html_mod.unescape(cpd.render(raw_ld, loc))
                 jsonld = json.loads(raw_ld)
+            if SHOWCASE_ON and page["key"] in HEADING_FIX and "<h3" in body:
+                # These pages go from their h1 straight to h3 cards. With the showcase on, the
+                # section that holds them is given the h2 it lacked — read by a screen reader,
+                # not drawn — so the outline has no gap (axe: heading-order).
+                at = body.rfind("<section", 0, body.index("<h3"))
+                end = body.index(">", at) + 1
+                body = body[:end] + f'\n  <h2 class="sc-sr">{HEADING_FIX[page["key"]][loc]}</h2>' + body[end:]
             if "<!-- cpd-dates -->" in body:
                 body = body.replace("<!-- cpd-dates -->", cpd.date_rows(loc, page))
                 jsonld = cpd.enrich(jsonld, loc, page)
@@ -483,8 +500,8 @@ def build():
             if PREVIEW:
                 # A PREVIEW SAYS SO, on every page, so nobody mistakes it for the live site —
                 # or mistakes the live site for it.
-                ribbon = ('<p class="sc-preview" role="note">Preview build &middot; showcase and salon switched on &middot; not the live site'
-                          + (" &middot; " + VERCEL_REF if VERCEL_REF else "") + "</p>")
+                ribbon = ('<aside class="sc-preview" aria-label="Preview">Preview build &middot; showcase and salon switched on &middot; not the live site'
+                          + (" &middot; " + VERCEL_REF if VERCEL_REF else "") + "</aside>")
                 html = html.replace('<a class="skip-link"', ribbon + '\n<a class="skip-link"', 1)
             if SHOWCASE_ON:
                 # Two accessibility faults in the shared chrome, put right with the showcase: the

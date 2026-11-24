@@ -196,7 +196,49 @@ PAIR_ID = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 LOOKS_LIKE_A_NAME = re.compile(r"\b(by|gan)\s+[A-Z][a-z]+", re.U)
 
 
-def validate_pairs(work, today=None, files=None):
+SLUG = re.compile(r"^(?:sample-)?learner-[a-z0-9]{2,8}$")
+MONTH = re.compile(r"^\d{4}-(?:0[1-9]|1[0-2])$")
+
+
+def validate_portfolios(work, today=None, preview=False):
+    """A learner's portfolio page. No names — the slug is a code — and it is published only with the
+    learner's own signed, dated consent. SAMPLE data is for previews: a public build refuses it."""
+    today = today or datetime.date.today().isoformat()
+    course_ids = {c["id"] for c in work["courses"]}
+    badge_ids = {b["id"] for b in work["badges"]}
+    seen = set()
+    for i, pf in enumerate(work.get("portfolios", [])):
+        who = f"work.json: portfolio {pf.get('slug', '#' + str(i + 1))!r}"
+        def refuse(why):
+            sys.exit(f"showcase: {who} cannot be published — {why}")
+        slug = str(pf.get("slug", ""))
+        if not SLUG.match(slug): refuse("its slug must be 'learner-' and a code of 2 to 8 letters or digits (never a name)")
+        if slug in seen: refuse("its slug is used twice")
+        seen.add(slug)
+        if pf.get("sample") is True and not slug.startswith("sample-"): refuse("it is sample data, so its slug must start 'sample-'")
+        if slug.startswith("sample-") and pf.get("sample") is not True: refuse("a 'sample-' slug must be marked \"sample\": true")
+        if pf.get("sample") is True and not preview: refuse("it is SAMPLE data, which is built in previews only: remove it before the showcase is public")
+        if any(k in pf for k in ("name", "learner", "learnerName", "firstName", "surname")): refuse("it names a person: no learner names")
+        if not str(pf.get("consentRef", "")).strip(): refuse("it has no consentRef: the learner's own signed consent to a public portfolio")
+        date = str(pf.get("consentDate", ""))
+        try: datetime.date.fromisoformat(date)
+        except ValueError: refuse("its consentDate is not a date (YYYY-MM-DD)")
+        if date > today: refuse(f"its consentDate ({date}) is in the future")
+        if pf.get("course") not in course_ids: refuse(f"its course is not one of {sorted(course_ids)}")
+        if not MONTH.match(str(pf.get("started", ""))): refuse("'started' must be a month, YYYY-MM")
+        for a in pf.get("achievements", []):
+            if a.get("badge") not in badge_ids: refuse(f"an achievement's badge is not one of {sorted(badge_ids)}")
+            if not MONTH.match(str(a.get("date", ""))): refuse("an achievement's date must be a month, YYYY-MM")
+            for loc in ("en", "cy"):
+                if len(str(a.get(loc, ""))) < 6: refuse(f"an achievement has no {loc} wording")
+                if LOOKS_LIKE_A_NAME.search(a[loc]): refuse(f"an achievement's {loc} wording appears to name somebody")
+    for pair in work.get("pairs", []):
+        if pair.get("portfolio") and pair["portfolio"] not in seen:
+            sys.exit(f"showcase: work.json: pair {pair.get('id')!r} belongs to a portfolio that does not exist: {pair['portfolio']!r}")
+    return work.get("portfolios", [])
+
+
+def validate_pairs(work, today=None, files=None, preview=False):
     """Refuse a before-and-after pair that could not be stood behind. Returns the pairs.
 
     `files` is the set of file names available (defaults to what is in website/_showcase/work/)."""
@@ -231,8 +273,12 @@ def validate_pairs(work, today=None, files=None):
             if len(alt) < 12: refuse(f"it has no {loc} description of the hair")
             if LOOKS_LIKE_A_NAME.search(alt): refuse(f"its {loc} description appears to name somebody: no learner or client names")
         if any(k in pair for k in ("learner", "learnerName", "name", "client", "clientName")): refuse("it names a person: no learner or client names")
+        if pair.get("sample") is True:
+            if not preview: refuse("it is SAMPLE data, which is built in previews only: remove it before the showcase is public")
+            if not pair["id"].startswith("sample-") or pair.get("ext") != "svg": refuse("sample data must have an id starting 'sample-' and a drawn panel (ext 'svg'), never a photograph")
+        elif pair["id"].startswith("sample-") or pair.get("ext", "jpg") != "jpg": refuse("only sample data may be called 'sample-' or use a drawn panel")
         for side in ("before", "after"):
-            fn = f"{pair['id']}-{side}.jpg"
+            fn = f"{pair['id']}-{side}.{pair.get('ext', 'jpg')}"
             if fn not in files: refuse(f"{fn} is not in website/_showcase/work/")
         if not (isinstance(pair.get("width"), int) and isinstance(pair.get("height"), int)): refuse("it has no width and height (of both pictures, which must be the same size)")
     return work.get("pairs", [])
@@ -245,20 +291,22 @@ def pair_html(pair, work, loc):
     course = next(c for c in work["courses"] if c["id"] == pair["course"])
     badges = "".join(f'<span class="sc-badge">{next(b for b in work["badges"] if b["id"] == bid)[loc]}</span>' for bid in pair.get("badges", []))
     base = "/assets/img/work/" + pair["id"]
+    ext = pair.get("ext", "jpg")
+    sample = f'<span class="sc-badge sc-badge--sample">{s["sample"]}</span>' if pair.get("sample") else ""
     w, h = pair["width"], pair["height"]
     alt = salon.esc(pair["alt"][loc])
     return f'''<figure class="ba" data-ba data-course="{course["id"]}">
       <div class="ba-stage" style="aspect-ratio:{w}/{h}">
-        <img class="ba-img ba-after" src="{base}-after.jpg" width="{w}" height="{h}" alt="{s["after"]}: {alt}" loading="lazy" decoding="async">
-        <div class="ba-clip"><img class="ba-img ba-before" src="{base}-before.jpg" width="{w}" height="{h}" alt="{s["before"]}: {alt}" loading="lazy" decoding="async"></div>
+        <img class="ba-img ba-after" src="{base}-after.{ext}" width="{w}" height="{h}" alt="{s["after"]}: {alt}" loading="lazy" decoding="async">
+        <div class="ba-clip"><img class="ba-img ba-before" src="{base}-before.{ext}" width="{w}" height="{h}" alt="{s["before"]}: {alt}" loading="lazy" decoding="async"></div>
         <span class="ba-tag ba-tag--before" aria-hidden="true">{s["before"]}</span>
         <span class="ba-tag ba-tag--after" aria-hidden="true">{s["after"]}</span>
         <span class="ba-handle" aria-hidden="true"></span>
       </div>
       <label class="ba-label" for="ba-{pair["id"]}">{s["ba_label"]}</label>
       <input class="ba-range" id="ba-{pair["id"]}" type="range" min="0" max="100" value="50" step="1" aria-valuetext="{s["ba_half"]}" data-before="{s["before"]}" data-after="{s["after"]}">
-      <figcaption><span class="sc-badge sc-badge--course">{course[loc]}</span>{badges}
-        <a class="ba-zoom" href="{base}-after.jpg" data-lightbox data-caption="{alt}">{s["zoom"]}</a></figcaption>
+      <figcaption>{sample}<span class="sc-badge sc-badge--course">{course[loc]}</span>{badges}
+        <a class="ba-zoom" href="{base}-after.{ext}" data-lightbox data-caption="{alt}">{s["zoom"]}</a></figcaption>
     </figure>'''
 
 
@@ -306,6 +354,12 @@ S = {
         "w_level": "Level", "w_cpd": "For working stylists",
         "w_empty_h": "Coming 2027",
         "w_empty_p": "Work from this course will appear here once its first learners are in the salon.",
+        "sample": "Sample",
+        "sample_note": "This is sample data, made up to show how a portfolio page will work. It is not a real learner, the panels are not photographs, and it is not built on the public site.",
+        "pf_h1": "Learner portfolio", "pf_started": "training began", "pf_level": "learner",
+        "pf_ach_h": "Units and competitions", "pf_work_h": "Work", "pf_none": "No work has been added yet.",
+        "pf_consent": "This page is published with the learner&rsquo;s own consent, and each picture with the client&rsquo;s. Neither is named.",
+        "pf_back": "All learner work", "pf_list_h": "Learner portfolios", "pf_open": "Open portfolio",
         "before": "Before", "after": "After",
         "ba_label": "Slide to compare before and after",
         "ba_half": "Half before, half after",
@@ -368,6 +422,12 @@ S = {
         "w_level": "Lefel", "w_cpd": "I steilwyr sy&rsquo;n gweithio",
         "w_empty_h": "Yn dod yn 2027",
         "w_empty_p": "Bydd gwaith o&rsquo;r cwrs hwn yn ymddangos yma unwaith y bydd ei ddysgwyr cyntaf yn y salon.",
+        "sample": "Sampl",
+        "sample_note": "Data sampl yw hwn, wedi&rsquo;i greu i ddangos sut bydd tudalen bortffolio&rsquo;n gweithio. Nid dysgwr go iawn mohono, nid ffotograffau yw&rsquo;r paneli, ac nid yw&rsquo;n cael ei adeiladu ar y wefan gyhoeddus.",
+        "pf_h1": "Portffolio dysgwr", "pf_started": "dechreuodd yr hyfforddiant", "pf_level": "dysgwr",
+        "pf_ach_h": "Unedau a chystadlaethau", "pf_work_h": "Gwaith", "pf_none": "Nid oes gwaith wedi&rsquo;i ychwanegu eto.",
+        "pf_consent": "Cyhoeddir y dudalen hon gyda chaniat&acirc;d y dysgwr ei hun, a phob llun gyda chaniat&acirc;d y cleient. Nid yw&rsquo;r naill na&rsquo;r llall yn cael ei enwi.",
+        "pf_back": "Holl waith y dysgwyr", "pf_list_h": "Portffolios dysgwyr", "pf_open": "Agor y portffolio",
         "before": "Cyn", "after": "Ar &ocirc;l",
         "ba_label": "Llithrwch i gymharu cyn ac ar &ocirc;l",
         "ba_half": "Hanner cyn, hanner ar &ocirc;l",
@@ -520,10 +580,83 @@ def home_body(loc, site):
 # The learner-work page
 # ------------------------------------------------------------------------------------------------
 
-def work_body(loc, site):
+MONTHS_CY = ["Ionawr", "Chwefror", "Mawrth", "Ebrill", "Mai", "Mehefin", "Gorffennaf", "Awst", "Medi", "Hydref", "Tachwedd", "Rhagfyr"]
+MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+
+def month(ym, loc):
+    y, m = ym.split("-")
+    return f"{(MONTHS_EN if loc == 'en' else MONTHS_CY)[int(m) - 1]} {y}"
+
+
+def portfolio_path(slug, loc):
+    return f"{WORK[loc]}{slug}/"
+
+
+def portfolio_label(pf, work, loc):
+    """What a portfolio is called, since it cannot be called by a name."""
+    course = next(c for c in work["courses"] if c["id"] == pf["course"])
+    return f'{course[loc]} {S[loc]["pf_level"]} &middot; {S[loc]["pf_started"]} {month(pf["started"], loc)}'
+
+
+def portfolio_pages(preview=False):
+    """The page registry entries for the portfolios — one EN/CY pair each — so they get the same
+    chrome, hreflang check and sitemap treatment as every other page. Sample pages are noindex."""
+    work = _load(WORK_PATH)
+    out = []
+    for pf in validate_portfolios(work, preview=preview):
+        label = lambda loc: re.sub(r"&\w+;", "-", portfolio_label(pf, work, loc))
+        out.append({"key": "work-" + pf["slug"], "nav": "/work/", "noindex": pf.get("sample") is True, "priority": "0.5", "legal": "plain",
+                    "generated": "showcase-portfolio", "slug": pf["slug"],
+                    "en": {"path": portfolio_path(pf["slug"], "en"), "title": f"Learner Portfolio: {label('en')} | Clwydian Academy",
+                           "desc": "Work by one learner of Clwydian Academy in St Asaph, on real clients of the academy salon, shown with their consent."},
+                    "cy": {"path": portfolio_path(pf["slug"], "cy"), "title": f"Portffolio Dysgwr: {label('cy')} | Clwydian Academy",
+                           "desc": "Gwaith gan un o ddysgwyr Clwydian Academy yn Llanelwy, ar gleientiaid go iawn salon yr academi, wedi&rsquo;i ddangos gyda&rsquo;u caniat&acirc;d."}})
+    return out
+
+
+def portfolio_body(slug, loc, site, preview=False):
     s = S[loc]
     work = _load(WORK_PATH)
-    pairs = validate_pairs(work)
+    pf = next(p for p in validate_portfolios(work, preview=preview) if p["slug"] == slug)
+    pairs = [p for p in validate_pairs(work, preview=preview) if p.get("portfolio") == slug]
+    badge = {b["id"]: b[loc] for b in work["badges"]}
+    ach = "".join(f'<li><span class="sc-badge">{badge[a["badge"]]}</span> <span>{a[loc]}</span> <time datetime="{a["date"]}">{month(a["date"], loc)}</time></li>' for a in pf.get("achievements", []))
+    note = f'<p class="sc-sample-note" role="note"><strong>{s["sample"]}.</strong> {s["sample_note"]}</p>' if pf.get("sample") else ""
+    gallery = ('<div class="ba-grid">' + "".join(pair_html(p, work, loc) for p in pairs) + "</div>") if pairs else f'<p>{s["pf_none"]}</p>'
+    return f'''<section class="page-hero">
+  <div class="wrap">
+    {salon.crumbs(loc, (s["w_crumb"], WORK[loc]), (s["pf_h1"], None))}
+    <p class="eyebrow mt-2">{s["wk_eyebrow"]}</p>
+    <h1>{s["pf_h1"]}</h1>
+    <p class="lede">{portfolio_label(pf, work, loc)}</p>
+    {note}
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <h2>{s["pf_ach_h"]}</h2>
+    <ul class="sc-achievements">{ach}</ul>
+    <h2 class="mt-3">{s["pf_work_h"]}</h2>
+    {gallery}
+    <p class="sc-illus sc-illus--light">{s["pf_consent"]}</p>
+    <p class="sc-actions"><a class="btn btn-outline" href="{WORK[loc]}">&larr; {s["pf_back"]}</a></p>
+  </div>
+</section>
+<dialog class="sc-lightbox" id="sc-lightbox" aria-label="{s["zoom"]}"><button type="button" class="sc-lightbox-close" data-lightbox-close aria-label="{s["close"]}">&times;</button><img alt=""><p></p></dialog>
+'''
+
+
+def work_body(loc, site, preview=False):
+    s = S[loc]
+    work = _load(WORK_PATH)
+    folios = validate_portfolios(work, preview=preview)
+    pairs = validate_pairs(work, preview=preview)
+    folio_cards = "".join(f'''<a class="sc-folio" href="{portfolio_path(pf["slug"], loc)}">{'<span class="sc-badge sc-badge--sample">' + s["sample"] + '</span>' if pf.get("sample") else ""}
+        <span class="sc-folio-h">{portfolio_label(pf, work, loc)}</span><span class="sc-folio-go">{s["pf_open"]} &rarr;</span></a>''' for pf in folios)
+    folio_section = f'''<section class="sc-folios" id="portfolios" aria-labelledby="portfolios-h"><header><h2 id="portfolios-h">{s["pf_list_h"]}</h2></header>
+      <div class="sc-folio-grid">{folio_cards}</div></section>''' if folios else ""
     chips = [f'<a class="chip" href="#{c["id"]}">{c[loc]}</a>' for c in work["courses"]]
     sections = []
     for c in work["courses"]:
@@ -551,6 +684,7 @@ def work_body(loc, site):
   <div class="wrap">
     <nav class="sc-filter" aria-label="{s["w_filter"]}">{"".join(chips)}</nav>
     {"".join(sections)}
+    {folio_section}
   </div>
 </section>
 

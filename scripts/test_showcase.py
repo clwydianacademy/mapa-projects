@@ -63,7 +63,56 @@ def t_pairs():
         refused(pairs(**change), needle)
     w = copy.deepcopy(WORK); w["pairs"] = [copy.deepcopy(GOOD)]
     refused(lambda: showcase.validate_pairs(w, today="2027-02-01", files={"cut-0001-before.jpg"}), "cut-0001-after.jpg")
-    assert WORK["pairs"] == [], "a pair is in the data file: this test must then be extended to read its consent record"
+    # Everything in the data file today is SAMPLE data: a public build refuses every item of it.
+    assert WORK["pairs"] and all(p.get("sample") is True for p in WORK["pairs"]), "a real pair is in the data file: extend this test to read its consent record"
+    refused(lambda: showcase.validate_pairs(copy.deepcopy(WORK)), "SAMPLE data, which is built in previews only")
+    refused(lambda: showcase.validate_portfolios(copy.deepcopy(WORK)), "SAMPLE data, which is built in previews only")
+    assert len(showcase.validate_pairs(copy.deepcopy(WORK), preview=True)) == 2
+    # A sample may never be a photograph, and a real pair may never be dressed as a sample.
+    w = copy.deepcopy(WORK); w["pairs"][0]["ext"] = "jpg"
+    refused(lambda: showcase.validate_pairs(w, preview=True, files={"sample-0001-before.jpg", "sample-0001-after.jpg", "sample-0002-before.svg", "sample-0002-after.svg"}), "never a photograph")
+    w = copy.deepcopy(WORK); w["pairs"] = [dict(copy.deepcopy(GOOD), id="sample-9")]
+    refused(lambda: showcase.validate_pairs(w, today="2027-02-01", files={"sample-9-before.jpg", "sample-9-after.jpg"}), "only sample data")
+
+def t_portfolios():
+    base = copy.deepcopy(WORK)
+    real = {"slug": "learner-a7", "course": "l2-hairdressing", "started": "2027-01", "consentRef": "LC-0007", "consentDate": "2027-01-20",
+            "achievements": [{"badge": "qualification", "date": "2027-03", "en": "Unit: cut hair using basic techniques", "cy": "Uned: torri gwallt"}]}
+    def folio(**change):
+        w = copy.deepcopy(base); w["pairs"] = []; p = copy.deepcopy(real)
+        for k, v in change.items():
+            if v is KeyError: p.pop(k, None)
+            else: p[k] = v
+        w["portfolios"] = [p]
+        return lambda: showcase.validate_portfolios(w, today="2027-06-01")
+    assert len(folio()()) == 1, "a complete portfolio was refused"
+    for change, needle in [
+        (dict(slug="morgan-jones"), "never a name"), (dict(slug="learner-Morgan"), "never a name"), (dict(slug="learner-averylongcode1"), "never a name"),
+        (dict(name="A Learner"), "names a person"), (dict(consentRef=KeyError), "consentRef"), (dict(consentDate="soon"), "consentDate"),
+        (dict(consentDate="2027-09-01"), "in the future"), (dict(course="l9"), "course"), (dict(started="January"), "YYYY-MM"),
+        (dict(slug="sample-learner-zz"), "must be marked"), (dict(sample=True), "must start 'sample-'"),
+        (dict(achievements=[{"badge": "gold-star", "date": "2027-03", "en": "Something", "cy": "Rhywbeth"}]), "badge"),
+        (dict(achievements=[{"badge": "competition", "date": "2027-03", "en": "Won, styled by Morgan", "cy": "Enillodd y gystadleuaeth"}]), "name somebody"),
+    ]:
+        refused(folio(**change), needle)
+    w = copy.deepcopy(base); w["portfolios"] = []
+    refused(lambda: showcase.validate_portfolios(w, preview=True), "a portfolio that does not exist")
+
+def t_preview_portfolio():
+    for rel, back in (("work/sample-learner-a1/index.html", "/work/"), ("cy/gwaith/sample-learner-a1/index.html", "/cy/gwaith/")):
+        h = read(rel)
+        assert '<meta name="robots" content="noindex, nofollow">' in h, f"{rel}: a sample page is indexable"
+        assert 'class="sc-sample-note" role="note"' in h and h.count("sc-badge--sample") >= 2, f"{rel}: sample data is not marked as sample"
+        assert h.count("data-ba ") == 2 and h.count('type="range"') == 2, f"{rel}: not two before-and-after sliders"
+        assert h.count('<li><span class="sc-badge">') == 3, f"{rel}: not three achievements with badges"
+        assert "SAMPLE-LEARNER-A1" not in h and "SAMPLE-CLIENT" not in h, f"{rel}: a consent reference is printed"
+        assert f'href="{back}"' in h
+        assert '.svg"' in h and ".jpg" not in h.split("<main")[1].split("</main>")[0], f"{rel}: a sample uses a photograph"
+        assert 'hreflang="en-GB"' in h and 'hreflang="cy"' in h
+    assert 'href="/work/sample-learner-a1/"' in read("work/index.html"), "the gallery does not link to the portfolio"
+    sm = read("sitemap.xml")
+    assert "sample-learner" not in sm, "a sample page is in the sitemap"
+
 
 def t_pair_html():
     w = copy.deepcopy(WORK); w["pairs"] = [copy.deepcopy(GOOD)]
@@ -141,7 +190,7 @@ def t_vercel():
             if not fn.endswith(".html"): continue
             h = open(os.path.join(dirpath, fn), encoding="utf-8").read(); n += 1
             rel = os.path.relpath(os.path.join(dirpath, fn), copy)
-            assert '<p class="sc-preview" role="note">Preview build' in h and "feat/salon 0123456" in h, f"{rel}: a preview page does not say it is a preview"
+            assert '<aside class="sc-preview" aria-label="Preview">Preview build' in h and "feat/salon 0123456" in h, f"{rel}: a preview page does not say it is a preview"
             assert '<meta name="robots" content="noindex, nofollow">' in h, f"{rel}: a preview page is indexable"
             assert h.count('<strong class="sc-tbc-mark">[TBC]</strong>') == 2, f"{rel}: the two missing statutory values are not marked TBC"
             assert "Bod Hyfryd" not in h
@@ -236,7 +285,7 @@ def t_preview_work():
     for rel in ("work/index.html", "cy/gwaith/index.html"):
         h = read(rel)
         assert h.count('class="sc-course') == 4, f"{rel}: not four courses"
-        assert "2027" in h and 'data-ba' not in h, f"{rel}: a pair is shown, or no placeholder"
+        assert "2027" in h and h.count("sc-soon-h") >= 3, f"{rel}: the courses with no work yet have lost their placeholder"
         assert '<dialog class="sc-lightbox"' in h
     assert "/work/" in read("sitemap.xml") and "/cy/gwaith/" in read("sitemap.xml")
 
@@ -286,6 +335,8 @@ def t_off():
 
 for name, fn in [
     ("a before-and-after pair is refused without consent ref, a real consent date, originals, own client, no retouching — 20 ways", t_pairs),
+    ("a portfolio is refused with a name-like slug, a name, no learner consent, or unmarked sample data — 14 ways", t_portfolios),
+    ("preview: the sample portfolio is marked SAMPLE, noindex, out of the sitemap, with two sliders and three badges — EN and CY", t_preview_portfolio),
     ("a pair renders as a labelled range slider with sized pictures, and never prints its consent record", t_pair_html),
     ("a stock photograph cannot be described as a learner's, student's or client's work; all 15 are stock and renamed", t_stock),
     ("the statutory line leaves a TODO_PM value out, never prints the residential address, and is complete once filled", t_legal),

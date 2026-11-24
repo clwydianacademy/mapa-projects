@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" role="img" aria-label="Sample · Before">
+<rect width="900" height="1200" fill="#e3dbe7"/>
+<g fill="none" stroke="#453550" stroke-width="3" opacity=".35"><path d="M0 300 900 0M0 700 900 400M0 1100 900 800M0 1500 900 1200"/></g>
+<text x="450" y="590" text-anchor="middle" font-family="Georgia, serif" font-size="74" font-weight="600" fill="#453550">Before</text>
+<text x="450" y="670" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" letter-spacing="10" fill="#453550">SAMPLE · NOT A PHOTOGRAPH</text>
+</svg>

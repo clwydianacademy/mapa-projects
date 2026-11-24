@@ -106,9 +106,9 @@
 /* ---------- learner work ---------- */
 .sc-filter { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 2.4rem; }
 .sc-filter .chip { min-height: 44px; display: inline-flex; align-items: center; text-decoration: none; }
-.sc-course { padding-block: 1.6rem 2.6rem; border-top: 1px solid var(--line); scroll-margin-top: 6rem; }
-.sc-course header { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1rem; }
-.sc-course h2 { font-size: clamp(1.5rem, 2.6vw, 2.1rem); }
+.sc-course, .sc-folios { padding-block: 1.6rem 2.6rem; border-top: 1px solid var(--line); scroll-margin-top: 6rem; }
+.sc-course header, .sc-folios header { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1rem; }
+.sc-course h2, .sc-folios h2 { font-size: clamp(1.5rem, 2.6vw, 2.1rem); }
 .sc-badge { display: inline-flex; align-items: center; padding: .28rem .7rem; border-radius: 999px; font-size: .78rem; font-weight: 600;
   background: var(--heather-tint); color: var(--heather-ink); border: 1px solid var(--heather-tint-2); }
 .sc-badge--course { background: var(--navy); color: #fff; border-color: var(--navy); }
@@ -163,3 +163,21 @@
 /* ---------- preview only ---------- */
 .sc-preview { margin: 0; padding: .45rem 1rem; text-align: center; font-size: .82rem; font-weight: 600; background: var(--gold); color: #1c2a45; }
 .sc-tbc-mark { background: var(--gold); color: #1c2a45; padding: 0 .3em; border-radius: 3px; }
+
+/* ---------- learner portfolios ---------- */
+.sc-badge--sample { background: var(--gold); color: #1c2a45; border-color: var(--gold); }
+.sc-sample-note { margin-top: 1.2rem; padding: .9rem 1.1rem; border-left: 4px solid var(--gold); background: var(--card); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; max-width: 62ch; }
+.sc-achievements { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; gap: .7rem; }
+.sc-achievements li { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .9rem; padding: .8rem 1rem; background: var(--card); border-radius: var(--radius-sm); box-shadow: var(--shadow-1); }
+.sc-achievements time { margin-left: auto; color: var(--muted); font-size: .9rem; }
+.sc-folio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: 1rem; margin-top: 1.4rem; }
+.sc-folio { display: grid; gap: .6rem; padding: 1.3rem 1.4rem; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow-1); color: var(--ink); text-decoration: none; justify-items: start; }
+.sc-folio:hover, .sc-folio:focus-visible { box-shadow: var(--shadow-2); }
+.sc-folio:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.sc-folio-h { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; color: var(--heather-ink); }
+.sc-folio-go { font-weight: 600; color: var(--heather); }
+.sc-illus--light { color: var(--muted); }
+
+/* Read aloud, not drawn: a heading that fills a gap in the outline. */
+.sc-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.sc-preview { display: block; }

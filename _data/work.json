@@ -39,5 +39,82 @@
       "cy": "Cais cystadleuaeth"
     }
   ],
-  "pairs": []
+  "pairs": [
+    {
+      "id": "sample-0001",
+      "sample": true,
+      "ext": "svg",
+      "course": "l2-hairdressing",
+      "portfolio": "sample-learner-a1",
+      "badges": [
+        "qualification"
+      ],
+      "width": 900,
+      "height": 1200,
+      "consentRef": "SAMPLE-CLIENT-0001",
+      "consentDate": "2026-11-24",
+      "originalsKept": true,
+      "ownClient": true,
+      "hairRetouched": false,
+      "afterOnlyEdited": false,
+      "alt": {
+        "en": "Sample panel standing in for a shoulder-length cut and blow-dry",
+        "cy": "Panel sampl yn sefyll yn lle toriad at yr ysgwydd a chwythsychu"
+      }
+    },
+    {
+      "id": "sample-0002",
+      "sample": true,
+      "ext": "svg",
+      "course": "l2-hairdressing",
+      "portfolio": "sample-learner-a1",
+      "badges": [
+        "qualification",
+        "competition"
+      ],
+      "width": 900,
+      "height": 1200,
+      "consentRef": "SAMPLE-CLIENT-0002",
+      "consentDate": "2026-11-24",
+      "originalsKept": true,
+      "ownClient": true,
+      "hairRetouched": false,
+      "afterOnlyEdited": false,
+      "alt": {
+        "en": "Sample panel standing in for a full head of foils",
+        "cy": "Panel sampl yn sefyll yn lle pen cyfan o ffoils"
+      }
+    }
+  ],
+  "_portfolios": "A PORTFOLIO PER LEARNER, at /work/<slug>/ and /cy/gwaith/<slug>/. No names: a slug is 'learner-' and a code the academy assigns, and the page says only the course, the level and the month training began. A portfolio is published only with the LEARNER'S own signed consent (consentRef, consentDate), and every pair in it needs the CLIENT'S (see _source). Anything marked \"sample\": true is made-up data to show how the template works: it is built in PREVIEWS ONLY, is labelled SAMPLE on the page, uses drawn panels in place of photographs, and a public build refuses it.",
+  "portfolios": [
+    {
+      "slug": "sample-learner-a1",
+      "sample": true,
+      "course": "l2-hairdressing",
+      "started": "2027-01",
+      "consentRef": "SAMPLE-LEARNER-A1",
+      "consentDate": "2026-11-24",
+      "achievements": [
+        {
+          "badge": "qualification",
+          "date": "2027-03",
+          "en": "Unit: cut hair using basic techniques",
+          "cy": "Uned: torri gwallt gan ddefnyddio technegau sylfaenol"
+        },
+        {
+          "badge": "qualification",
+          "date": "2027-05",
+          "en": "Unit: colour and lighten hair",
+          "cy": "Uned: lliwio a goleuo gwallt"
+        },
+        {
+          "badge": "competition",
+          "date": "2027-06",
+          "en": "Entered: academy end-of-term showcase",
+          "cy": "Wedi cystadlu: arddangosfa diwedd tymor yr academi"
+        }
+      ]
+    }
+  ]
 }
