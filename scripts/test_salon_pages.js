@@ -73,7 +73,8 @@ test("flag off: the deployed output is byte-for-byte what main deploys", () => {
   assert.deepEqual(out, ["site/assets/css/salon.css", "site/vercel.json"], "site/ differs from main in: " + out.join(", "));
   const mine = JSON.parse(read(SITE, "vercel.json"));
   const mains = JSON.parse(execFileSync("git", ["--no-optional-locks", "show", "origin/main:site/vercel.json"], { cwd: REPO, encoding: "utf8" }));
-  assert.deepEqual(Object.keys(mine).sort(), ["buildCommand", "redirects"]);
+  assert.deepEqual(Object.keys(mine).sort(), ["buildCommand", "outputDirectory", "redirects"]);
+  assert.equal(mine.outputDirectory, ".", "with a build command Vercel needs to be told the built site is this folder");
   assert.deepEqual(mine.redirects, mains.redirects, "the redirects are not main's");
   assert.match(mine.buildCommand, /^cd \.\. && \(python3 website\/_src\/build\.py --vercel \|\| echo /, "the build step is not the guarded preview build");
   for (const env of ["production", "", "development"]) {

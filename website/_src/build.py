@@ -396,7 +396,10 @@ def redirects(pages):
     # through behind Vercel's login. If the step fails, the committed (switch-off) site is served
     # and the ribbon is absent — which is how to tell.
     command = "cd .. && (python3 website/_src/build.py --vercel || echo 'preview build failed: serving the committed site')"
-    write("vercel.json", json.dumps({"buildCommand": command, "redirects": rules}, indent=2) + "\n")
+    # outputDirectory: once a build command exists Vercel looks for a folder called `public`
+    # and fails the deployment without one (the first attempt, 24 Nov 2026, failed in three
+    # seconds). The built site IS this folder, so say so.
+    write("vercel.json", json.dumps({"buildCommand": command, "outputDirectory": ".", "redirects": rules}, indent=2) + "\n")
     return len(wanted)
 
 def build():
