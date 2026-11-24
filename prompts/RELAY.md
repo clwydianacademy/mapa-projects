@@ -4074,3 +4074,64 @@ Machine-written, unreviewed. In `website/_src/showcase.py`, `_data/photos.json`,
 ## BRIEF — "KEEP PUSHING" (Mark via PM, 24 Nov 2026) — saved verbatim
 
 Excellent report. Mark says keep pushing. While his 7 answers are pending, continue with everything that doesn't need them (same rules: drafts/switches, BOOKING_OPEN unset, push after each piece, append progress to RELAY.md). (1) PREVIEW FOR MARK: make Vercel PREVIEW builds of mapa-projects (VERCEL_ENV=preview) build with the showcase switch ON, while production stays OFF, so Mark can click through the new site behind Vercel's login. The footer gaps (registered office / registered in) may show a visible 'TBC' marker on previews only; production must still refuse to switch on without them. Tell me the preview URL. (2) Defaults until Mark answers: keep the headline 'Train here. Be styled here. See the work.'; keep 48h deposit notice and the fair no-show wording; propose a trimmed main nav of 6-7 items (rest to the footer) and implement it on the branch so Mark can judge it in the preview. (3) Finish the 'Not done' list: receipt, staff-invite and operator emails in the salon's voice, EN + CY; consent tick in the staff console when recording a patch test, stored with the record; learner portfolio pages and qualification/competition badges as a working template (/work/<slug>/, no real names, sample data clearly marked as sample, consent fields enforced); reshape the stylist app /app/ for fixed premises (no driving: today's clients by learner, check-in, start/finish, processing timer, patch-test record) or hide it if too large - your call, report which. (4) Accessibility: run axe or similar on every page of both hosts and fix all issues; keyboard-only walkthrough of the booking journey and day sheet; 200% zoom; record results. (5) Write docs/GO-LIVE-SALON.md as a plain-English step-by-step checklist for Mark (Vercel project, Upstash, Stripe test then live, webhook, env vars with what each does, DNS, switches to flip, Google Business Profile steps). Final report as before.
+
+---
+
+## REPORT — "keep pushing" brief, website side (24 Nov 2026)
+
+### Done
+1. **Vercel previews build with the showcase ON; production builds nothing.** `site/vercel.json`
+   gains a build step, `build.py --vercel`. It builds only when `VERCEL_ENV=preview`: in place,
+   salon and showcase on, every page noindex, a gold "Preview build" ribbon naming the branch and
+   commit, and the two missing statutory values shown as **[TBC]**. For production it prints
+   "nothing built" and the committed folder is served as before. A public build still refuses
+   while those values are TODO_PM.
+   - First attempt FAILED on Vercel in three seconds: with a build command Vercel wants a folder
+     called `public`. `"outputDirectory": "."` fixed it; Vercel then reported **Ready**.
+   - **Not seen by the coder.** The preview is behind Vercel's login and this machine's network
+     policy blocks the host. If the ribbon is missing, the Python step failed on Vercel and the
+     committed (switch-off) site is being served.
+   - Preview address: `https://mapa-projects-git-feat-salon-charlotte-eleanor-s-projects.vercel.app`
+2. **Trimmed nav, seven items:** Courses, Apprenticeships, Fees & Funding, Our Salon, Learner
+   Work, About, Contact. For Salons and Guides remain in the footer. It fits the original 1240px
+   breakpoint in English and Welsh, so the menu button no longer lingers to 1560px.
+3. **Learner portfolios** at `/work/<slug>/` and `/cy/gwaith/<slug>/`: by code, never by name;
+   course, level, the month training began; units and competitions with badges; before-and-after
+   pairs. Refused with a name-like slug, a name, or no consent record for the learner. One
+   SAMPLE portfolio and two SAMPLE pairs (drawn panels, never photographs) show the template;
+   they are labelled SAMPLE, noindex, out of the sitemap, and **a public build refuses them**.
+4. **Accessibility** (`docs/accessibility-audit.md`): axe on all 69 preview pages at two widths,
+   0 violations after fixes; 200% zoom clean.
+5. Defaults kept as instructed: the headline, the 48-hour notice, the fair no-show wording.
+
+### Gates
+`scripts/test_showcase.py` **17 passed** · `test_salon_pages.js` 15 · `test_enquiry.js` 23 ·
+with the switch off, `site/` differs from main only in `salon.css` and `vercel.json` (one build
+key and one output key; redirects identical) — the test now says exactly that.
+
+### Brief against CLAUDE.md
+CLAUDE.md says never to change Vercel deployment protection, environment variables or credential
+fields. None was touched: the build step is a line in the repository's own `site/vercel.json`.
+**It does change how production deploys once merged** (a build step now runs and does nothing).
+That is worth Mark's eye before any merge, and the enquiry form should be tried on the preview.
+
+### NEEDS A HUMAN
+1. Open the preview and confirm the gold ribbon is there. Try the enquiry form on it.
+2. The seven-item nav: is losing "For Salons" and "Guides" from the header acceptable?
+
+### WELSH FOR REVIEW (new)
+| English | Welsh (machine-written) |
+|---|---|
+| Sample | Sampl |
+| This is sample data, made up to show how a portfolio page will work. It is not a real learner, the panels are not photographs, and it is not built on the public site. | Data sampl yw hwn, wedi’i greu i ddangos sut bydd tudalen bortffolio’n gweithio. Nid dysgwr go iawn mohono, nid ffotograffau yw’r paneli, ac nid yw’n cael ei adeiladu ar y wefan gyhoeddus. |
+| Learner portfolio | Portffolio dysgwr |
+| training began / learner | dechreuodd yr hyfforddiant / dysgwr |
+| Units and competitions / Work / No work has been added yet. | Unedau a chystadlaethau / Gwaith / Nid oes gwaith wedi’i ychwanegu eto. |
+| This page is published with the learner’s own consent, and each picture with the client’s. Neither is named. | Cyhoeddir y dudalen hon gyda chaniatâd y dysgwr ei hun, a phob llun gyda chaniatâd y cleient. Nid yw’r naill na’r llall yn cael ei enwi. |
+| All learner work / Learner portfolios / Open portfolio | Holl waith y dysgwyr / Portffolios dysgwyr / Agor y portffolio |
+| The courses / The guides / The units / The notice in full | Y cyrsiau / Y canllawiau / Yr unedau / Yr hysbysiad yn llawn |
+| (sample) Unit: cut hair using basic techniques | Uned: torri gwallt gan ddefnyddio technegau sylfaenol |
+| (sample) Unit: colour and lighten hair | Uned: lliwio a goleuo gwallt |
+| (sample) Entered: academy end-of-term showcase | Wedi cystadlu: arddangosfa diwedd tymor yr academi |
+| (sample) Sample panel standing in for a shoulder-length cut and blow-dry | Panel sampl yn sefyll yn lle toriad at yr ysgwydd a chwythsychu |
+| (sample) Sample panel standing in for a full head of foils | Panel sampl yn sefyll yn lle pen cyfan o ffoils |
