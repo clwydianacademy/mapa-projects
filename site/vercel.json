@@ -1,5 +1,6 @@
 {
   "buildCommand": "cd .. && (python3 website/_src/build.py --vercel || echo 'preview build failed: serving the committed site')",
+  "outputDirectory": ".",
   "redirects": [
     {
       "source": "/funders",
