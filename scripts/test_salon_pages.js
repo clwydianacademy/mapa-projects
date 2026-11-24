@@ -68,7 +68,20 @@ test("flag off: no page links to the salon, the nav is as it was, and the sitema
 test("flag off: the deployed output is byte-for-byte what main deploys", () => {
   // Everything under site/ except the salon stylesheet (which no page loads while the flag is off).
   const out = execFileSync("git", ["--no-optional-locks", "diff", "--name-only", "origin/main", "--", "site"], { cwd: REPO, encoding: "utf8" }).trim().split("\n").filter(Boolean);
-  assert.deepEqual(out, ["site/assets/css/salon.css"], "site/ differs from main in: " + out.join(", "));
+  // …and vercel.json, which gains ONE key: the build step that rebuilds a PREVIEW deployment with
+  // the switches on. Its redirects must be main's, and the step must do nothing on production.
+  assert.deepEqual(out, ["site/assets/css/salon.css", "site/vercel.json"], "site/ differs from main in: " + out.join(", "));
+  const mine = JSON.parse(read(SITE, "vercel.json"));
+  const mains = JSON.parse(execFileSync("git", ["--no-optional-locks", "show", "origin/main:site/vercel.json"], { cwd: REPO, encoding: "utf8" }));
+  assert.deepEqual(Object.keys(mine).sort(), ["buildCommand", "redirects"]);
+  assert.deepEqual(mine.redirects, mains.redirects, "the redirects are not main's");
+  assert.match(mine.buildCommand, /^cd \.\. && \(python3 website\/_src\/build\.py --vercel \|\| echo /, "the build step is not the guarded preview build");
+  for (const env of ["production", "", "development"]) {
+    const r = execFileSync("python3", [path.join(REPO, "website", "_src", "build.py"), "--vercel"], { cwd: REPO, encoding: "utf8", env: { ...process.env, VERCEL_ENV: env } });
+    assert.match(r, /nothing built/, "VERCEL_ENV=" + JSON.stringify(env) + " built something");
+  }
+  const after = execFileSync("git", ["--no-optional-locks", "diff", "--name-only", "origin/main", "--", "site"], { cwd: REPO, encoding: "utf8" }).trim().split("\n").filter(Boolean);
+  assert.deepEqual(after, out, "a production deployment's build step changed the deployed folder");
 });
 
 // =================================================================================================

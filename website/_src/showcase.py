@@ -62,25 +62,28 @@ def legal_todos(site):
     return [key for key in ("registered_in", "registered_office") if is_todo(legal[key]) or not legal[key].get("value")]
 
 
-def legal_line(loc, site):
+def legal_line(loc, site, tbc=False):
     """Regs 24-25 of the 2015 Regulations, on every page: the registered name, that it is a limited
     company, the part of the United Kingdom it is registered in, its number and its registered
     office. A value that is still TODO_PM is LEFT OUT rather than guessed — and the build will
-    not let the showcase go public until none is (legal_todos)."""
+    not let the showcase go public until none is (legal_todos). On a PREVIEW build only
+    (`tbc`), the gap is shown as a visible [TBC] so whoever is reviewing sees what is missing."""
     legal = site["legal"]
     name, number = legal["registered_name"], legal["company_number"]
-    where = None if is_todo(legal["registered_in"]) else legal["registered_in"]["value"]
-    office = None if is_todo(legal["registered_office"]) else legal["registered_office"]["value"]
+    mark = '<strong class="sc-tbc-mark">[TBC]</strong>' if tbc else None
+    where = (mark if is_todo(legal["registered_in"]) else legal["registered_in"]["value"])
+    office = (mark if is_todo(legal["registered_office"]) else legal["registered_office"]["value"])
+    office = office[loc] if isinstance(office, dict) else office
     if loc == "en":
         parts = [f"{name} is {legal['status']['en']}"
                  + (f", registered in {where}" if where else "") + f". Company number {number}."]
         if office:
-            parts.append(f"Registered office: {office['en'] if isinstance(office, dict) else office}.")
+            parts.append(f"Registered office: {office}.")
     else:
         parts = [f"Mae {name} yn {legal['status']['cy']}"
                  + (f", wedi&rsquo;i gofrestru yn {where}" if where else "") + f". Rhif cwmni {number}."]
         if office:
-            parts.append(f"Swyddfa gofrestredig: {office['cy'] if isinstance(office, dict) else office}.")
+            parts.append(f"Swyddfa gofrestredig: {office}.")
     return "&copy; 2026 " + " ".join(parts)
 
 

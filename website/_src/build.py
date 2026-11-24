@@ -71,13 +71,23 @@ SALON_ON = salon.is_public()      # build() may force this on for a preview buil
 WORK_NAV = {"en": ("/work/", "Learner Work"), "cy": ("/cy/gwaith/", "Gwaith Dysgwyr")}
 SHOWCASE_ON = showcase.is_public()
 PREVIEW = False
+NOINDEX_ALL = False  # a Vercel preview deployment: no page indexable, nothing in the sitemap
+VERCEL_REF = ""      # branch and commit, shown in the preview ribbon on Vercel
+
+# THE TRIMMED NAV (proposed 24 Nov 2026, for Mark to judge in the preview): seven items. With the
+# showcase on, "For Salons" and "Guides" leave the header — both stay in the footer's Academy
+# column, where they already are — and the salon and learner work take their places.
+TRIMMED_OUT = ("/for-salons/", "/guides/")
 
 def nav_items():
-    extra = ([SALON_NAV] if SALON_ON else []) + ([WORK_NAV] if SHOWCASE_ON else [])
-    if not extra:
+    if SHOWCASE_ON:
+        keep = [item for item in NAV if item["en"][0] not in TRIMMED_OUT]
+        at = next(i for i, item in enumerate(keep) if item["en"][0] == "/funding/") + 1
+        return keep[:at] + ([SALON_NAV] if SALON_ON else []) + [WORK_NAV] + keep[at:]
+    if not SALON_ON:
         return NAV
     at = next(i for i, item in enumerate(NAV) if item["en"][0] == "/for-salons/") + 1
-    return NAV[:at] + extra + NAV[at:]
+    return NAV[:at] + [SALON_NAV] + NAV[at:]
 
 def is_showcase(page):
     return str(page.get("generated") or "").startswith("showcase")
@@ -163,7 +173,7 @@ def is_salon(page):
 def hidden(page):
     """Not to be indexed: a page marked noindex, and EVERY salon page while any value in
     _data/salon/policy.json is still a placeholder — nothing unconfirmed goes out to a search engine."""
-    return bool(page.get("noindex")) or (is_salon(page) and not salon.confirmed())
+    return NOINDEX_ALL or bool(page.get("noindex")) or (is_salon(page) and not salon.confirmed())
 
 def head(page, loc, jsonld):
     c, me = CHROME[loc], page[loc]
@@ -275,7 +285,7 @@ def footer(page, loc):
     if SHOWCASE_ON:
         # The statutory line on EVERY page, and the one address, both from _data/site.json.
         c = dict(c, address=tuple(showcase.address_text(loc, SITE).split(", ", 1)),
-                 legal={k: '<span class="sc-legal">' + showcase.legal_line(loc, SITE) + "</span>" for k in c["legal"]})
+                 legal={k: '<span class="sc-legal">' + showcase.legal_line(loc, SITE, tbc=PREVIEW) + "</span>" for k in c["legal"]})
     li = lambda items: "\n".join(f'          <li><a href="{h}">{l}</a></li>' for h, l in items)
     return f'''</main>
 <footer class="site-footer">
@@ -380,7 +390,13 @@ def redirects(pages):
             try: os.rmdir(os.path.dirname(stale))
             except OSError: pass
             print("removed retired page", out_path(src))
-    write("vercel.json", json.dumps({"redirects": rules}, indent=2) + "\n")
+    # THE BUILD STEP VERCEL RUNS. For a production deployment it does nothing at all and the
+    # committed folder is served as it is. For a PREVIEW deployment (VERCEL_ENV=preview) it
+    # rebuilds this folder with the salon and the showcase on, so the new site can be clicked
+    # through behind Vercel's login. If the step fails, the committed (switch-off) site is served
+    # and the ribbon is absent — which is how to tell.
+    command = "cd .. && (python3 website/_src/build.py --vercel || echo 'preview build failed: serving the committed site')"
+    write("vercel.json", json.dumps({"buildCommand": command, "redirects": rules}, indent=2) + "\n")
     return len(wanted)
 
 def build():
@@ -461,6 +477,12 @@ def build():
                 jsonld = [b for b in (jsonld if isinstance(jsonld, list) else [jsonld]) if b.get("@type") != "FAQPage"]
                 showcase.check_ld([ORG] + list(jsonld), page[loc]["path"])
             html = head(page, loc, jsonld) + "\n" + header(page, loc) + "\n" + body + footer(page, loc)
+            if PREVIEW:
+                # A PREVIEW SAYS SO, on every page, so nobody mistakes it for the live site —
+                # or mistakes the live site for it.
+                ribbon = ('<p class="sc-preview" role="note">Preview build &middot; showcase and salon switched on &middot; not the live site'
+                          + (" &middot; " + VERCEL_REF if VERCEL_REF else "") + "</p>")
+                html = html.replace('<a class="skip-link"', ribbon + '\n<a class="skip-link"', 1)
             if SHOWCASE_ON:
                 # Two accessibility faults in the shared chrome, put right with the showcase: the
                 # footer's headings skipped a level (h4 straight after h2; now h2), and the brand link's accessible
@@ -528,6 +550,14 @@ if __name__ == "__main__":
             sys.exit("build: --preview must write outside the repository")
         shutil.copytree(OUT, target, dirs_exist_ok=True)
         OUT, SALON_ON, SHOWCASE_ON, PREVIEW = target, True, True, True
+    elif len(sys.argv) == 2 and sys.argv[1] == "--vercel":
+        # Run by Vercel on every deployment (see redirects()). ONLY a preview deployment builds:
+        # in place, everything on. Production, and anything that is not Vercel, is left alone.
+        if os.environ.get("VERCEL_ENV") != "preview":
+            print("build --vercel: not a preview deployment (VERCEL_ENV=%r) — nothing built; the committed site is served" % os.environ.get("VERCEL_ENV"))
+            sys.exit(0)
+        SALON_ON, SHOWCASE_ON, PREVIEW, NOINDEX_ALL = True, True, True, True
+        VERCEL_REF = (os.environ.get("VERCEL_GIT_COMMIT_REF", "") + " " + os.environ.get("VERCEL_GIT_COMMIT_SHA", "")[:7]).strip()
     elif len(sys.argv) > 1:
-        sys.exit("usage: build.py [--salon-preview DIR | --preview DIR]")
+        sys.exit("usage: build.py [--salon-preview DIR | --preview DIR | --vercel]")
     build()

@@ -119,6 +119,42 @@ def t_public_refused():
     r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
     assert r.returncode != 0 and "the showcase cannot be public" in r.stderr and "registered_in" in r.stderr, r.stderr[-300:] or "the build went ahead"
 
+def t_vercel():
+    """A Vercel PREVIEW deployment builds everything on, marked as a preview, with the gaps shown
+    as [TBC] and no page indexable. Production builds nothing. Run on a COPY of the repository."""
+    import shutil
+    copy = os.path.join(tempfile.mkdtemp(prefix="vercel-"), "repo")
+    shutil.copytree(REPO, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", "node_modules"))
+    cmd = json.load(open(os.path.join(copy, "site", "vercel.json")))["buildCommand"]
+    before = open(os.path.join(copy, "site", "index.html"), encoding="utf-8").read()
+    for env in ("production", ""):
+        r = subprocess.run(["bash", "-c", cmd], cwd=os.path.join(copy, "site"), capture_output=True, text=True, env=dict(os.environ, VERCEL_ENV=env))
+        assert r.returncode == 0 and "nothing built" in r.stdout, r.stdout[-200:] + r.stderr[-200:]
+        assert open(os.path.join(copy, "site", "index.html"), encoding="utf-8").read() == before, f"VERCEL_ENV={env!r} changed the deployed home page"
+    assert not os.path.exists(os.path.join(copy, "site", "work")), "production has a /work/ page"
+    r = subprocess.run(["bash", "-c", cmd], cwd=os.path.join(copy, "site"), capture_output=True, text=True,
+                       env=dict(os.environ, VERCEL_ENV="preview", VERCEL_GIT_COMMIT_REF="feat/salon", VERCEL_GIT_COMMIT_SHA="0123456789"))
+    assert r.returncode == 0 and "showcase: ON (PREVIEW)" in r.stdout, r.stdout[-300:] + r.stderr[-300:]
+    n = 0
+    for dirpath, _d, files in os.walk(os.path.join(copy, "site")):
+        for fn in files:
+            if not fn.endswith(".html"): continue
+            h = open(os.path.join(dirpath, fn), encoding="utf-8").read(); n += 1
+            rel = os.path.relpath(os.path.join(dirpath, fn), copy)
+            assert '<p class="sc-preview" role="note">Preview build' in h and "feat/salon 0123456" in h, f"{rel}: a preview page does not say it is a preview"
+            assert '<meta name="robots" content="noindex, nofollow">' in h, f"{rel}: a preview page is indexable"
+            assert h.count('<strong class="sc-tbc-mark">[TBC]</strong>') == 2, f"{rel}: the two missing statutory values are not marked TBC"
+            assert "Bod Hyfryd" not in h
+    assert n >= 60
+    assert "<loc>" not in open(os.path.join(copy, "site", "sitemap.xml")).read(), "a preview deployment has a sitemap with pages in it"
+    home = open(os.path.join(copy, "site", "index.html"), encoding="utf-8").read()
+    nav = re.findall(r'<a href="([^"]+)"(?: aria-current="page")?>', home[home.index('<nav class="site-nav"'):home.index("</nav>")])
+    assert nav == ["/courses/", "/apprenticeships/", "/funding/", "/salon/", "/work/", "/about/", "/contact/"], f"the trimmed nav is not the seven proposed: {nav}"
+    foot = home[home.index('<footer class="site-footer">'):]
+    assert 'href="/for-salons/"' in foot and 'href="/guides/"' in foot, "a page trimmed from the header is not in the footer"
+    # [TBC] is for previews ONLY: a public line never carries it, and a public build still refuses.
+    assert "TBC" not in showcase.legal_line("en", SITE) and "TBC" not in showcase.legal_line("cy", SITE)
+
 def t_ld():
     refused(lambda: showcase.check_ld([{"@type": "HairSalon", "aggregateRating": {"ratingValue": 5}}], "/x/"), "aggregateRating")
     refused(lambda: showcase.check_ld([{"@type": "HairSalon", "review": []}], "/x/"), "review")
@@ -254,6 +290,7 @@ for name, fn in [
     ("a stock photograph cannot be described as a learner's, student's or client's work; all 15 are stock and renamed", t_stock),
     ("the statutory line leaves a TODO_PM value out, never prints the residential address, and is complete once filled", t_legal),
     ("the build refuses to make the showcase public while a statutory value is TODO_PM", t_public_refused),
+    ("Vercel: production builds nothing; a preview builds everything on, marked, noindex, gaps shown as [TBC], seven-item nav", t_vercel),
     ("structured data: review, aggregateRating, additionalType and FAQPage each stop the build", t_ld),
     ("hreflang: a missing pair, a one-way pair, a wrong canonical and a shared path each stop the build", t_hreflang),
     ("preview: the home page has three paths, sized images, no font service, and no placeholder address — EN and CY", t_preview_home),

@@ -152,33 +152,6 @@
   .sc-tile:hover img { transform: none; }
 }
 
-/* ---------- the header with two more items ----------
-   main.css measured its breakpoint (1239px) for seven links. With "Our Salon" and "Learner Work"
-   the Welsh row needs more room, so the menu button stays until 1560px. Same rules, wider range. */
-@media (min-width: 1240px) and (max-width: 1559px) {
-  .site-nav {
-    position: fixed; inset: 78px 0 auto 0; z-index: 99;
-    flex-direction: column; align-items: stretch; gap: 0;
-    background: var(--paper); border-bottom: 1px solid var(--line);
-    padding: 0.75rem 1.5rem 1.75rem;
-    transform: translateY(-115%); transition: transform 0.4s var(--ease);
-    box-shadow: var(--shadow-2);
-  }
-  .site-nav.is-open { transform: translateY(0); }
-  .site-nav a { padding: 0.85rem 0.25rem; font-size: 1.1rem; border-bottom: 1px solid var(--line-soft); }
-  .site-nav a::after { display: none; }
-  .site-nav a.btn { margin-top: 1.1rem; padding: 0.85rem 1.25rem; border-bottom: 0; }
-  .nav-toggle {
-    display: flex; flex-direction: column; justify-content: center; gap: 5px;
-    width: 44px; height: 44px; padding: 10px; background: none; border: 0; cursor: pointer;
-  }
-  .nav-toggle span { display: block; height: 2px; background: var(--slate); border-radius: 2px; transition: transform 0.3s var(--ease), opacity 0.3s; }
-  .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-  .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
-  .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-}
-@media (min-width: 1560px) { .site-nav { gap: clamp(0.7rem, 1.1vw, 1.5rem); } }
-
 /* ---------- one palette ----------
    The salon pages were given a teal accent of their own. With the showcase on, the salon is
    part of the academy and wears its colours: heather, navy, gold, paper. */
@@ -186,3 +159,7 @@
 
 /* The footer's column titles are h2 while the showcase is on (they were h4, skipping a level). */
 .footer-col .footer-h { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.15rem; line-height: 1.4; }
+
+/* ---------- preview only ---------- */
+.sc-preview { margin: 0; padding: .45rem 1rem; text-align: center; font-size: .82rem; font-weight: 600; background: var(--gold); color: #1c2a45; }
+.sc-tbc-mark { background: var(--gold); color: #1c2a45; padding: 0 .3em; border-radius: 3px; }
