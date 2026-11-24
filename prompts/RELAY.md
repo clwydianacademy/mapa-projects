@@ -4135,3 +4135,9 @@ That is worth Mark's eye before any merge, and the enquiry form should be tried 
 | (sample) Entered: academy end-of-term showcase | Wedi cystadlu: arddangosfa diwedd tymor yr academi |
 | (sample) Sample panel standing in for a shoulder-length cut and blow-dry | Panel sampl yn sefyll yn lle toriad at yr ysgwydd a chwythsychu |
 | (sample) Sample panel standing in for a full head of foils | Panel sampl yn sefyll yn lle pen cyfan o ffoils |
+
+### NOTE — 24 Nov 2026 — Mark's direction (PM relay): build the whole salon system; the staff diary first
+
+The brief of 24 November ("the staff diary/calendar is an absolute necessity … keep building until the whole salon system is complete") is saved verbatim in `salon-booking/prompts/RELAY.md`, with its reports, its running "Questions for Mark" and the Welsh awaiting review. All five items were built there: the staff calendar, the learner flow, learner management, the till (Stripe test mode only) and polish.
+
+**Nothing in this repository changed in that run.** The website's switches are still off, `"public": false` still holds in `_data/showcase.json`, and the preview is as it was. No new Welsh strings here.
