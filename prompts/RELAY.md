@@ -4141,3 +4141,12 @@ That is worth Mark's eye before any merge, and the enquiry form should be tried 
 The brief of 24 November ("the staff diary/calendar is an absolute necessity … keep building until the whole salon system is complete") is saved verbatim in `salon-booking/prompts/RELAY.md`, with its reports, its running "Questions for Mark" and the Welsh awaiting review. All five items were built there: the staff calendar, the learner flow, learner management, the till (Stripe test mode only) and polish.
 
 **Nothing in this repository changed in that run.** The website's switches are still off, `"public": false` still holds in `_data/showcase.json`, and the preview is as it was. No new Welsh strings here.
+
+### NOTE — 24 Nov 2026 (later) — the third salon round changed nothing here; one thing to keep in step
+
+The third brief of 24 November (Settings, client records, reminders, waiting list, evidence, reports, Welsh, rehearsal) is saved verbatim in `salon-booking/prompts/RELAY.md` with its reports and the questions for Mark (now 30). All eight items are built and pushed there (`clwydianacademy/salon-booking`, draft PR #1).
+
+**Nothing in this repository changed in that run.** Both switches are still off and no new Welsh strings were added here.
+
+### NEEDS A HUMAN
+- **Opening hours now live in two places and say different things.** Mark's default for the booking system (PM relay, 24 Nov) is Monday to Friday, 9:00 to 5:00, and a manager can now change it on the booking system's Settings screen. This repository's `_data/salon/policy.json` still holds the earlier placeholder — Monday and Wednesday, 9:30 to 4:00 — under `sessions`, marked `todo_pm`, so the website prints "to be confirmed" rather than those hours and nothing wrong is published. When Mark confirms the real hours they need entering in both, or the website should read them from the booking system. Not changed here, because the website's value is Mark's to confirm, not the coder's to infer.
