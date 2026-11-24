@@ -37,6 +37,48 @@ def raw():
     with open(DATA_PATH, encoding="utf-8") as f:
         return json.load(f)
 
+# ------------------------------------------------------------------------------------------------
+# THE CATALOGUE FEED. Every PRICE, every LENGTH OF APPOINTMENT, the DEPOSIT and the OPENING HOURS
+# on the salon's pages come from _data/salon/feed.json, which is exported from the booking system
+# (clwydianacademy/salon-booking, tools/export-feed.mjs; live at /api/salon/feed/) and is worked
+# out there by the same code that prices a booking. policy.json no longer holds a single one of
+# those figures, so this site CANNOT show a price the booking page would not charge. A service
+# that is not in the feed cannot be booked, so it is not listed. scripts/test_salon_feed.py reads
+# the built pages back and fails if any figure differs from the feed.
+# ------------------------------------------------------------------------------------------------
+FEED_PATH = os.path.join(os.path.dirname(DATA_PATH), "feed.json")
+_FEED = None
+
+def feed():
+    global _FEED
+    if _FEED is None:
+        with open(FEED_PATH, encoding="utf-8") as f:
+            _FEED = json.load(f)
+    return _FEED
+
+def fsvc(sid):
+    return next((x for x in feed()["services"] if x["id"] == sid), None)
+
+def figures(s, level):
+    """{'price','minutes','from','deposit'} for this service at this level, or None if it is not sold there."""
+    f = fsvc(s["id"])
+    return (f or {}).get("levels", {}).get(level)
+
+def priced(s):
+    """A service is listed only if the booking system sells it."""
+    return fsvc(s["id"]) is not None
+
+def sessions():
+    """Opening days and hours, in the shape the pages draw: {'mon': [{'open','close'}], ...}."""
+    return {h["day"]: [{"open": h["open"], "close": h["close"]}] for h in feed()["hours"]}
+
+def terms():
+    return feed()["terms"]
+
+def book_url(s, loc):
+    """The booking page, opened on this service (and in Welsh from a Welsh page)."""
+    return fsvc(s["id"])["book"] + ("&lang=cy" if loc == "cy" else "")
+
 def is_todo(node):
     return isinstance(node, dict) and node.get("todo_pm") is True
 
@@ -321,17 +363,18 @@ def round_half_up(x):
     return int(x + 0.5)
 
 def l3_price(s):
-    return val(s["stylist_price"])
+    f = figures(s, "l3")
+    return f["price"] if f else None
 
 def l2_price(policy, s):
-    """Level 2 = the stylist price less the category's percentage, to the nearest whole pound."""
-    pct = policy["pricing"]["l2_percent_off"][s["category"]]
-    return round_half_up(val(s["stylist_price"]) * (100 - pct) / 100)
+    """What the booking system charges for this service with a Level 2 learner (None: not offered)."""
+    f = figures(s, "l2")
+    return f["price"] if f else None
 
 def minutes_for(policy, s, level):
-    """base minutes x the level's factor for the category, rounded up to five, plus educator time."""
-    factor = val(policy["levels"][level]["factors"])[s["category"]]
-    return round_up5(val(s["base_minutes"]) * factor) + val(policy["educator"]["minutes"])
+    """The real length of the appointment at this level, as the booking system books it."""
+    f = figures(s, level)
+    return f["minutes"] if f else None
 
 def draft_notice(loc):
     """Shown wherever a draft figure is printed, for as long as the policy holds any draft."""
@@ -346,7 +389,7 @@ def deposit_text(p, loc):
     d = p["deposit"]
     if not (printable(d["cutting"]) and printable(d["colour"])):
         return t("deposit_tbc", loc)
-    return t("deposit_p", loc, cutting=money(val(d["cutting"])), colour=money(val(d["colour"])), cancel=p["cancel_window_hours"])
+    return t("deposit_p", loc, cutting=money(feed()["deposit"]["cutting"]), colour=money(feed()["deposit"]["colour"]), cancel=p["cancel_window_hours"])
 
 def book_link(loc, cls="btn btn-salon"):
     return f'<a class="{cls}" href="{raw()["booking_url"]}">{t("cta_book", loc)}</a>'
@@ -370,8 +413,8 @@ def home_body(loc, site):
         opening = f'<p><strong>{t("tbc", loc)}.</strong></p>'
     else:
         days = "".join(f'<div class="meta-row"><dt>{DAYS[loc][d]}</dt><dd>{", ".join(x["open"] + "&ndash;" + x["close"] for x in ss)}</dd></div>'
-                       for d, ss in val(op["sessions"]).items() if ss)
-        terms = "".join(f'<div class="meta-row"><dt>{long_date(x["from"], loc)}</dt><dd>&ndash; {long_date(x["to"], loc)}</dd></div>' for x in val(op["terms"]))
+                       for d, ss in sessions().items() if ss)
+        terms = "".join(f'<div class="meta-row"><dt>{long_date(x["from"], loc)}</dt><dd>&ndash; {long_date(x["to"], loc)}</dd></div>' for x in globals()["terms"]())
         opening = f'<div class="meta-panel"><h3>{t("open_days", loc)}</h3><dl>{days}</dl><h3 class="mt-2">{t("open_terms", loc)}</h3><dl>{terms}</dl></div>'
     notice = "" if confirmed(p) else soon(loc, site)
     return subnav(loc, "home") + hero(loc, [(t("salon", loc), None)], t("home_h1", loc), t("home_lede", loc)) + f"""
@@ -407,31 +450,29 @@ def prices_body(loc, site):
     head = "".join(f'<th scope="col">{esc(p["levels"][l]["name"][loc])}</th>' for l in lv)
     na = f'<td class="salon-na"><span class="sr-only">{t("not_offered", loc)}</span><span aria-hidden="true">&mdash;</span></td>'
     def time(s, l):
-        ok = printable(s["base_minutes"]) and printable(p["levels"][l]["factors"]) and printable(p["educator"]["minutes"])
-        return f'<small>{duration(minutes_for(p, s, l), loc) if ok else t("time_tbc", loc)}</small>'
+        return f'<small>{duration(minutes_for(p, s, l), loc)}</small>'
     sections = []
     for gid, gname in p["groups"].items():
         rows = []
         for s in p["services"]:
-            if s["group"] != gid:
+            if s["group"] != gid or not priced(s):
                 continue
+            f2, f3 = figures(s, "l2"), figures(s, "l3")
             notes = []
             if s.get("consultation_first"): notes.append(t("consult_note", loc))
             if s.get("patch_test"): notes.append(t("patch_note", loc))
             note = f'<small>{" &middot; ".join(notes)}</small>' if notes else ""
             # Beside every "from" price and every consultation price: how it is worked out.
-            how = f'<small class="salon-how"><a href="#how">{t("how_link", loc)}</a></small>' if (s.get("price_from") or s.get("consultation_first")) else ""
-            priced = printable(s["stylist_price"])
-            frm = t("from", loc) + " " if s.get("price_from") else ""
-            # Level 2: not offered for a Level 3 service; "to be confirmed" where the price or its rule is undecided
-            if s.get("l3_only"):
-                c2 = na
-            elif not priced or s.get("l2_rule_confirmed") is False:
-                c2 = f'<td><b>{t("tbc", loc)}</b></td>'
-            else:
-                c2 = f'<td><b>{frm}{money(l2_price(p, s))}</b>{time(s, "l2")}{how}</td>'
-            c3 = f'<td><b>{frm}{money(l3_price(s))}</b>{time(s, "l3")}{how}</td>' if priced else f'<td><b>{t("tbc", loc)}</b></td>'
-            rows.append(f'<tr><th scope="row">{esc(s["name"][loc])}{note}</th>{c2}{c3}</tr>')
+            def cell(f, l):
+                # not sold at this level: a dash, said in words to a screen reader
+                if not f:
+                    return na
+                how = f'<small class="salon-how"><a href="#how">{t("how_link", loc)}</a></small>' if (f["from"] or s.get("consultation_first")) else ""
+                frm = t("from", loc) + " " if f["from"] else ""
+                return f'<td data-price="{f["price"]}" data-minutes="{f["minutes"]}" data-level="{l}"><b>{frm}{money(f["price"])}</b>{time(s, l)}{how}</td>'
+            # THE BOOK LINK OPENS THE BOOKING PAGE ON THIS SERVICE (the feed gives the address)
+            book = f'<small class="salon-book"><a href="{book_url(s, loc)}" data-book="{s["id"]}">{t("book", loc)}<span class="sr-only"> &ndash; {esc(s["name"][loc])}</span></a></small>'
+            rows.append(f'<tr data-service="{s["id"]}"><th scope="row">{esc(s["name"][loc])}{note}{book}</th>{cell(f2, "l2")}{cell(f3, "l3")}</tr>')
         if rows:
             sections.append(f"""<h2 class="salon-h2 mt-3">{esc(gname[loc])}</h2>
     <div class="salon-table-wrap" tabindex="0" role="region" aria-label="{esc(gname[loc])}">
@@ -539,6 +580,6 @@ def jsonld(kind, loc, domain, org, site):
     if printable(op["sessions"]):
         names = {"mon": "Monday", "tue": "Tuesday", "wed": "Wednesday", "thu": "Thursday", "fri": "Friday", "sat": "Saturday", "sun": "Sunday"}
         salon["openingHoursSpecification"] = [{"@type": "OpeningHoursSpecification", "dayOfWeek": "https://schema.org/" + names[d], "opens": x["open"], "closes": x["close"]}
-                                              for d, ss in val(op["sessions"]).items() for x in ss]
+                                              for d, ss in sessions().items() for x in ss]
     link = {"@context": "https://schema.org", "@type": org["@type"], "@id": org["@id"], "department": {"@id": salon_id}}
     return [salon, link]

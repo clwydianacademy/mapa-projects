@@ -4150,3 +4150,23 @@ The third brief of 24 November (Settings, client records, reminders, waiting lis
 
 ### NEEDS A HUMAN
 - **Opening hours now live in two places and say different things.** Mark's default for the booking system (PM relay, 24 Nov) is Monday to Friday, 9:00 to 5:00, and a manager can now change it on the booking system's Settings screen. This repository's `_data/salon/policy.json` still holds the earlier placeholder — Monday and Wednesday, 9:30 to 4:00 — under `sessions`, marked `todo_pm`, so the website prints "to be confirmed" rather than those hours and nothing wrong is published. When Mark confirms the real hours they need entering in both, or the website should read them from the booking system. Not changed here, because the website's value is Mark's to confirm, not the coder's to infer.
+
+### REPORT — 24 Nov 2026 — round 4 item 3: the salon's prices, times and hours now come from the booking system
+
+The brief (PM relay, round 4) is saved verbatim in `salon-booking/prompts/RELAY.md`. Item 3 of it lands here.
+
+- `_data/salon/feed.json` is new: the booking system's catalogue, exported by `node ../salon-booking/tools/export-feed.mjs _data/salon/feed.json`. **Never edited by hand.**
+- `website/_src/salon.py` takes every price, appointment length, deposit and opening hour from it (`feed()`, `figures()`, `sessions()`, `terms()`); `showcase.py`'s price range and opening hours follow.
+- `_data/salon/policy.json` no longer holds `stylist_price`, `base_minutes`, the Level 2 percentages, the time factors or the educator minutes. It keeps the bilingual names, the notes, and the draft / to-be-confirmed flags, which still keep every salon page noindex and out of the sitemap.
+- Every service row has a "Book online" link that opens the booking page on that service, in the page's language.
+- `scripts/test_salon_feed.py` (new, 9 checks, each watched failing) reads the built pages back against the feed, and against the booking repository's export when it is checked out beside this one. `test_salon_pages.js` and `test_showcase.py` were updated to the same source.
+- **The deployed folder `site/` did not change**: the salon switch is off, so the ordinary build writes nothing of the salon. No output commit was needed.
+
+**Resolves** the NEEDS A HUMAN note above (opening hours held in two places): they are held in one place now, the booking system.
+
+### NEEDS A HUMAN
+- **Six barbering services are no longer on the price list** (clipper cut, scissor over comb, beard trim, hot towel shave, flat top, cut and beard): the booking system does not sell them, so they could not be booked, and the website now lists only what can be. If they should be offered, they go into the booking catalogue first (prices and times needed) and appear here on the next export.
+- **The Vercel build does not fetch the live feed.** It builds from the committed `feed.json`. Before the booking site is live that is the only possibility; after, a price changed in the booking system's Settings reaches this site only when the feed is exported again and the site rebuilt.
+
+### WELSH FOR REVIEW
+None new: the link uses the existing "Book online" / Welsh label; prices and times are figures.

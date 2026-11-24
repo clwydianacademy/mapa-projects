@@ -751,8 +751,8 @@ def hairsalon_ld(loc, domain, org, site):
     }
     if not is_todo(a["geo"]):
         block["geo"] = {"@type": "GeoCoordinates", **a["geo"]["value"]}
-    prices = [salon.l2_price(p, sv) for sv in p["services"] if salon.printable(sv["stylist_price"]) and sv.get("category") in p["pricing"]["l2_percent_off"]]
-    prices += [salon.l3_price(sv) for sv in p["services"] if salon.printable(sv["stylist_price"])]
+    # from the booking system's feed, like every other figure about the salon (salon.py)
+    prices = [x for sv in p["services"] if salon.priced(sv) for x in (salon.l2_price(p, sv), salon.l3_price(sv)) if x is not None]
     if prices and not salon.draft_paths(p):
         block["priceRange"] = f"£{min(prices)}–£{max(prices)}"
     op = p["opening"]
@@ -760,7 +760,7 @@ def hairsalon_ld(loc, domain, org, site):
         block["openingHoursSpecification"] = [
             {"@type": "OpeningHoursSpecification", "dayOfWeek": "https://schema.org/" + DAY_NAMES[d],
              "opens": x["open"], "closes": x["close"], "validFrom": term["from"], "validThrough": term["to"]}
-            for term in salon.val(op["terms"]) for d, ss in salon.val(op["sessions"]).items() for x in ss]
+            for term in salon.terms() for d, ss in salon.sessions().items() for x in ss]
     link = {"@context": "https://schema.org", "@type": org["@type"], "@id": org["@id"], "department": {"@id": block["@id"]}}
     return [block, link]
 

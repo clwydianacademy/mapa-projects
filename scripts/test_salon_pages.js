@@ -34,7 +34,9 @@ test.after(() => fs.rmSync(PREVIEW, { recursive: true, force: true }));
 const read = (root, p) => fs.readFileSync(path.join(root, p), "utf8");
 const page = (p) => read(PREVIEW, path.join(p, "index.html"));
 const visible = (html) => html.slice(html.indexOf("<body")).replace(/<script[\s\S]*?<\/script>/g, " ").replace(/<[^>]+>/g, " ").replace(/&pound;/g, "£").replace(/&rsquo;/g, "’").replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n))).replace(/\s+/g, " ");
-const row = (html, name) => { const m = html.match(new RegExp('<tr><th scope="row">' + name + "[\\s\\S]*?</tr>")); assert.ok(m, "no row: " + name); return visible("<body>" + m[0]); };
+const row = (html, name) => { const m = html.match(new RegExp('<tr\\b[^>]*><th scope="row">' + name + "[\\s\\S]*?</tr>")); assert.ok(m, "no row: " + name); return visible("<body>" + m[0]); };
+// THE BOOKING SYSTEM'S OWN FIGURES: the only place a price, a time or an opening hour may come from
+const FEED = JSON.parse(fs.readFileSync(path.join(REPO, "_data", "salon", "feed.json"), "utf8"));
 function walk(dir, out) { for (const f of fs.readdirSync(dir, { withFileTypes: true })) { const p = path.join(dir, f.name); if (f.isDirectory()) walk(p, out); else out.push(p); } return out; }
 
 // =================================================================================================
@@ -109,7 +111,10 @@ test("preview: every 'Book' control goes to the booking site, and nothing posts 
     assert.ok(html.includes('href="' + BOOK + '"'), p + " has no link to the booking site");
     assert.ok(!/\/api\/salon|salon-book\.js|salon-staff\.js|salon-models\.js|id="salon-data"/.test(html), p + " still refers to the removed engine");
     assert.ok(!/<form\b/.test(html.slice(html.indexOf("<main"), html.indexOf("</main>"))), p + " has a form with nowhere to post");
-    for (const m of html.matchAll(/<a\b[^>]*href="https:\/\/book\.[^"]*"[^>]*>/g)) assert.equal(m[0].includes('href="' + BOOK + '"'), true, "an odd booking link: " + m[0]);
+    // a booking link is the booking page itself, or the booking page opened on ONE service the feed lists
+    const cy = p.startsWith("cy/");
+    const deep = new Set(FEED.services.map((s) => s.book.replace(/&/g, "&amp;") + (cy ? "&amp;lang=cy" : "")).concat(FEED.services.map((s) => s.book + (cy ? "&lang=cy" : ""))));
+    for (const m of html.matchAll(/<a\b[^>]*href="(https:\/\/book\.[^"]*)"[^>]*>/g)) assert.ok(m[1] === BOOK || deep.has(m[1]), "an odd booking link: " + m[0]);
   }
 });
 
@@ -120,16 +125,16 @@ test("preview: prices — Level 3 is the stylist price; Level 2 is 25% off cutti
     const r = row(html, name);
     assert.match(r, new RegExp("£" + want[name][0] + "\\b.*£" + want[name][1] + "\\b"), name + ": " + r);
   }
-  // the arithmetic itself, from the policy, for every service that has a stylist price
-  const pct = { cutting: 25, colour: 20 };
+  // every figure on the page is the booking system's: each service in the feed, at each level it is sold at
   let n = 0;
-  for (const s of POLICY.services) {
-    if (typeof s.stylist_price !== "number" || s.l3_only || s.l2_rule_confirmed === false) continue;
-    const l2 = Math.floor(s.stylist_price * (100 - pct[s.category]) / 100 + 0.5);
+  for (const f of FEED.services) {
+    const s = POLICY.services.find((x) => x.id === f.id);
+    assert.ok(s, f.id + " is sold by the booking system and is not on the website's list");
     const r = row(html, s.name.en.replace(/[()/]/g, "."));
-    assert.ok(r.includes("£" + l2) && r.includes("£" + s.stylist_price), s.id + ": expected £" + l2 + " and £" + s.stylist_price + " in: " + r);
+    for (const level of ["l2", "l3"]) if (f.levels[level]) assert.ok(r.includes("£" + f.levels[level].price), f.id + " at " + level + ": expected £" + f.levels[level].price + " in: " + r);
     n += 1;
   }
+  for (const s of POLICY.services) for (const k of ["stylist_price", "base_minutes"]) assert.equal(s[k], undefined, s.id + " still carries " + k + ": the website must hold no figure of its own");
   assert.ok(n >= 10);
 });
 
@@ -146,8 +151,8 @@ test("preview: restyle, balayage, colour correction and occasion hair are Level 
 
 test("preview: a value nobody has decided is never printed; a draft is printed only under a 'Draft' notice", () => {
   const html = page("salon/prices");
-  const clipper = row(html, "Clipper cut");
-  assert.ok(/To be confirmed/.test(clipper) && !/£/.test(clipper), "barbering not in the stylist list has no price yet: " + clipper);
+  // a service the booking system does not sell cannot be booked, so it is not listed at all
+  assert.ok(!/Clipper cut|Hot towel shave/.test(visible(html)), "a service that is not in the booking system's catalogue is on the price list");
   assert.match(html, /Draft/, "durations, deposits and the concession are drafts, so the page says so");
   assert.match(page("cy/salon/prisiau"), /Drafft/);
 });

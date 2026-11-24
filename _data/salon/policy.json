@@ -10,13 +10,6 @@
    "name": {
     "en": "Level 2 learner",
     "cy": "Dysgwr Lefel 2"
-   },
-   "factors": {
-    "pm_draft": "central scenario",
-    "value": {
-     "cutting": 2.0,
-     "colour": 1.6
-    }
    }
   },
   "l3": {
@@ -24,39 +17,24 @@
    "name": {
     "en": "Level 3 learner",
     "cy": "Dysgwr Lefel 3"
-   },
-   "factors": {
-    "pm_draft": "central scenario",
-    "value": {
-     "cutting": 1.5,
-     "colour": 1.3
-    }
    }
   }
  },
  "pricing": {
-  "_rule": "PM decision, 17 Nov 2026. Level 3 pays the stylist price. Level 2 pays the stylist price less this percentage — one figure for cutting and styling, one for colour and technical — rounded to the nearest whole pound (a half rounds up).",
-  "l2_percent_off": {
-   "cutting": 25,
-   "colour": 20
-  }
+  "_rule": "PM decision, 17 Nov 2026. Level 3 pays the stylist price. Level 2 pays the stylist price less this percentage — one figure for cutting and styling, one for colour and technical — rounded to the nearest whole pound (a half rounds up). THE FIGURES ARE NOT HERE: every price and time comes from feed.json, exported from the booking system."
  },
  "educator": {
-  "_note": "Educator time added to every appointment (draft).",
-  "minutes": {
-   "pm_draft": "central scenario",
-   "value": 15
-  }
+  "_note": "Educator time is part of every appointment length in feed.json; it is not a figure kept here."
  },
  "deposit": {
   "_note": "Flat, by category; comes off the bill; kept if cancelled inside the cancel window or on a no-show (draft).",
   "cutting": {
    "pm_draft": "central scenario",
-   "value": 5
+   "value": "feed.json"
   },
   "colour": {
    "pm_draft": "central scenario",
-   "value": 10
+   "value": "feed.json"
   }
  },
  "concession": {
@@ -129,35 +107,11 @@
   "_terms": "The salon opens in term time only.",
   "terms": {
    "todo_pm": true,
-   "value": [
-    {
-     "id": "spring-2027",
-     "from": "2027-01-11",
-     "to": "2027-03-26"
-    },
-    {
-     "id": "summer-2027",
-     "from": "2027-04-12",
-     "to": "2027-07-16"
-    }
-   ]
+   "value": "feed.json"
   },
   "sessions": {
    "todo_pm": true,
-   "value": {
-    "mon": [
-     {
-      "open": "09:30",
-      "close": "16:00"
-     }
-    ],
-    "wed": [
-     {
-      "open": "09:30",
-      "close": "16:00"
-     }
-    ]
-   }
+   "value": "feed.json"
   }
  },
  "services": [
@@ -168,12 +122,7 @@
    "name": {
     "en": "Cut and blow-dry",
     "cy": "Torri a chwythsychu"
-   },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 55
-   },
-   "stylist_price": 35
+   }
   },
   {
    "id": "blow-dry",
@@ -182,12 +131,7 @@
    "name": {
     "en": "Blow-dry",
     "cy": "Chwythsychu"
-   },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 35
-   },
-   "stylist_price": 22
+   }
   },
   {
    "id": "curly-blow-dry",
@@ -196,12 +140,7 @@
    "name": {
     "en": "Curly blow-dry",
     "cy": "Chwythsychu cyrliog"
-   },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 50
-   },
-   "stylist_price": 27
+   }
   },
   {
    "id": "restyle",
@@ -210,13 +149,7 @@
    "name": {
     "en": "Restyle / creative cut",
     "cy": "Ailsteilio / toriad creadigol"
-   },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 70
-   },
-   "stylist_price": 45,
-   "l3_only": true
+   }
   },
   {
    "id": "gents-cut",
@@ -225,12 +158,7 @@
    "name": {
     "en": "Gents cut",
     "cy": "Toriad dynion"
-   },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 30
-   },
-   "stylist_price": 18
+   }
   },
   {
    "id": "faded-gents-cut",
@@ -239,12 +167,7 @@
    "name": {
     "en": "Faded gents cut",
     "cy": "Toriad dynion pylu"
-   },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 45
-   },
-   "stylist_price": 21
+   }
   },
   {
    "id": "occasion",
@@ -253,13 +176,7 @@
    "name": {
     "en": "Occasion hair",
     "cy": "Gwallt achlysur"
-   },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 75
-   },
-   "stylist_price": 60,
-   "l3_only": true
+   }
   },
   {
    "id": "root-retouch",
@@ -269,11 +186,6 @@
     "en": "Root retouch",
     "cy": "Ail-liwio'r gwreiddiau"
    },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 90
-   },
-   "stylist_price": 38,
    "patch_test": true
   },
   {
@@ -284,11 +196,6 @@
     "en": "Full head colour",
     "cy": "Lliwio'r pen cyfan"
    },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 105
-   },
-   "stylist_price": 55,
    "patch_test": true
   },
   {
@@ -299,11 +206,6 @@
     "en": "Half head foils",
     "cy": "Ffoiliau hanner pen"
    },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 90
-   },
-   "stylist_price": 60,
    "patch_test": true
   },
   {
@@ -314,11 +216,6 @@
     "en": "Full head foils",
     "cy": "Ffoiliau pen cyfan"
    },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 135
-   },
-   "stylist_price": 70,
    "patch_test": true
   },
   {
@@ -329,12 +226,6 @@
     "en": "Balayage / creative colour",
     "cy": "Balayage / lliwio creadigol"
    },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 150
-   },
-   "stylist_price": 75,
-   "l3_only": true,
    "patch_test": true,
    "consultation_first": true
   },
@@ -346,11 +237,6 @@
     "en": "Toner / gloss",
     "cy": "Arlliwydd / sglein"
    },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 30
-   },
-   "stylist_price": 24,
    "patch_test": true
   },
   {
@@ -361,15 +247,8 @@
     "en": "Colour correction",
     "cy": "Cywiro lliw"
    },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 180
-   },
-   "stylist_price": 50,
-   "l3_only": true,
    "patch_test": true,
-   "consultation_first": true,
-   "price_from": true
+   "consultation_first": true
   },
   {
    "id": "perm",
@@ -378,28 +257,17 @@
    "name": {
     "en": "Perm",
     "cy": "Pyrm"
-   },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 150
-   },
-   "stylist_price": 50
+   }
   },
   {
-   "id": "conditioning",
+   "id": "conditioning-treatment",
    "group": "treatment",
    "category": "cutting",
    "name": {
     "en": "Conditioning treatment",
     "cy": "Triniaeth gyflyru"
    },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 30
-   },
-   "stylist_price": 24,
-   "_l2": "The decision gives a Level 2 discount for cutting/styling and for colour/technical; which one a treatment takes is not decided.",
-   "l2_rule_confirmed": false
+   "_l2": "The decision gives a Level 2 discount for cutting/styling and for colour/technical; which one a treatment takes is not decided."
   },
   {
    "id": "bond-reconstructor",
@@ -408,13 +276,7 @@
    "name": {
     "en": "Bond reconstructor",
     "cy": "Adluniwr bondiau"
-   },
-   "base_minutes": {
-    "pm_draft": "central scenario",
-    "value": 30
-   },
-   "stylist_price": 24,
-   "l2_rule_confirmed": false
+   }
   },
   {
    "id": "clipper-cut",
@@ -423,14 +285,6 @@
    "name": {
     "en": "Clipper cut, one grade",
     "cy": "Toriad clipiwr, un radd"
-   },
-   "base_minutes": {
-    "todo_pm": true,
-    "value": null
-   },
-   "stylist_price": {
-    "todo_pm": true,
-    "value": null
    }
   },
   {
@@ -440,14 +294,6 @@
    "name": {
     "en": "Scissor-over-comb",
     "cy": "Siswrn dros grib"
-   },
-   "base_minutes": {
-    "todo_pm": true,
-    "value": null
-   },
-   "stylist_price": {
-    "todo_pm": true,
-    "value": null
    }
   },
   {
@@ -457,14 +303,6 @@
    "name": {
     "en": "Beard trim and shape",
     "cy": "Tocio a siapio barf"
-   },
-   "base_minutes": {
-    "todo_pm": true,
-    "value": null
-   },
-   "stylist_price": {
-    "todo_pm": true,
-    "value": null
    }
   },
   {
@@ -474,16 +312,7 @@
    "name": {
     "en": "Hot towel / cut-throat shave",
     "cy": "Eillio tywel poeth / rasel hen ffasiwn"
-   },
-   "base_minutes": {
-    "todo_pm": true,
-    "value": null
-   },
-   "stylist_price": {
-    "todo_pm": true,
-    "value": null
-   },
-   "l3_only": true
+   }
   },
   {
    "id": "flat-top",
@@ -492,16 +321,7 @@
    "name": {
     "en": "Flat top / creative cut",
     "cy": "Pen fflat / toriad creadigol"
-   },
-   "base_minutes": {
-    "todo_pm": true,
-    "value": null
-   },
-   "stylist_price": {
-    "todo_pm": true,
-    "value": null
-   },
-   "l3_only": true
+   }
   },
   {
    "id": "cut-beard-combo",
@@ -510,14 +330,6 @@
    "name": {
     "en": "Cut and beard",
     "cy": "Toriad a barf"
-   },
-   "base_minutes": {
-    "todo_pm": true,
-    "value": null
-   },
-   "stylist_price": {
-    "todo_pm": true,
-    "value": null
    }
   }
  ],
@@ -537,6 +349,13 @@
   "treatment": {
    "en": "Treatments",
    "cy": "Triniaethau"
+  }
+ },
+ "catalogue": {
+  "_note": "Prices, appointment lengths, deposits, opening hours and term dates are taken from _data/salon/feed.json, which is exported from the booking system (clwydianacademy/salon-booking) and never edited by hand. They stay DRAFT here until Mark confirms them in the booking system's Settings.",
+  "figures": {
+   "pm_draft": "central scenario",
+   "value": "feed.json"
   }
  }
 }

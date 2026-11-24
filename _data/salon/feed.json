@@ -1,0 +1,438 @@
+{
+ "_source": "Exported from clwydianacademy/salon-booking by tools/export-feed.mjs. DO NOT EDIT BY HAND: change the price in the booking system and export again. The website builds its salon prices, times and hours from this file and from nothing else.",
+ "version": "ec647a15dd4a3167",
+ "for": "Clwydian Academy Training Salon",
+ "currency": "GBP",
+ "totalPrice": true,
+ "levels": [
+  {
+   "id": "l2",
+   "rank": 2,
+   "name": "Level 2 learner"
+  },
+  {
+   "id": "l3",
+   "rank": 3,
+   "name": "Level 3 learner"
+  }
+ ],
+ "services": [
+  {
+   "id": "cut-blow-dry",
+   "name": "Cut and blow-dry",
+   "group": "Cutting and styling",
+   "category": "cutting",
+   "allergyTest": false,
+   "consultationFirst": false,
+   "levels": {
+    "l2": {
+     "price": 26,
+     "minutes": 125,
+     "from": true,
+     "deposit": 5
+    },
+    "l3": {
+     "price": 35,
+     "minutes": 100,
+     "from": true,
+     "deposit": 5
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=cut-blow-dry"
+  },
+  {
+   "id": "blow-dry",
+   "name": "Blow-dry",
+   "group": "Cutting and styling",
+   "category": "cutting",
+   "allergyTest": false,
+   "consultationFirst": false,
+   "levels": {
+    "l2": {
+     "price": 17,
+     "minutes": 85,
+     "from": true,
+     "deposit": 5
+    },
+    "l3": {
+     "price": 22,
+     "minutes": 70,
+     "from": true,
+     "deposit": 5
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=blow-dry"
+  },
+  {
+   "id": "curly-blow-dry",
+   "name": "Curly blow-dry",
+   "group": "Cutting and styling",
+   "category": "cutting",
+   "allergyTest": false,
+   "consultationFirst": false,
+   "levels": {
+    "l2": {
+     "price": 20,
+     "minutes": 115,
+     "from": true,
+     "deposit": 5
+    },
+    "l3": {
+     "price": 27,
+     "minutes": 90,
+     "from": true,
+     "deposit": 5
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=curly-blow-dry"
+  },
+  {
+   "id": "restyle",
+   "name": "Restyle or creative cut",
+   "group": "Cutting and styling",
+   "category": "cutting",
+   "allergyTest": false,
+   "consultationFirst": false,
+   "levels": {
+    "l2": null,
+    "l3": {
+     "price": 45,
+     "minutes": 120,
+     "from": true,
+     "deposit": 5
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=restyle"
+  },
+  {
+   "id": "gents-cut",
+   "name": "Gents cut",
+   "group": "Cutting and styling",
+   "category": "cutting",
+   "allergyTest": false,
+   "consultationFirst": false,
+   "levels": {
+    "l2": {
+     "price": 14,
+     "minutes": 75,
+     "from": false,
+     "deposit": 5
+    },
+    "l3": {
+     "price": 18,
+     "minutes": 60,
+     "from": false,
+     "deposit": 5
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=gents-cut"
+  },
+  {
+   "id": "faded-gents-cut",
+   "name": "Faded gents cut",
+   "group": "Cutting and styling",
+   "category": "cutting",
+   "allergyTest": false,
+   "consultationFirst": false,
+   "levels": {
+    "l2": {
+     "price": 16,
+     "minutes": 105,
+     "from": false,
+     "deposit": 5
+    },
+    "l3": {
+     "price": 21,
+     "minutes": 85,
+     "from": false,
+     "deposit": 5
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=faded-gents-cut"
+  },
+  {
+   "id": "occasion",
+   "name": "Occasion hair",
+   "group": "Cutting and styling",
+   "category": "cutting",
+   "allergyTest": false,
+   "consultationFirst": false,
+   "levels": {
+    "l2": null,
+    "l3": {
+     "price": 60,
+     "minutes": 130,
+     "from": true,
+     "deposit": 5
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=occasion"
+  },
+  {
+   "id": "root-retouch",
+   "name": "Root retouch",
+   "group": "Colour",
+   "category": "colour",
+   "allergyTest": true,
+   "consultationFirst": false,
+   "levels": {
+    "l2": {
+     "price": 30,
+     "minutes": 160,
+     "from": true,
+     "deposit": 10
+    },
+    "l3": {
+     "price": 38,
+     "minutes": 135,
+     "from": true,
+     "deposit": 10
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=root-retouch"
+  },
+  {
+   "id": "full-head-colour",
+   "name": "Full head colour",
+   "group": "Colour",
+   "category": "colour",
+   "allergyTest": true,
+   "consultationFirst": false,
+   "levels": {
+    "l2": {
+     "price": 44,
+     "minutes": 185,
+     "from": true,
+     "deposit": 10
+    },
+    "l3": {
+     "price": 55,
+     "minutes": 155,
+     "from": true,
+     "deposit": 10
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=full-head-colour"
+  },
+  {
+   "id": "half-head-foils",
+   "name": "Half head foils",
+   "group": "Colour",
+   "category": "colour",
+   "allergyTest": true,
+   "consultationFirst": false,
+   "levels": {
+    "l2": {
+     "price": 48,
+     "minutes": 160,
+     "from": true,
+     "deposit": 10
+    },
+    "l3": {
+     "price": 60,
+     "minutes": 135,
+     "from": true,
+     "deposit": 10
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=half-head-foils"
+  },
+  {
+   "id": "full-head-foils",
+   "name": "Full head foils",
+   "group": "Colour",
+   "category": "colour",
+   "allergyTest": true,
+   "consultationFirst": false,
+   "levels": {
+    "l2": {
+     "price": 56,
+     "minutes": 235,
+     "from": true,
+     "deposit": 10
+    },
+    "l3": {
+     "price": 70,
+     "minutes": 195,
+     "from": true,
+     "deposit": 10
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=full-head-foils"
+  },
+  {
+   "id": "balayage",
+   "name": "Balayage or creative colour",
+   "group": "Colour",
+   "category": "colour",
+   "allergyTest": true,
+   "consultationFirst": false,
+   "levels": {
+    "l2": null,
+    "l3": {
+     "price": 75,
+     "minutes": 210,
+     "from": true,
+     "deposit": 10
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=balayage"
+  },
+  {
+   "id": "perm",
+   "name": "Perm",
+   "group": "Colour",
+   "category": "colour",
+   "allergyTest": false,
+   "consultationFirst": false,
+   "levels": {
+    "l2": {
+     "price": 40,
+     "minutes": 255,
+     "from": true,
+     "deposit": 10
+    },
+    "l3": {
+     "price": 50,
+     "minutes": 210,
+     "from": true,
+     "deposit": 10
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=perm"
+  },
+  {
+   "id": "toner-gloss",
+   "name": "Toner or gloss",
+   "group": "Colour",
+   "category": "colour",
+   "allergyTest": true,
+   "consultationFirst": false,
+   "levels": {
+    "l2": {
+     "price": 19,
+     "minutes": 65,
+     "from": false,
+     "deposit": 10
+    },
+    "l3": {
+     "price": 24,
+     "minutes": 55,
+     "from": false,
+     "deposit": 10
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=toner-gloss"
+  },
+  {
+   "id": "colour-correction",
+   "name": "Colour correction",
+   "group": "Colour",
+   "category": "colour",
+   "allergyTest": true,
+   "consultationFirst": true,
+   "levels": {
+    "l2": null,
+    "l3": {
+     "price": 50,
+     "minutes": 250,
+     "from": true,
+     "deposit": 10
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=colour-correction"
+  },
+  {
+   "id": "conditioning-treatment",
+   "name": "Conditioning treatment",
+   "group": "Treatments",
+   "category": "cutting",
+   "allergyTest": false,
+   "consultationFirst": false,
+   "levels": {
+    "l2": null,
+    "l3": {
+     "price": 24,
+     "minutes": 60,
+     "from": false,
+     "deposit": 5
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=conditioning-treatment"
+  },
+  {
+   "id": "bond-reconstructor",
+   "name": "Bond reconstructor",
+   "group": "Treatments",
+   "category": "cutting",
+   "allergyTest": false,
+   "consultationFirst": false,
+   "levels": {
+    "l2": null,
+    "l3": {
+     "price": 24,
+     "minutes": 60,
+     "from": false,
+     "deposit": 5
+    }
+   },
+   "book": "https://book.clwydianacademy.co.uk/book/?service=bond-reconstructor"
+  }
+ ],
+ "deposit": {
+  "cutting": 5,
+  "colour": 10
+ },
+ "minimumAge": 18,
+ "hours": [
+  {
+   "day": "mon",
+   "name": "Monday",
+   "open": "09:00",
+   "close": "17:00"
+  },
+  {
+   "day": "tue",
+   "name": "Tuesday",
+   "open": "09:00",
+   "close": "17:00"
+  },
+  {
+   "day": "wed",
+   "name": "Wednesday",
+   "open": "09:00",
+   "close": "17:00"
+  },
+  {
+   "day": "thu",
+   "name": "Thursday",
+   "open": "09:00",
+   "close": "17:00"
+  },
+  {
+   "day": "fri",
+   "name": "Friday",
+   "open": "09:00",
+   "close": "17:00"
+  }
+ ],
+ "terms": [
+  {
+   "from": "2027-01-11",
+   "to": "2027-03-26"
+  },
+  {
+   "from": "2027-04-12",
+   "to": "2027-07-16"
+  }
+ ],
+ "closed": [
+  "2027-02-15",
+  "2027-02-17",
+  "2027-05-03",
+  "2027-05-31",
+  "2027-06-02"
+ ],
+ "book": "https://book.clwydianacademy.co.uk/book/",
+ "manage": "https://book.clwydianacademy.co.uk/manage/"
+}
