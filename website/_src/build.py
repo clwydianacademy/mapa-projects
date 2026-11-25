@@ -17,6 +17,8 @@ import html as html_mod
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import cpd   # everything rendered from _data/cpd-2027.json
+import salon # the training salon's pages, rendered from _data/salon/policy.json
+import showcase # the three-path home page, learner work, Find us, the statutory footer — behind its own switch
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
@@ -59,6 +61,43 @@ NAV = [
     {"en": ("/guides/", "Guides"),                 "cy": ("/cy/canllawiau/", "Canllawiau")},
     {"en": ("/contact/", "Contact"),               "cy": ("/cy/cysylltu/", "Cysylltu")},
 ]
+
+# The training salon's nav item. Added to NAV only while the salon is public — see salon.is_public().
+SALON_NAV = {"en": ("/salon/", "Our Salon"), "cy": ("/cy/salon/", "Ein Salon")}
+SALON_ON = salon.is_public()      # build() may force this on for a preview build in a scratch folder
+
+# The showcase switch (_data/showcase.json). Off: this file builds exactly what it built before
+# showcase.py existed. A preview build forces it on, like the salon's.
+WORK_NAV = {"en": ("/work/", "Learner Work"), "cy": ("/cy/gwaith/", "Gwaith Dysgwyr")}
+SHOWCASE_ON = showcase.is_public()
+PREVIEW = False
+NOINDEX_ALL = False  # a Vercel preview deployment: no page indexable, nothing in the sitemap
+VERCEL_REF = ""      # branch and commit, shown in the preview ribbon on Vercel
+
+# THE TRIMMED NAV (proposed 24 Nov 2026, for Mark to judge in the preview): seven items. With the
+# showcase on, "For Salons" and "Guides" leave the header — both stay in the footer's Academy
+# column, where they already are — and the salon and learner work take their places.
+TRIMMED_OUT = ("/for-salons/", "/guides/")
+
+def nav_items():
+    if SHOWCASE_ON:
+        keep = [item for item in NAV if item["en"][0] not in TRIMMED_OUT]
+        at = next(i for i, item in enumerate(keep) if item["en"][0] == "/funding/") + 1
+        return keep[:at] + ([SALON_NAV] if SALON_ON else []) + [WORK_NAV] + keep[at:]
+    if not SALON_ON:
+        return NAV
+    at = next(i for i, item in enumerate(NAV) if item["en"][0] == "/for-salons/") + 1
+    return NAV[:at] + [SALON_NAV] + NAV[at:]
+
+HEADING_FIX = {
+    "cpd-courses": {"en": "The courses", "cy": "Y cyrsiau"},
+    "guides": {"en": "The guides", "cy": "Y canllawiau"},
+    "train-your-team": {"en": "The units", "cy": "Yr unedau"},
+    "privacy": {"en": "The notice in full", "cy": "Yr hysbysiad yn llawn"},
+}
+
+def is_showcase(page):
+    return str(page.get("generated") or "").startswith("showcase")
 
 # Every locale-specific string in the chrome. Welsh strings are machine-written and
 # unreviewed (CLAUDE.md "Bilingual") — any change here goes under WELSH FOR REVIEW.
@@ -135,8 +174,19 @@ def other(loc):
 def out_path(path):
     return path.lstrip("/") if path.endswith(".html") else path.strip("/") + "/index.html" if path != "/" else "index.html"
 
+def is_salon(page):
+    return str(page.get("generated") or "").startswith("salon")
+
+def hidden(page):
+    """Not to be indexed: a page marked noindex, and EVERY salon page while any value in
+    _data/salon/policy.json is still a placeholder — nothing unconfirmed goes out to a search engine."""
+    return NOINDEX_ALL or bool(page.get("noindex")) or (is_salon(page) and not salon.confirmed())
+
 def head(page, loc, jsonld):
     c, me = CHROME[loc], page[loc]
+    if SHOWCASE_ON and page["key"] in showcase.META:
+        title, desc = showcase.META[page["key"]][loc]
+        me = dict(me, title=title, desc=desc)
     url = DOMAIN + me["path"]
     lines = [
         "<!doctype html>",
@@ -147,10 +197,12 @@ def head(page, loc, jsonld):
         f"<title>{me['title']}</title>",
         f'<meta name="description" content="{me["desc"]}">',
     ]
-    if page.get("noindex"):
+    if hidden(page):
         lines.append('<meta name="robots" content="noindex, nofollow">')
     lines.append(f'<link rel="canonical" href="{url}">')
-    if page.get("cy"):
+    if page.get("cy") and SHOWCASE_ON:
+        lines += showcase.hreflang_links(page, DOMAIN)       # en-GB, cy, x-default: checked both ways at the end of the build
+    elif page.get("cy"):
         lines += [
             f'<link rel="alternate" hreflang="en" href="{DOMAIN}{page["en"]["path"]}">',
             f'<link rel="alternate" hreflang="cy" href="{DOMAIN}{page["cy"]["path"]}">',
@@ -175,22 +227,36 @@ def head(page, loc, jsonld):
         '<link rel="icon" href="/favicon.svg" type="image/svg+xml">',
         '<link rel="icon" href="/favicon.ico" sizes="32x32">',
         '<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">',
-        '<link rel="preconnect" href="https://fonts.googleapis.com">',
-        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
-        f'<link href="{FONTS}" rel="stylesheet">',
-        '<link rel="stylesheet" href="/assets/css/main.css">',
+    ]
+    if SHOWCASE_ON:
+        # The faces come from our own origin (showcase.css): no request to a font service.
+        lines += ['<link rel="preload" href="/assets/fonts/inter-400-700.woff2" as="font" type="font/woff2" crossorigin>',
+                  '<link rel="preload" href="/assets/fonts/fraunces-600.woff2" as="font" type="font/woff2" crossorigin>',
+                  '<link rel="stylesheet" href="/assets/css/main.css">',
+                  '<link rel="stylesheet" href="/assets/css/showcase.css">']
+    else:
+        lines += ['<link rel="preconnect" href="https://fonts.googleapis.com">',
+                  '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
+                  f'<link href="{FONTS}" rel="stylesheet">',
+                  '<link rel="stylesheet" href="/assets/css/main.css">']
+    lines += [
         # without JavaScript the menu button cannot open the menu: show the links instead
         '<noscript><link rel="stylesheet" href="/assets/css/nojs.css"></noscript>',
-        ld(ORG),
     ]
+    if is_salon(page):
+        lines.append('<link rel="stylesheet" href="/assets/css/salon.css">')
+    lines.append(ld(ORG))
     lines += [ld(block) for block in jsonld]
-    lines += ['<script src="/assets/js/main.js" defer></script>', "</head>"]
+    lines.append('<script src="/assets/js/main.js" defer></script>')
+    if SHOWCASE_ON:
+        lines.append('<script src="/assets/js/showcase.js" defer></script>')
+    lines.append("</head>")
     return "\n".join(lines)
 
 def header(page, loc):
     c = CHROME[loc]
     links = []
-    for item in NAV:
+    for item in nav_items():
         href, label = item[loc]
         cur = ' aria-current="page"' if page.get("nav") == item["en"][0] else ""
         links.append(f'<a href="{href}"{cur}>{label}</a>')
@@ -223,6 +289,10 @@ def header(page, loc):
 
 def footer(page, loc):
     c = CHROME[loc]
+    if SHOWCASE_ON:
+        # The statutory line on EVERY page, and the one address, both from _data/site.json.
+        c = dict(c, address=tuple(showcase.address_text(loc, SITE).split(", ", 1)),
+                 legal={k: '<span class="sc-legal">' + showcase.legal_line(loc, SITE, tbc=PREVIEW) + "</span>" for k in c["legal"]})
     li = lambda items: "\n".join(f'          <li><a href="{h}">{l}</a></li>' for h, l in items)
     return f'''</main>
 <footer class="site-footer">
@@ -273,7 +343,11 @@ def footer(page, loc):
 def lastmod(page, loc, fallback):
     """Date of the last commit touching this page's sources; the build date if none.
     Sources are the fragment and JSON-LD, plus the CPD data and cpd.py for pages that render from them."""
-    if page.get("generated"):
+    if is_showcase(page) or (SHOWCASE_ON and page["key"] == "home"):
+        paths = showcase.SOURCES
+    elif is_salon(page):
+        paths = [salon.DATA_PATH, os.path.join(HERE, "salon.py")]
+    elif page.get("generated"):
         paths = [cpd.DATA_PATH, os.path.join(HERE, "cpd.py")]
     else:
         paths = [os.path.join("pages", loc, page["key"] + ".html"), os.path.join("jsonld", loc, page["key"] + ".json")]
@@ -323,7 +397,16 @@ def redirects(pages):
             try: os.rmdir(os.path.dirname(stale))
             except OSError: pass
             print("removed retired page", out_path(src))
-    write("vercel.json", json.dumps({"redirects": rules}, indent=2) + "\n")
+    # THE BUILD STEP VERCEL RUNS. For a production deployment it does nothing at all and the
+    # committed folder is served as it is. For a PREVIEW deployment (VERCEL_ENV=preview) it
+    # rebuilds this folder with the salon and the showcase on, so the new site can be clicked
+    # through behind Vercel's login. If the step fails, the committed (switch-off) site is served
+    # and the ribbon is absent — which is how to tell.
+    command = "cd .. && (python3 website/_src/build.py --vercel || echo 'preview build failed: serving the committed site')"
+    # outputDirectory: once a build command exists Vercel looks for a folder called `public`
+    # and fails the deployment without one (the first attempt, 24 Nov 2026, failed in three
+    # seconds). The built site IS this folder, so say so.
+    write("vercel.json", json.dumps({"buildCommand": command, "outputDirectory": ".", "redirects": rules}, indent=2) + "\n")
     return len(wanted)
 
 def build():
@@ -338,13 +421,56 @@ def build():
             if " " in rel:
                 sys.exit(f"build: {rel!r} contains a space — Vercel will refuse to deploy this function")
     pages = json.loads(read("pages.json"))
+    if SALON_ON and not os.path.exists(os.path.join(OUT, "assets", "css", "salon.css")):
+        sys.exit("build: /assets/css/salon.css is missing — the salon pages load it")
     cpd.configure(DOMAIN, next(p for p in pages if p.get("generated") == "cpd-calendar"))
     urls = {"en": [], "cy": []}
+    built = {}
+    if SHOWCASE_ON:
+        missing = showcase.legal_todos(SITE)
+        if missing and not PREVIEW:
+            sys.exit("build: the showcase cannot be public: _data/site.json legal." + ", legal.".join(missing)
+                     + " is still TODO_PM — the trading disclosure would be incomplete on every page")
+        showcase.copy_assets(OUT)
+        pages += showcase.portfolio_pages(preview=PREVIEW)     # /work/<slug>/, one pair of pages per learner portfolio
+    else:
+        showcase.remove_assets(OUT)
     for page in pages:
         for loc in LOCALES:
             if not page.get(loc):
                 continue
-            if page.get("generated") == "cpd-calendar":
+            if is_salon(page) and not SALON_ON:
+                # THE SWITCH IS OFF: the page is not built, and one left over from an earlier
+                # build is removed, so the deployed folder holds no trace of the salon.
+                stale = os.path.join(OUT, out_path(page[loc]["path"]))
+                if os.path.exists(stale):
+                    os.remove(stale)
+                    try: os.removedirs(os.path.dirname(stale))
+                    except OSError: pass
+                    print("removed (salon not public)", out_path(page[loc]["path"]))
+                continue
+            if is_showcase(page) and not SHOWCASE_ON:
+                stale = os.path.join(OUT, out_path(page[loc]["path"]))
+                if os.path.exists(stale):
+                    os.remove(stale)
+                    try: os.removedirs(os.path.dirname(stale))
+                    except OSError: pass
+                    print("removed (showcase not public)", out_path(page[loc]["path"]))
+                continue
+            if page.get("generated") == "showcase-portfolio":
+                body, jsonld = showcase.portfolio_body(page["slug"], loc, SITE, preview=PREVIEW), []
+            elif is_showcase(page):
+                body, jsonld = showcase.work_body(loc, SITE, preview=PREVIEW), []
+            elif SHOWCASE_ON and page["key"] == "home":
+                body = showcase.home_body(loc, SITE)
+                jsonld = json.loads(read("jsonld", loc, "home.json"))
+            elif is_salon(page):
+                body = salon.body(page["generated"], loc, SITE)
+                jsonld = salon.jsonld(page["generated"], loc, DOMAIN, ORG, SITE)
+                if SHOWCASE_ON and page["generated"] == "salon":
+                    body += showcase.find_us(loc, SITE)
+                    jsonld = showcase.hairsalon_ld(loc, DOMAIN, ORG, SITE)
+            elif page.get("generated") == "cpd-calendar":
                 body = cpd.calendar_body(loc, page)
                 jsonld = cpd.calendar_jsonld(loc, page)
             else:
@@ -353,18 +479,47 @@ def build():
                 if "{{" in raw_ld:                             # tokens in structured data render as plain text, not entities
                     raw_ld = html_mod.unescape(cpd.render(raw_ld, loc))
                 jsonld = json.loads(raw_ld)
+            if SHOWCASE_ON and page["key"] in HEADING_FIX and "<h3" in body:
+                # These pages go from their h1 straight to h3 cards. With the showcase on, the
+                # section that holds them is given the h2 it lacked — read by a screen reader,
+                # not drawn — so the outline has no gap (axe: heading-order).
+                at = body.rfind("<section", 0, body.index("<h3"))
+                end = body.index(">", at) + 1
+                body = body[:end] + f'\n  <h2 class="sc-sr">{HEADING_FIX[page["key"]][loc]}</h2>' + body[end:]
             if "<!-- cpd-dates -->" in body:
                 body = body.replace("<!-- cpd-dates -->", cpd.date_rows(loc, page))
                 jsonld = cpd.enrich(jsonld, loc, page)
             body = cpd.render(body, loc)                       # {{cpd:...}} facts from the data file
             page = dict(page, **{loc: dict(page[loc], title=cpd.render(page[loc]["title"], loc), desc=cpd.render(page[loc]["desc"], loc))})
+            if SHOWCASE_ON:
+                # The questions and answers stay on the page as plain, visible content. Their
+                # FAQPage markup goes: Google ended FAQ rich results on 7 May 2026.
+                jsonld = [b for b in (jsonld if isinstance(jsonld, list) else [jsonld]) if b.get("@type") != "FAQPage"]
+                showcase.check_ld([ORG] + list(jsonld), page[loc]["path"])
             html = head(page, loc, jsonld) + "\n" + header(page, loc) + "\n" + body + footer(page, loc)
+            if PREVIEW:
+                # A PREVIEW SAYS SO, on every page, so nobody mistakes it for the live site —
+                # or mistakes the live site for it.
+                ribbon = ('<aside class="sc-preview" aria-label="Preview">Preview build &middot; showcase and salon switched on &middot; not the live site'
+                          + (" &middot; " + VERCEL_REF if VERCEL_REF else "") + "</aside>")
+                html = html.replace('<a class="skip-link"', ribbon + '\n<a class="skip-link"', 1)
+            if SHOWCASE_ON:
+                # Two accessibility faults in the shared chrome, put right with the showcase: the
+                # footer's headings skipped a level (h4 straight after h2; now h2), and the brand link's accessible
+                # name did not contain the words it shows.
+                foot = html.index('<footer class="site-footer">')
+                html = html[:foot] + html[foot:].replace("<h4>", '<h2 class="footer-h">').replace("</h4>", "</h2>")
+                html = html.replace(f'aria-label="{CHROME[loc]["home_label"]}"', 'aria-label="Clwydian Academy &middot; CBC &mdash; ' + ("home" if loc == "en" else "hafan") + '"')
+            if SHOWCASE_ON:
+                built[page[loc]["path"]] = html
             rel = out_path(page[loc]["path"])
             write(rel, html)
-            if not page.get("noindex"):
+            if not hidden(page):
                 urls[loc].append(page)
             print("built", rel)
 
+    if SHOWCASE_ON:
+        showcase.check_hreflang(pages, built, DOMAIN)
     today = datetime.date.today().isoformat()
     sm = ['<?xml version="1.0" encoding="UTF-8"?>',
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">']
@@ -372,16 +527,57 @@ def build():
         for page in urls[loc]:
             en, cy = DOMAIN + page["en"]["path"], DOMAIN + page["cy"]["path"]
             sm += [f'  <url><loc>{DOMAIN + page[loc]["path"]}</loc><lastmod>{lastmod(page, loc, today)}</lastmod><priority>{page["priority"]}</priority>',
-                   f'    <xhtml:link rel="alternate" hreflang="en" href="{en}"/>',
+                   f'    <xhtml:link rel="alternate" hreflang="{"en-GB" if SHOWCASE_ON else "en"}" href="{en}"/>',
                    f'    <xhtml:link rel="alternate" hreflang="cy" href="{cy}"/>',
                    f'    <xhtml:link rel="alternate" hreflang="x-default" href="{en}"/>',
                    "  </url>"]
     sm.append("</urlset>")
     write("sitemap.xml", "\n".join(sm) + "\n")
     write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {DOMAIN}/sitemap.xml\n")
+    if SALON_ON:
+        todo, draft = salon.todo_paths(salon.raw()), salon.draft_paths(salon.raw())
+        print(f"salon: ON — {len(todo)} placeholder(s) and {len(draft)} draft value(s): salon pages are "
+              + ("noindex and out of the sitemap" if todo or draft else "indexed"))
+    else:
+        print("salon: OFF — no salon page and no nav item built (\"public\" is false in _data/salon/policy.json)")
+    if SHOWCASE_ON:
+        todo = showcase.legal_todos(SITE)
+        print("showcase: ON" + (" (PREVIEW)" if PREVIEW else "") + " — hreflang pairs checked on " + str(len(built)) + " pages"
+              + (f"; STILL TODO_PM before it can be public: legal.{', legal.'.join(todo)}" if todo else "")
+              + ("" if showcase.address_confirmed(SITE) else "; the unit and postcode are TODO_PM (park and town shown)"))
+    else:
+        print("showcase: OFF — the home page, footer and fonts are main's; no /work/ page (\"public\" is false in _data/showcase.json)")
     n = sum(len(v) for v in urls.values())
     r = redirects(pages)
     print(f"built sitemap.xml ({n} urls), robots.txt, vercel.json ({r} redirected urls)")
 
 if __name__ == "__main__":
+    # `build.py --salon-preview DIR`: copy the deployed folder to DIR and build THERE with the salon
+    # switched on. For looking at the salon pages, and for scripts/test_salon_pages.js, without
+    # putting anything into the folder that is deployed. DIR must not be inside the repository.
+    if len(sys.argv) == 3 and sys.argv[1] == "--salon-preview":
+        import shutil
+        target = os.path.abspath(sys.argv[2])
+        if target == OUT or target.startswith(REPO + os.sep):
+            sys.exit("build: --salon-preview must write outside the repository")
+        shutil.copytree(OUT, target, dirs_exist_ok=True)
+        OUT, SALON_ON = target, True
+    elif len(sys.argv) == 3 and sys.argv[1] == "--preview":
+        # `build.py --preview DIR`: everything ON — the salon and the showcase — in a scratch folder.
+        import shutil
+        target = os.path.abspath(sys.argv[2])
+        if target == OUT or target.startswith(REPO + os.sep):
+            sys.exit("build: --preview must write outside the repository")
+        shutil.copytree(OUT, target, dirs_exist_ok=True)
+        OUT, SALON_ON, SHOWCASE_ON, PREVIEW = target, True, True, True
+    elif len(sys.argv) == 2 and sys.argv[1] == "--vercel":
+        # Run by Vercel on every deployment (see redirects()). ONLY a preview deployment builds:
+        # in place, everything on. Production, and anything that is not Vercel, is left alone.
+        if os.environ.get("VERCEL_ENV") != "preview":
+            print("build --vercel: not a preview deployment (VERCEL_ENV=%r) — nothing built; the committed site is served" % os.environ.get("VERCEL_ENV"))
+            sys.exit(0)
+        SALON_ON, SHOWCASE_ON, PREVIEW, NOINDEX_ALL = True, True, True, True
+        VERCEL_REF = (os.environ.get("VERCEL_GIT_COMMIT_REF", "") + " " + os.environ.get("VERCEL_GIT_COMMIT_SHA", "")[:7]).strip()
+    elif len(sys.argv) > 1:
+        sys.exit("usage: build.py [--salon-preview DIR | --preview DIR | --vercel]")
     build()

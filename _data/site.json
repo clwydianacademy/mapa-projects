@@ -6,5 +6,62 @@
     "_note": "LEGAL QUESTION PENDING WITH THE PM — do not change without their instruction. This is the only place the address is written: change these two lines (English and Welsh forms of the same address) and rebuild. It appears in the footer of /funding/ and /cy/ffioedd-a-chyllid/ only.",
     "en": "2 Bod Hyfryd, Rhes-y-Cae, Holywell CH8 8JG",
     "cy": "2 Bod Hyfryd, Rhes-y-Cae, Treffynnon CH8 8JG"
+  },
+  "legal": {
+    "_note": "THE TRADING DISCLOSURE (Company, LLP and Business (Names and Trading Disclosures) Regulations 2015, regs 24-25), for the footer of every page once the showcase is on. One value each, used in both languages. Two are TODO_PM and the showcase CANNOT be switched public while either is: 'registered_in' must be copied verbatim from the Companies House record (never inferred from an address — the register could not be reached from the build machine on 20 Nov 2026), and 'registered_office' waits for Mark's decision on moving the registered office. The current registered office is a residential address and is NOT to be put here.",
+    "registered_name": "Clwydian Academy CBC",
+    "company_number": "17330962",
+    "status": {
+      "en": "a community interest company and a limited company",
+      "cy": "gwmni buddiant cymunedol ac yn gwmni cyfyngedig"
+    },
+    "registered_in": {
+      "todo_pm": true,
+      "value": null
+    },
+    "registered_office": {
+      "todo_pm": true,
+      "value": null
+    }
+  },
+  "salon_address": {
+    "_note": "WHERE THE ACADEMY AND ITS SALON ARE. Stored once; read by the footer, the HairSalon JSON-LD and the 'Find us' block, in both languages. The unit number and the postcode are TODO_PM: the string below is the form the letting agents use for the park, with 'Unit N' standing in. While todo_pm is true the page shows the park and the town only, the JSON-LD carries no streetAddress or postalCode, and the page is noindex.",
+    "todo_pm": true,
+    "value": {
+      "en": "Unit N, St Asaph Business Park, Ffordd Richard Davies, St Asaph, LL17 0LJ",
+      "cy": "Uned N, Parc Busnes Llanelwy, Ffordd Richard Davies, Llanelwy, LL17 0LJ",
+      "street": "Unit N, St Asaph Business Park, Ffordd Richard Davies",
+      "locality": "St Asaph",
+      "region": "Denbighshire",
+      "postcode": "LL17 0LJ"
+    },
+    "confirmed_part": {
+      "en": "St Asaph Business Park, St Asaph, LL17",
+      "cy": "Parc Busnes Llanelwy, Llanelwy, LL17"
+    },
+    "geo": {
+      "todo_pm": true,
+      "value": {
+        "latitude": 53.2713,
+        "longitude": -3.4603
+      },
+      "_note": "Approximate centre of the business park. Replace with the unit's own pin."
+    },
+    "find_us": {
+      "todo_pm": true,
+      "_note": "Directions, parking and public transport. Drafted from the map, not from a visit: confirm each line on site before it is published.",
+      "value": {
+        "en": {
+          "road": "By road, leave the A55 North Wales Expressway at junction 26, signed for St Asaph Business Park. The park is beside the junction.",
+          "parking": "Parking at the unit is to be confirmed.",
+          "transport": "The business park is on the edge of St Asaph, around a mile and a half from the city centre, and bus services to it are limited. Please check Traveline Cymru for current times before you rely on a bus. The nearest railway station is Rhyl."
+        },
+        "cy": {
+          "road": "Ar y ffordd, gadewch Wibffordd Gogledd Cymru yr A55 wrth gyffordd 26, sydd ag arwyddion i Barc Busnes Llanelwy. Mae’r parc wrth ymyl y gyffordd.",
+          "parking": "Mae’r trefniadau parcio wrth yr uned i’w cadarnhau.",
+          "transport": "Mae’r parc busnes ar gyrion Llanelwy, tua milltir a hanner o ganol y ddinas, ac mae’r gwasanaethau bws iddo yn gyfyngedig. Gwiriwch Traveline Cymru am yr amseroedd cyfredol cyn dibynnu ar fws. Yr orsaf reilffordd agosaf yw’r Rhyl."
+        }
+      }
+    }
   }
 }

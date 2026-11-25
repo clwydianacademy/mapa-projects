@@ -1,0 +1,71 @@
+# A PRICE CHANGED IN THE BOOKING SYSTEM REACHES THE WEBSITE BY ITSELF (Mark, 25 November 2026).
+#
+# Every night: fetch the booking system's live catalogue; if it differs from the committed feed,
+# commit the feed, rebuild the site, run the site's own checks, commit the output, and push.
+# Source and output are SEPARATE commits, in that order (CLAUDE.md, build discipline: the
+# sitemap's lastmod is read from the commit that touched the source).
+#
+# It pushes to the branch it runs on. A scheduled run is always the default branch, so a push
+# is a production deploy of the new prices — which is the point — and it happens ONLY when
+# every check below has passed. A feed that is refused (scripts/sync_salon_feed.py says why)
+# turns this job red and changes nothing. The booking system not answering changes nothing
+# and is not a failure.
+#
+# Until the booking site is live at book.clwydianacademy.co.uk this does nothing each night.
+name: Salon prices from the booking system
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: salon-feed
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Fetch the live catalogue
+        id: feed
+        run: python3 scripts/sync_salon_feed.py
+      - name: Commit the feed (source first)
+        if: steps.feed.outputs.changed == 'true'
+        env:
+          SUMMARY: ${{ steps.feed.outputs.summary }}
+        run: |
+          git config user.name "salon-feed"
+          git config user.email "salon-feed@users.noreply.github.com"
+          git add _data/salon/feed.json
+          git commit -m "Salon feed: the booking system's catalogue changed" -m "$SUMMARY"
+      - name: Build
+        if: steps.feed.outputs.changed == 'true'
+        run: python3 website/_src/build.py
+      - name: The site's own checks — nothing is pushed unless these pass
+        if: steps.feed.outputs.changed == 'true'
+        run: |
+          python3 scripts/test_feed_sync.py
+          python3 scripts/test_salon_feed.py
+          python3 scripts/test_showcase.py
+          node scripts/test_salon_pages.js
+          python3 scripts/check_claims.py site
+          python3 scripts/check_dates.py
+          python3 scripts/check_links.py site
+          python3 scripts/check_locale.py site
+          python3 scripts/check_forms.py site
+      - name: Commit the output (second, separately) and push
+        if: steps.feed.outputs.changed == 'true'
+        run: |
+          git add -A site
+          git diff --cached --quiet || git commit -m "Build: output for the salon feed change"
+          git push

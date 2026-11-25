@@ -6,7 +6,7 @@ check_locale.py — the English and Welsh sites are mirrors.
 
 For every page except /404.html:
   * <html lang> is en-GB outside /cy/ and cy inside it
-  * the head carries hreflang en, cy and x-default; x-default equals en
+  * the head carries hreflang en (written en or en-GB), cy and x-default; x-default equals en
   * the counterpart named by hreflang exists, and its own hreflang points straight back
   * the header language switch points at the same counterpart
   * the primary nav has the same number of links in both languages
@@ -62,7 +62,7 @@ def check(root):
         for k, v in re.findall(r'<link rel="alternate" hreflang="([\w-]+)" href="([^"]+)">', head):
             if not v.startswith(HOST + "/"):
                 problems.append(f"{url}: hreflang {k} href {v} is not on {HOST}")
-        alts = dict((k, strip(v)) for k, v in re.findall(r'<link rel="alternate" hreflang="([\w-]+)" href="([^"]+)">', head))
+        alts = dict(("en" if k == "en-GB" else k, strip(v)) for k, v in re.findall(r'<link rel="alternate" hreflang="([\w-]+)" href="([^"]+)">', head))
         for k in ("en", "cy", "x-default"):
             if k not in alts:
                 problems.append(f"{url}: no hreflang {k}")
@@ -75,7 +75,7 @@ def check(root):
         if twin not in site:
             problems.append(f"{url}: counterpart {twin} does not exist"); continue
         twin_head = site[twin].split("</head>", 1)[0]
-        back = dict((k, strip(v)) for k, v in re.findall(r'<link rel="alternate" hreflang="([\w-]+)" href="([^"]+)">', twin_head))
+        back = dict(("en" if k == "en-GB" else k, strip(v)) for k, v in re.findall(r'<link rel="alternate" hreflang="([\w-]+)" href="([^"]+)">', twin_head))
         if back.get(me) != url:
             problems.append(f"{url}: counterpart {twin} points its hreflang {me} at {back.get(me)}")
         sw = re.search(r'class="lang-switch" href="([^"]+)"', html)

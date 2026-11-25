@@ -1,0 +1,4 @@
+{
+  "_source": "THE SHOWCASE SWITCH. false: the site is built exactly as it is on main \u2014 the present home page, the present footer, no /work/ page, no photographs copied into the deployed folder. true: the three-path home page, the learner-work gallery, the statutory footer, the Find us block and the self-hosted fonts are built. It cannot be set true while a legal value in _data/site.json is TODO_PM. `python3 website/_src/build.py --preview DIR` builds everything ON into a scratch folder to look at.",
+  "public": false
+}

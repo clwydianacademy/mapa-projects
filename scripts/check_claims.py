@@ -4,7 +4,10 @@ check_claims.py — content guard for the Clwydian Academy site.
 
 Fails the build on any claim the academy cannot stand behind, any regression to pre-August 2026
 copy, and any personal contact detail or personal name (scans .html, .md, .txt, .json and .js in
-the tree — .js so that the enquiry function's own addresses are covered). Run against the built output before every commit:
+the tree — .js so that the enquiry function's own addresses are covered — and, since the training
+salon was added, .css, .svg, .xml and .webmanifest too, because a colour or a domain can live in
+any of them). It also fails on a FILE NAME that carries the other business's name: a photograph
+cannot be read, but its name can. Run against the built output before every commit:
 
     python3 scripts/check_claims.py "site"
 
@@ -30,6 +33,11 @@ BANNED = [
     (r"Charlotte\s+Eleanor\s+Academy",      "old entity name — renamed to Clwydian Academy CBC for funding separation"),
     (r"parentOrganization",                 "no parent organisation: the CIC is independent by design"),
     (r"Charlotte\s+Eleanor\s+Group",        "no related-party framing: the academy is independent of Charlotte Eleanor Group Cyf"),
+    # The training salon (Nov 2026) is run by Clwydian Academy CBC and its booking engine was a
+    # one-off copy from the Group's. Nothing of the Group may come with it: not the name in any
+    # spelling, not a domain or address on it, not its brand colour. (PM decision, 17 Nov 2026.)
+    (r"charlotte[\s._-]*eleanor",           "arm's length — the other business's name, in any spelling, domain, email address or path, must not appear in the deployed site"),
+    (r"#4e1622\b|rgba?\(\s*78\s*,\s*22\s*,\s*34\b", "arm's length — #4e1622 is the other business's brand colour; the salon has its own accent (--salon in salon.css)"),
     # Industry statistics: the unsourced originals are banned; the sourced versions live only in
     # _data/statistics.json and reach pages as {{stat:...}} tokens (Brief 12, 13 Sep 2026).
     (r"60\.5\s*%",                         "unsourced statistic — the sourced figure is 62% (NHBF evidence to Parliament, Sep 2024) via {{stat:self_employed:...}}"),
@@ -75,6 +83,10 @@ BLOCK = (r"p|div|section|article|aside|header|footer|main|nav|ul|ol|li|dl|dt|dd|
          r"legend|form|figure|figcaption|blockquote|pre|hr|details|summary|tfoot|caption")
 BLOCK_RE = re.compile(rf"</?(?:{BLOCK})\b[^>]*>", re.I)
 
+SCANNED = (".html", ".md", ".txt", ".json", ".js", ".css", ".svg", ".xml", ".webmanifest")
+NAME_RE = re.compile(r"charlotte[\s._-]*eleanor", re.I)
+PHOTO_NAME_RE = re.compile(r"charlotte|eleanor|(?:^|[-_/])ce[-_]|logo|(?:^|[-_])mark(?:[-_.]|$)|franchise|^(?:hero|hero-mobile|band-|split-|svc-|tile-)", re.I)
+
 def text_of(html):
     """Whole-page text, tags stripped — used for the banned-phrase scan."""
     return re.sub(r"<[^>]+>", " ", html)
@@ -91,10 +103,23 @@ def check(root):
     pages = 0
     for dirpath, _dirs, files in os.walk(root):
         for fn in files:
-            if not fn.endswith((".html", ".md", ".txt", ".json", ".js")):
-                continue
             path = os.path.join(dirpath, fn)
             rel = "/" + os.path.relpath(path, root).replace(os.sep, "/")
+            if NAME_RE.search(rel):          # every file, whatever its type: an image cannot be read, its name can
+                findings.append((rel, "BANNED", NAME_RE.search(rel).group(0),
+                                 "arm's length — a file or folder named after the other business"))
+            # THE IMPORTED PHOTOGRAPHS (Mark, 20 Nov 2026) are allowed under their NEW names only.
+            # A photograph folder may hold nothing named for the other business, none of its
+            # logo or mark files, and none of the names the files had where they came from.
+            if "/assets/img/photos/" in rel or "/assets/img/work/" in rel:
+                m = PHOTO_NAME_RE.search(fn)
+                if m:
+                    findings.append((rel, "BANNED", m.group(0),
+                                     "arm's length — a photograph published under the other business's file name, or one of its logo or mark files"))
+                if fn.lower().endswith((".jpg", ".jpeg")) and b"Exif\x00\x00" in open(path, "rb").read(4096):
+                    findings.append((rel, "BANNED", "EXIF", "privacy — a published photograph still carries EXIF data (camera, date, possibly GPS)"))
+            if not fn.endswith(SCANNED):
+                continue
             url = rel.replace("/index.html", "/")
             pages += 1
             raw = open(path, encoding="utf-8", errors="replace").read()

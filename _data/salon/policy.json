@@ -1,0 +1,361 @@
+{
+ "_source": "What the training salon's pages on this site say: services, prices, times, terms. Read by website/_src/salon.py. The BOOKING ENGINE is not in this repository — it is a separate repository and Vercel project at book.clwydianacademy.co.uk with its own copy of these figures; when a figure changes it must change in both places.",
+ "_public": "THE SWITCH. While this is false, build.py builds no salon page and no 'Our Salon' nav item: the deployed site is exactly what it was. Nothing about the salon goes public until VTCT approval and the signed lease — Mark's decision, 17 Nov 2026. Only Mark turns this on.",
+ "public": false,
+ "_status": "Two kinds of unconfirmed value. {\"todo_pm\": true, \"value\": X} is a PLACEHOLDER nobody has decided: it is never printed, and the page says 'to be confirmed'. {\"pm_draft\": \"central scenario\", \"value\": X} is the PM's DRAFT: it is printed, under a visible 'Draft' notice. While ANY of either remains, the salon pages are noindex and out of the sitemap even with the switch on.",
+ "booking_url": "https://book.clwydianacademy.co.uk/book/",
+ "levels": {
+  "l2": {
+   "rank": 2,
+   "name": {
+    "en": "Level 2 learner",
+    "cy": "Dysgwr Lefel 2"
+   }
+  },
+  "l3": {
+   "rank": 3,
+   "name": {
+    "en": "Level 3 learner",
+    "cy": "Dysgwr Lefel 3"
+   }
+  }
+ },
+ "pricing": {
+  "_rule": "PM decision, 17 Nov 2026. Level 3 pays the stylist price. Level 2 pays the stylist price less this percentage — one figure for cutting and styling, one for colour and technical — rounded to the nearest whole pound (a half rounds up). THE FIGURES ARE NOT HERE: every price and time comes from feed.json, exported from the booking system."
+ },
+ "educator": {
+  "_note": "Educator time is part of every appointment length in feed.json; it is not a figure kept here."
+ },
+ "deposit": {
+  "_note": "Flat, by category; comes off the bill; kept if cancelled inside the cancel window or on a no-show (draft).",
+  "cutting": {
+   "pm_draft": "central scenario",
+   "value": "feed.json"
+  },
+  "colour": {
+   "pm_draft": "central scenario",
+   "value": "feed.json"
+  }
+ },
+ "concession": {
+  "_note": "Off cutting and styling only, never colour, on the listed weekdays (draft).",
+  "percent": {
+   "pm_draft": "central scenario",
+   "value": 20
+  },
+  "days": {
+   "pm_draft": "central scenario",
+   "value": [
+    "tue",
+    "wed",
+    "thu"
+   ]
+  },
+  "who": {
+   "pm_draft": "central scenario",
+   "value": {
+    "en": [
+     "Over 65",
+     "Students",
+     "NHS and care staff"
+    ],
+    "cy": [
+     "Dros 65 oed",
+     "Myfyrwyr",
+     "Staff y GIG a gofal"
+    ]
+   }
+  }
+ },
+ "models": {
+  "_note": "Assessment models (draft).",
+  "colour_product_cost": {
+   "pm_draft": "central scenario",
+   "value": [
+    10,
+    15
+   ]
+  },
+  "refundable_deposit": {
+   "pm_draft": "central scenario",
+   "value": 5
+  }
+ },
+ "adults_only": {
+  "_note": "Mark, 17 Nov 2026: no clients under 18 at all for now.",
+  "minimum_age": 18
+ },
+ "vat": {
+  "_note": "Whether the salon's prices carry VAT.",
+  "status": {
+   "todo_pm": true,
+   "value": "unknown"
+  }
+ },
+ "_terms_approved": "The wording of /salon/terms/. The page says DRAFT until this is true.",
+ "terms_approved": {
+  "todo_pm": true,
+  "value": false
+ },
+ "cancel_window_hours": 48,
+ "patch_test": {
+  "_note": "The allergy alert test: in the salon, free, at least min_hours before colour, valid max_months, for the same product line.",
+  "min_hours": 48,
+  "max_months": 12
+ },
+ "opening": {
+  "_terms": "The salon opens in term time only.",
+  "terms": {
+   "todo_pm": true,
+   "value": "feed.json"
+  },
+  "sessions": {
+   "todo_pm": true,
+   "value": "feed.json"
+  }
+ },
+ "services": [
+  {
+   "id": "cut-blow-dry",
+   "group": "cutting",
+   "category": "cutting",
+   "name": {
+    "en": "Cut and blow-dry",
+    "cy": "Torri a chwythsychu"
+   }
+  },
+  {
+   "id": "blow-dry",
+   "group": "cutting",
+   "category": "cutting",
+   "name": {
+    "en": "Blow-dry",
+    "cy": "Chwythsychu"
+   }
+  },
+  {
+   "id": "curly-blow-dry",
+   "group": "cutting",
+   "category": "cutting",
+   "name": {
+    "en": "Curly blow-dry",
+    "cy": "Chwythsychu cyrliog"
+   }
+  },
+  {
+   "id": "restyle",
+   "group": "cutting",
+   "category": "cutting",
+   "name": {
+    "en": "Restyle / creative cut",
+    "cy": "Ailsteilio / toriad creadigol"
+   }
+  },
+  {
+   "id": "gents-cut",
+   "group": "cutting",
+   "category": "cutting",
+   "name": {
+    "en": "Gents cut",
+    "cy": "Toriad dynion"
+   }
+  },
+  {
+   "id": "faded-gents-cut",
+   "group": "cutting",
+   "category": "cutting",
+   "name": {
+    "en": "Faded gents cut",
+    "cy": "Toriad dynion pylu"
+   }
+  },
+  {
+   "id": "occasion",
+   "group": "cutting",
+   "category": "cutting",
+   "name": {
+    "en": "Occasion hair",
+    "cy": "Gwallt achlysur"
+   }
+  },
+  {
+   "id": "root-retouch",
+   "group": "colour",
+   "category": "colour",
+   "name": {
+    "en": "Root retouch",
+    "cy": "Ail-liwio'r gwreiddiau"
+   },
+   "patch_test": true
+  },
+  {
+   "id": "full-head-colour",
+   "group": "colour",
+   "category": "colour",
+   "name": {
+    "en": "Full head colour",
+    "cy": "Lliwio'r pen cyfan"
+   },
+   "patch_test": true
+  },
+  {
+   "id": "half-head-foils",
+   "group": "colour",
+   "category": "colour",
+   "name": {
+    "en": "Half head foils",
+    "cy": "Ffoiliau hanner pen"
+   },
+   "patch_test": true
+  },
+  {
+   "id": "full-head-foils",
+   "group": "colour",
+   "category": "colour",
+   "name": {
+    "en": "Full head foils",
+    "cy": "Ffoiliau pen cyfan"
+   },
+   "patch_test": true
+  },
+  {
+   "id": "balayage",
+   "group": "colour",
+   "category": "colour",
+   "name": {
+    "en": "Balayage / creative colour",
+    "cy": "Balayage / lliwio creadigol"
+   },
+   "patch_test": true,
+   "consultation_first": true
+  },
+  {
+   "id": "toner-gloss",
+   "group": "colour",
+   "category": "colour",
+   "name": {
+    "en": "Toner / gloss",
+    "cy": "Arlliwydd / sglein"
+   },
+   "patch_test": true
+  },
+  {
+   "id": "colour-correction",
+   "group": "colour",
+   "category": "colour",
+   "name": {
+    "en": "Colour correction",
+    "cy": "Cywiro lliw"
+   },
+   "patch_test": true,
+   "consultation_first": true
+  },
+  {
+   "id": "perm",
+   "group": "colour",
+   "category": "colour",
+   "name": {
+    "en": "Perm",
+    "cy": "Pyrm"
+   }
+  },
+  {
+   "id": "conditioning-treatment",
+   "group": "treatment",
+   "category": "cutting",
+   "name": {
+    "en": "Conditioning treatment",
+    "cy": "Triniaeth gyflyru"
+   },
+   "_l2": "The decision gives a Level 2 discount for cutting/styling and for colour/technical; which one a treatment takes is not decided."
+  },
+  {
+   "id": "bond-reconstructor",
+   "group": "treatment",
+   "category": "cutting",
+   "name": {
+    "en": "Bond reconstructor",
+    "cy": "Adluniwr bondiau"
+   }
+  },
+  {
+   "id": "clipper-cut",
+   "group": "barbering",
+   "category": "cutting",
+   "name": {
+    "en": "Clipper cut, one grade",
+    "cy": "Toriad clipiwr, un radd"
+   }
+  },
+  {
+   "id": "scissor-over-comb",
+   "group": "barbering",
+   "category": "cutting",
+   "name": {
+    "en": "Scissor-over-comb",
+    "cy": "Siswrn dros grib"
+   }
+  },
+  {
+   "id": "beard-trim",
+   "group": "barbering",
+   "category": "cutting",
+   "name": {
+    "en": "Beard trim and shape",
+    "cy": "Tocio a siapio barf"
+   }
+  },
+  {
+   "id": "hot-towel-shave",
+   "group": "barbering",
+   "category": "cutting",
+   "name": {
+    "en": "Hot towel / cut-throat shave",
+    "cy": "Eillio tywel poeth / rasel hen ffasiwn"
+   }
+  },
+  {
+   "id": "flat-top",
+   "group": "barbering",
+   "category": "cutting",
+   "name": {
+    "en": "Flat top / creative cut",
+    "cy": "Pen fflat / toriad creadigol"
+   }
+  },
+  {
+   "id": "cut-beard-combo",
+   "group": "barbering",
+   "category": "cutting",
+   "name": {
+    "en": "Cut and beard",
+    "cy": "Toriad a barf"
+   }
+  }
+ ],
+ "groups": {
+  "cutting": {
+   "en": "Cutting and styling",
+   "cy": "Torri a steilio"
+  },
+  "barbering": {
+   "en": "Barbering",
+   "cy": "Barbro"
+  },
+  "colour": {
+   "en": "Colour and perming",
+   "cy": "Lliwio a phyrmio"
+  },
+  "treatment": {
+   "en": "Treatments",
+   "cy": "Triniaethau"
+  }
+ },
+ "catalogue": {
+  "_note": "Prices, appointment lengths, deposits, opening hours and term dates are taken from _data/salon/feed.json, which is exported from the booking system (clwydianacademy/salon-booking) and never edited by hand. They stay DRAFT here until Mark confirms them in the booking system's Settings.",
+  "figures": {
+   "pm_draft": "central scenario",
+   "value": "feed.json"
+  }
+ }
+}
