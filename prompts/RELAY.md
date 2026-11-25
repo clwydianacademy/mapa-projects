@@ -4170,3 +4170,24 @@ The brief (PM relay, round 4) is saved verbatim in `salon-booking/prompts/RELAY.
 
 ### WELSH FOR REVIEW
 None new: the link uses the existing "Book online" / Welsh label; prices and times are figures.
+
+### REPORT — 25 Nov 2026 — Mark's answer to question 56: a price changed in the booking system reaches this site by itself
+
+Mark's answers of 25 November are saved verbatim in `salon-booking/prompts/RELAY.md`. The one that lands here is 56: **yes**, a price changed in the booking system's Settings should reach the website with nobody doing anything.
+
+- `scripts/sync_salon_feed.py` (new) fetches the booking system's live catalogue (`https://book.clwydianacademy.co.uk/api/salon/feed/`, https and that host only) and, if it differs from `_data/salon/feed.json`, replaces it — written byte-for-byte as the booking repository's own export writes it.
+- `.github/workflows/salon-feed.yml` (new) runs it every night at 03:17 UTC, and by hand from the Actions tab. If the feed changed it commits the feed, rebuilds, runs the site's own checks, commits the output **as a second, separate commit** (build discipline), and pushes. Nothing is pushed unless every check passes.
+- **Because nobody is watching, it is built to refuse.** An error page, half a file, a feed for another business, no services, more than half the price list gone, a price of nothing, a price that is text, **a price more than four times or less than a quarter of last night's** (a slip of the finger in Settings is for a person to confirm, not for publishing overnight), no opening hours, a Book link to another site, markup in a service name: each leaves the file exactly as it was and turns the job red. The booking system simply not answering changes nothing and is not a failure — which is what happens every night until that site is live.
+- `scripts/test_feed_sync.py` (new, 30 checks) drives each of those against a real local server. **Watched failing**: with the validator switched off, 14 of the refusals failed; restored, all pass.
+- ⛔ **The first draft of that test passed and was wrong.** I wrote it from what I assumed the endpoint serves. Run against the booking system's real handler, the answer also carries a `generatedAt` that differs every time — so the feed would have "changed", been committed and redeployed **every single night**. Caught by fetching from the real thing before believing the test; the sync now leaves that field out (as the export does) and the test uses the real shape.
+- **The deployed folder `site/` did not change** and no output commit was needed: the salon switch is still off.
+
+### NEEDS A HUMAN
+- **This does nothing until it is on the default branch.** GitHub runs a scheduled job only from `main`; on this draft branch it is inert. Merging this pull request is what switches it on — and from then, once the booking site is live, **a manager changing a price in Settings is a production deploy of this website the following night, with no review**. That is what was asked for; it is said here so that nobody is surprised by a commit from "salon-feed" on `main`.
+- **If `main` is a protected branch**, the push will be refused and the job will go red on the first real change. Either allow GitHub Actions to push to `main`, or say so and it can open a pull request instead (which would then need somebody to merge it each time).
+- **While the salon switch is off, a changed feed changes no page.** The feed would still be committed nightly-on-change; only the price pages, when they are public, would follow.
+- **Not run on GitHub.** The workflow file has been read and its order tested (`test_feed_sync.py` check 6), but a workflow only runs on GitHub, and this one has never run. Its first manual run from the Actions tab, after merge, is the real test.
+- **The four-times limit is my number.** A price that genuinely needs to move further than that in one night is refused until somebody exports the feed by hand.
+
+### WELSH FOR REVIEW
+None: no page text changed.
